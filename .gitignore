@@ -1,0 +1,24 @@
+# Editor files
+*.swp
+
+# Compilation by-products
+*.o
+
+# Libraries
+*.a
+*.so
+*.so.*
+
+# LaTeX stuff (for docs)
+*.aux
+*.glo
+*.idx
+*.log
+*.toc
+*.pdf
+*.dvi
+*.out
+
+# Outputs
+bin
+lib
