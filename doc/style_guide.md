@@ -10,29 +10,29 @@ Adhere to the Linux Kernel Coding standards for brace
 style. This means that all non-function block statements
 (if, switch, for, while) should look like this:
 
-  if (test) {
-  	stuff;
-  }
+	if (test) {
+  		stuff;
+	}
 
 Functions, however, are special:
 
-  int *
-  function(int x)
-  {
-  	body;
-  }
+	int *
+	function(int x)
+	{
+		body;
+	}
 
 This is because functions *are* special.
 
 Use a "cuddled else"
 
-  if (condition) {
+	if (condition) {
 	a;
-  } else if (condition) {
-  	b;
-  } else {
-  	c;
-  }
+	} else if (condition) {
+		b;
+	} else {
+		c;
+	}
 
 Do not use braces for single line if statements, unless
 it is part of an if, else if, else. In that case, absolutely DO
