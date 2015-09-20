@@ -75,3 +75,25 @@ But not for functions, even declarations/definitions
 
 If you put spaces on the inside of parenthesis, you are a disappointment to
 humanity, and your offspring will perish.
+
+## Naming
+
+Use ALL_CAPS for constants, UpperCamelCase for classes, lowerCamelCase for 
+class members and local variables.
+
+Methods should also be in lowerCamelCase. Do not do m_membername for members;
+they should be private so it doesn't matter if
+they "look like methods". If you really feel like one
+should be public, it's probably time to rethink what you are trying to do
+or overload operator=.
+
+## Scope/Encapsulation
+
+Members should be private. This makes threading easier, and keeps code
+clean. SetX() and GetX() are ugly warts. Try to avoid designing yourself
+into a situation where they are necessary.
+
+## RAII
+
+Adhere to RAII. If your method isn't exception-safe, you should go work
+for Google instead.
