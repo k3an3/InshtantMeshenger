@@ -46,13 +46,16 @@ or definition, as show above.
 
 ## Indentation
 
-Use tabs. Rationale: Brain cells
+Use tabs. Rationale: C++ is a very indentation-heavy language. Using tabs
+allows individual choice over how deep indentation levels should be. This means
+that if you have a wide screen, you can widen up your indentation for easier
+reading.
 
 ## Column Width
 
 Maintain 80 character columns, assuming a tab width of 4 columns. This is a
-compromise between the 8 column tradition, as has been established for over
-half a certury, and the practical limitations of C++ as a very highly indented
+compromise between the 8 column tradition, as has been established for decades, 
+and the practical limitations of C++ as a very highly indented
 language.
 
 However, because we are using tab characters rather than heretical spaces, if
