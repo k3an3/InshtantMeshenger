@@ -64,14 +64,14 @@ restriction, and this restriction assumes 4 column tabs.
 
 Put a space before the parenthesis for if, while, etc.
 
-  if (condition)
+	if (condition)
 
 But not for functions, even declarations/definitions
 
-  int
-  foo(int x);
+	int
+	foo(int x);
  
-  if (foo(10))
+	if (foo(10))
 
 If you put spaces on the inside of parenthesis, you are a disappointment to
 humanity, and your offspring will perish.
