@@ -1,0 +1,31 @@
+Inshtant Meshenger binary protocol (Version 1)
+
+------------------------------
+| 8 octets | (Length) octets |
+------------------------------
+| Preamble |     Body        |
+------------------------------
+
+Preamble Structure
+
+----------------------------------------------
+|  2 octets  | 1 octet | 3 octets | 2 octets |
+----------------------------------------------
+| Magic "IM" | Version | Reserved |  Length  |
+----------------------------------------------
+
+Body Structure
+
+---------------------------------
+| 1 octet | (Length - 1) octets |
+---------------------------------
+| Type ID | Type-specific data  |
+---------------------------------
+
+Message Structure
+
+------------------------------------------------------
+|    1 octet     | 16 octets  | (Length - 17) octets |
+------------------------------------------------------
+| Type ID (0x01) | Message ID |  Encrypted message   |
+------------------------------------------------------
