@@ -3,31 +3,23 @@
 #include <boost/asio.hpp>
 #include <cstdlib>
 
-using boost::asio::ip::tcp;
+using boost::asio::ip::udp;
 using namespace std;
 
 const int PORT = 1234;
+const int MAX_LENGTH = 1024;
 
 int
 main()
 {
     boost::asio::io_service io_service;
-    tcp::acceptor acceptor(io_service);
-    tcp::endpoint endpoint(tcp::v4(), PORT);
-    acceptor.open(endpoint.protocol());
-    acceptor.set_option(tcp::acceptor::reuse_address(true));
-    //acceptor.set_option(boost::asio::socket_base::broadcast(true));
-    tcp::socket socket(io_service);
-    acceptor.bind(endpoint);
-    acceptor.listen();
+    udp::socket socket(io_service, udp::endpoint(udp::v4(), PORT));
 
     while(1) {
-        char recv[1024];
-        acceptor.accept(socket);
-        tcp::endpoint e = socket.remote_endpoint();
-        socket.read_some(boost::asio::buffer(recv));
-        cerr << recv << " Got connection from: " << e.address() << "\n";
-        boost::asio::write(socket, boost::asio::buffer("hotdog\n", 7));
-        socket.close();
+        char data[MAX_LENGTH];
+        udp::endpoint remote_endpoint;
+        size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), remote_endpoint);
+        cerr << data << " Got connection from: " << remote_endpoint.address() << "\n";
+        socket.send_to(boost::asio::buffer("hotdog\n", 7), remote_endpoint);
     }
 }
