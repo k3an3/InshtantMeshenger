@@ -1,5 +1,7 @@
 Inshtant Meshenger binary protocol (Version 1)
 
+All multi-octet ints are in Network Byte Order (Big-endian)
+
 ------------------------------
 | 8 octets | (Length) octets |
 ------------------------------
