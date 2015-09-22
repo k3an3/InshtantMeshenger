@@ -12,7 +12,7 @@ bool
 libmeshenger::ValidatePacket(vector<uint8_t> msg)
 {
 	/* Validate minimum size */
-	if (msg.size < 8)
+	if (msg.size() < 8)
 		return false;
 
 	/* Validate magic */
@@ -24,15 +24,15 @@ libmeshenger::ValidatePacket(vector<uint8_t> msg)
 		return false;
 
 	/* Get body length */
-	uint16_t bodyLength = msg[7]
+	uint16_t bodyLength = msg[7];
 	bodyLength |= (msg[6] << 8);
 
 	/* Validate body length */
-	if (msg.size != bodyLength + 8)
+	if (msg.size() != bodyLength + 8)
 		return false;
 
 	/* Return true if valid empty packet */
-	if (msg.size == 8 && msg[5] == 0x00)
+	if (msg.size() == 8 && msg[5] == 0x00)
 		return true;
 
 	/* Create body vector */
@@ -51,7 +51,7 @@ libmeshenger::ValidatePacket(vector<uint8_t> msg)
 static bool
 validateMessage(vector<uint8_t> body)
 {
-	if (body.size < 144)
+	if (body.size() < 144)
 	{
 		return false;
 	}
