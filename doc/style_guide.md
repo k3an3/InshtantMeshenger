@@ -4,6 +4,14 @@ InshtantMeshenger Coding Standards
 Heavily based on the Linux Coding syle guidelines
 https://www.kernel.org/doc/Documentation/CodingStyle
 
+## integer variable standard
+Never use char, int, short, long. 
+Instead use int types in <cstdint> types:
+int8_t, uint8_t, 
+int16_t, uint16_t,
+int32_t, uint32_t,
+int64_t, uint64_t,
+
 ## Brace style
 
 Adhere to the Linux Kernel Coding standards for brace
