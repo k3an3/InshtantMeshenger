@@ -7,7 +7,7 @@
 namespace libmeshenger
 {
 	bool
-	ValidateMessage(std::vector<std::uint8> message);
+	ValidatePacket(std::vector<std::uint8_t> message);
 }
 
 #endif
