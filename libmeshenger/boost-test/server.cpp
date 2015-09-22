@@ -19,7 +19,7 @@ main()
         char data[MAX_LENGTH];
         udp::endpoint remote_endpoint;
         size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), remote_endpoint);
-        cerr << data << " Got connection from: " << remote_endpoint.address() << "\n";
+        cerr << remote_endpoint.address() << ": " << data << "\n";
         socket.send_to(boost::asio::buffer("hotdog\n", 7), remote_endpoint);
     }
 }
