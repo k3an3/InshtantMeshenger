@@ -10,9 +10,8 @@ const int PORT = 1234;
 const int MAX_LENGTH = 1024;
 
 int
-main()
+main(int32_t argc, char* argv[])
 {
-    char data[] = "hello world";
     char response[MAX_LENGTH];
     boost::asio::io_service io_service;
     udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
@@ -21,8 +20,8 @@ main()
     socket.set_option(udp::socket::broadcast(true));
 
     udp::endpoint endpoint(boost::asio::ip::address_v4::broadcast(), PORT);
-    socket.send_to(boost::asio::buffer(data, MAX_LENGTH), endpoint);
+    socket.send_to(boost::asio::buffer(argv[1], MAX_LENGTH), endpoint);
     size_t recv_length = socket.receive_from(boost::asio::buffer(response, MAX_LENGTH), endpoint);
-    cout << response;
+    cout << "Discovered server at " << endpoint.address() << "...\nMsg: " << response;
     socket.close();
 }

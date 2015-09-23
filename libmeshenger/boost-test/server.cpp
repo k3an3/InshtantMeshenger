@@ -15,12 +15,14 @@ main()
 {
 	boost::asio::io_service io_service;
 	udp::socket socket(io_service, udp::endpoint(udp::v4(), PORT));
+	cerr << "Listening on " << socket.local_endpoint().address() << "...\n";
 
 	while(1) {
 		char data[MAX_LENGTH];
 		udp::endpoint remote_endpoint;
-		size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), remote_endpoint);
-		cerr << remote_endpoint.address() << ": " << data << "\n";
-		socket.send_to(boost::asio::buffer("hotdog\n", 7), remote_endpoint);
+		size_t recv_length = socket.receive_from(boost::asio::buffer(
+					data, MAX_LENGTH), remote_endpoint);
+		cerr << "Msg from " << remote_endpoint.address() << ": " << data << "\n";
+		socket.send_to(boost::asio::buffer(data, recv_length - 1), remote_endpoint);
 	}
 }
