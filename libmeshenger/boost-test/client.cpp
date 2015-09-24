@@ -21,7 +21,9 @@ main(int32_t argc, char* argv[])
 
     udp::endpoint endpoint(boost::asio::ip::address_v4::broadcast(), PORT);
     socket.send_to(boost::asio::buffer(argv[1], MAX_LENGTH), endpoint);
-    size_t recv_length = socket.receive_from(boost::asio::buffer(response, MAX_LENGTH), endpoint);
-    cout << "Discovered server at " << endpoint.address() << "...\nMsg: " << response;
-    socket.close();
+
+    while(1) {
+        size_t recv_length = socket.receive_from(boost::asio::buffer(response, MAX_LENGTH), endpoint);
+        cout << "Discovered server at " << endpoint.address() << "...\nMsg: " << response << "\n\n";
+    }
 }

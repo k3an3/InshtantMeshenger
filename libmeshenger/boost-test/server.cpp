@@ -15,7 +15,7 @@ main()
 {
 	boost::asio::io_service io_service;
 	udp::socket socket(io_service, udp::endpoint(udp::v4(), PORT));
-	cerr << "Listening on " << socket.local_endpoint().address() << "...\n";
+	cerr << "Listening on " << socket.local_endpoint().address() << ":" << PORT << "...\n";
 
 	while(1) {
 		char data[MAX_LENGTH];
