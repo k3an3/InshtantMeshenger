@@ -67,10 +67,9 @@ namespace libmeshenger
 		: raw_m(data)
 	{
 		if (ValidatePacket(data) == false)
-			//throw InvalidPacketException("Unable to validate!");
-			throw 5;
+			throw InvalidPacketException();
 
-		type_m = data[5];
+		type_m = data[5]; /* Store type */
 	}
 
 	uint16_t
@@ -102,7 +101,7 @@ namespace libmeshenger
 		:	raw_m(p.body())
 	{
 		if (p.type() != 1)
-			throw 6;
+			throw WrongPacketTypeException();
 	}
 
 	uint16_t
@@ -122,4 +121,22 @@ namespace libmeshenger
 	{
 		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}
+
+	/* Exception definitions */
+
+	InvalidPacketException::InvalidPacketException(string const& error)
+		: runtime_error(error)
+	{}
+
+	InvalidPacketException::InvalidPacketException()
+		: runtime_error("Invalid packet!")
+	{}
+
+	WrongPacketTypeException::WrongPacketTypeException(string const& error)
+		: runtime_error(error)
+	{}
+
+	WrongPacketTypeException::WrongPacketTypeException()
+		: runtime_error("Packet type mismatch!")
+	{}
 }

@@ -12,16 +12,18 @@ namespace libmeshenger
 	bool
 	ValidatePacket(std::vector<std::uint8_t> message);
 
-	class Packet
+	class Packet final
 	{
 		private:
 			std::vector<std::uint8_t> raw_m;
 			uint8_t type_m;
 		public:
-			/* Getters */
-			uint8_t type();
+			/* Returns a new (copy) vector of the appropriate bytes */
 			std::vector<std::uint8_t> raw();
 			std::vector<std::uint8_t> body();
+
+			/* Packet type */
+			uint8_t type();
 
 			/* Body length */
 			uint16_t length();
@@ -31,11 +33,12 @@ namespace libmeshenger
 	};
 
 	/* Packet type 1 */
-	class Message
+	class Message final
 	{
 		private:
 			std::vector<std::uint8_t> raw_m;
 		public:
+			/* Returns a vector copy containing the appropriate bytes */
 			std::vector<std::uint8_t> id();
 			std::vector<std::uint8_t> body();
 			
@@ -47,16 +50,18 @@ namespace libmeshenger
 	};
 
 	/* Parser exceptions */
-	class InvalidPacketException : public std::runtime_error
+	class InvalidPacketException final : public std::runtime_error
 	{
 		public:
 			InvalidPacketException(std::string const& error);
+			InvalidPacketException();
 	};
 
-	class WrongPacketTypeException : public std::runtime_error
+	class WrongPacketTypeException final : public std::runtime_error
 	{
 		public:
 			WrongPacketTypeException(std::string const& error);
+			WrongPacketTypeException();
 	};
 }
 
