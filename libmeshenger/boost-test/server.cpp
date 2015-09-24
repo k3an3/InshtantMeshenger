@@ -11,7 +11,7 @@ const int PORT = 1234;
 const int MAX_LENGTH = 1024;
 
 int
-main()
+main(int32_t argc, char* argv[])
 {
 	boost::asio::io_service io_service;
 	udp::socket socket(io_service, udp::endpoint(udp::v4(), PORT));
@@ -23,6 +23,6 @@ main()
 		size_t recv_length = socket.receive_from(boost::asio::buffer(
 					data, MAX_LENGTH), remote_endpoint);
 		cerr << "Msg from " << remote_endpoint.address() << ": " << data << "\n";
-		socket.send_to(boost::asio::buffer(data, recv_length - 1), remote_endpoint);
+		socket.send_to(boost::asio::buffer(argv[1], strlen(argv[1])), remote_endpoint);
 	}
 }
