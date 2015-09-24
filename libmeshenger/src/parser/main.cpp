@@ -19,4 +19,23 @@ main()
 	std::vector<uint8_t> raw_data(test_data, test_data+40);
 	
 	cout << (libmeshenger::ValidatePacket(raw_data) ? "Good" : "Bad") << endl;
+
+	libmeshenger::Packet p(raw_data);
+
+	cout << p.length() << endl;
+	cout << (int) p.type() << endl;
+
+	libmeshenger::Message m(p);
+
+	cout << m.length() << endl;
+
+	for(int i = 0; i < 16; i++) {
+		cout << (int) m.id()[i];
+	}
+	cout << endl;
+	
+	for(int i = 0; i < 16; i++) {
+		cout << (int) m.body()[i];
+	}
+	cout << endl;
 }

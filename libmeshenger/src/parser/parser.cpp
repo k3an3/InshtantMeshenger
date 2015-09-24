@@ -14,7 +14,7 @@ namespace libmeshenger
 	static bool
 	validateMessage(vector<uint8_t> body)
 	{
-		if (body.size() < 144)
+		if (body.size() < 32)
 		{
 			return false;
 		}
@@ -64,7 +64,7 @@ namespace libmeshenger
 
 	/* Class methods */
 	Packet::Packet(vector<uint8_t> data)
-		: raw_m(data), body_m(data.begin()+8, data.end())
+		: raw_m(data)
 	{
 		if (ValidatePacket(data) == false)
 			//throw InvalidPacketException("Unable to validate!");
@@ -76,13 +76,50 @@ namespace libmeshenger
 	uint16_t
 	Packet::length()
 	{
-		return body_m.size();
+		return body().size();
 	}
 
 	vector<uint8_t>
 	Packet::body()
 	{
 		/* Return (by value) a copy of the body */
-		return vector<uint8_t>(body_m);
+		return vector<uint8_t>(raw_m.begin() + 8, raw_m.end());
+	}
+
+	vector<uint8_t>
+	Packet::raw()
+	{
+		return vector<uint8_t>(raw_m);
+	}
+
+	uint8_t
+	Packet::type()
+	{
+		return type_m;
+	}
+
+	Message::Message(Packet p)
+		:	raw_m(p.body())
+	{
+		if (p.type() != 1)
+			throw 6;
+	}
+
+	uint16_t
+	Message::length()
+	{
+		return raw_m.size() - 16;
+	}
+
+	vector<uint8_t>
+	Message::body()
+	{
+		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
+	}
+
+	vector<uint8_t>
+	Message::id()
+	{
+		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}
 }

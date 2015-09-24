@@ -16,7 +16,6 @@ namespace libmeshenger
 	{
 		private:
 			std::vector<std::uint8_t> raw_m;
-			std::vector<std::uint8_t> body_m;
 			uint8_t type_m;
 		public:
 			/* Getters */
@@ -35,8 +34,7 @@ namespace libmeshenger
 	class Message
 	{
 		private:
-			std::vector<std::uint8_t> id_m;
-			std::vector<std::uint8_t> body_m;
+			std::vector<std::uint8_t> raw_m;
 		public:
 			std::vector<std::uint8_t> id();
 			std::vector<std::uint8_t> body();
