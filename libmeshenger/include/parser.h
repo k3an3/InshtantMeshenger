@@ -10,6 +10,9 @@
 namespace libmeshenger
 {
 	bool
+	/*checks to see if the packet is valid
+	Reasons that a packet is not valid include: Unstructed Packet, Incorrect Encryption,Wrong Packet type or parsering error
+	*/
 	ValidatePacket(std::vector<std::uint8_t> message);
 
 	class Packet final
@@ -66,6 +69,16 @@ namespace libmeshenger
 		public:
 			WrongPacketTypeException(std::string const& error);
 			WrongPacketTypeException();
+	};
+	/*
+	*In the worse case scenario when the parser fails it would hit this parsing exception block
+	* This is differnt than the InValid Packet Exception in that it would be an error in our code vs the packet it self
+	*/
+	class PacketParsingException final : public std::runtime_error
+	{
+		public:
+			PacketParsingExceptio(std::string const& error);
+			PacketParsingExceptio();
 	};
 }
 
