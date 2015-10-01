@@ -37,6 +37,8 @@ namespace libmeshenger
 	string
 	ClearMessage::bodyString() const
 	{
+		/* Treat the body as a plain, ASCII string
+		 * Weird output will result if it isn't */
 		string s((const char *) (body().data()));
 		return s;
 	}
@@ -44,6 +46,7 @@ namespace libmeshenger
 	string
 	ClearMessage::idString() const
 	{
+		/* Convert the ID to hex */
 		char buffer[3];
 		string s;
 		for(uint8_t i = 0; i < 16; i++) {
