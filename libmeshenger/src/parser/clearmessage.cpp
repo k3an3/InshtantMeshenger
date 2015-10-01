@@ -1,23 +1,26 @@
 #include <parser.h>
 #include <string>
 #include <cstdint>
+#include <vector>
+
+using namespace std;
 
 namespace libmeshenger
 {
-	int16_t
-	ClearMessage::length()
+	uint16_t
+	ClearMessage::length() const
 	{
 		return raw_m.size() - 16;
 	}
 
 	vector<uint8_t>
-	ClearMessage::body()
+	ClearMessage::body() const
 	{
 		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
 	}
 
 	vector<uint8_t>
-	ClearMessage::id()
+	ClearMessage::id() const
 	{
 		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}
@@ -32,7 +35,7 @@ namespace libmeshenger
 
 	/* Equality */
 	bool
-	operator==(const Message& lhs, const Message& rhs)
+	operator==(const ClearMessage& lhs, const ClearMessage& rhs)
 	{
 		if (lhs.id().size() != rhs.id().size())
 			return false;

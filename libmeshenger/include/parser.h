@@ -16,24 +16,26 @@ namespace libmeshenger
 	{
 		private:
 			std::vector<std::uint8_t> raw_m;
-			uint8_t type_m;
+			std::uint8_t type_m;
 		public:
 			/* Returns a new (copy) vector of the appropriate bytes */
 			std::vector<std::uint8_t> raw() const;
 			std::vector<std::uint8_t> body() const;
 
 			/* Packet type */
-			uint8_t type() const;
+			std::uint8_t type() const;
 
 			/* Body length */
-			uint16_t length() const;
+			std::uint16_t length() const;
 
 			/* Construct from raw data */
 			Packet(std::vector<std::uint8_t>);
 	};
 
 
-	/* Packet type 1 */
+	/* Packet type 1
+	 * Cleartext message
+	 * */
 	class ClearMessage final
 	{
 		private:
@@ -44,7 +46,7 @@ namespace libmeshenger
 			std::vector<std::uint8_t> body() const;
 			
 			/* Body length */
-			uint16_t length() const;
+			std::uint16_t length() const;
 
 			/* Construct from a Packet */
 			ClearMessage(Packet);
@@ -54,7 +56,7 @@ namespace libmeshenger
 	};
 
 	/* Message equality */
-	bool operator==(const Message& lhs, const Message& rhs);
+	bool operator==(const ClearMessage& lhs, const ClearMessage& rhs);
 
 	/* Parser exceptions */
 	class InvalidPacketException final : public std::runtime_error
