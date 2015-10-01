@@ -51,6 +51,10 @@ namespace libmeshenger
 			/* Body length */
 			std::uint16_t length() const;
 
+			/* ID and body as strings */
+			std::string bodyString() const;
+			std::string idString() const;
+
 			/* Construct from a Packet */
 			ClearMessage(Packet);
 
@@ -85,8 +89,8 @@ namespace libmeshenger
 	class PacketParsingException final : public std::runtime_error
 	{
 		public:
-			PacketParsingExceptio(std::string const& error);
-			PacketParsingExceptio();
+			PacketParsingException(std::string const& error);
+			PacketParsingException();
 	};
 }
 
