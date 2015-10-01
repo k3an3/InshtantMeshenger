@@ -74,26 +74,26 @@ namespace libmeshenger
 	}
 
 	uint16_t
-	Packet::length()
+	Packet::length() const
 	{
 		return body().size();
 	}
 
 	vector<uint8_t>
-	Packet::body()
+	Packet::body() const
 	{
 		/* Return (by value) a copy of the body */
 		return vector<uint8_t>(raw_m.begin() + 8, raw_m.end());
 	}
 
 	vector<uint8_t>
-	Packet::raw()
+	Packet::raw() const
 	{
 		return vector<uint8_t>(raw_m);
 	}
 
 	uint8_t
-	Packet::type()
+	Packet::type() const
 	{
 		return type_m;
 	}
@@ -106,19 +106,19 @@ namespace libmeshenger
 	}
 
 	uint16_t
-	Message::length()
+	Message::length() const
 	{
 		return raw_m.size() - 16;
 	}
 
 	vector<uint8_t>
-	Message::body()
+	Message::body() const
 	{
 		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
 	}
 
 	vector<uint8_t>
-	Message::id()
+	Message::id() const
 	{
 		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}

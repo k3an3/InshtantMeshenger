@@ -46,6 +46,17 @@ main()
 	}
 	cout << endl;
 
+	/* Create additional packets for operator== testing */
+	libmeshenger::Message m2(p);
+
+	raw_data[8] = 2;
+	p = libmeshenger::Packet(raw_data);
+	libmeshenger::Message m3(p);
+
+	cout << "M and M1 should be equal, M3 should be different" << endl;
+	cout << "M1 and M2 are " << ((m == m2) ? "Equal" : "Inequal") << endl;
+	cout << "M2 and M3 are " << ((m2 == m3) ? "Equal" : "Inequal") << endl;
+
 	raw_data[1] = 'm'; /* Mangle packet */
 	p = libmeshenger::Packet(raw_data); /* Throw exception */
 }
