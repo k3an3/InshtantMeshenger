@@ -15,6 +15,8 @@ namespace libmeshenger
 
 			/* Add a message to the list of messages that have already
 			 * been "seen" and broadcast to all peers
+			 *
+			 *
 			 * */
 			void FlagMessage(Message m);
 
@@ -34,6 +36,13 @@ namespace libmeshenger
 			 * it is "new"
 			 * */
 			void ProcessMessage(Message m);
+			/*
+			*It takes a message in, first checks if it is a valid message,
+			*then checks if it is a new message, if it is not a new message discard it else
+			*add it to the list and display the message to the user 
+			*
+			*/
+            
 	}
 }
 
