@@ -2,6 +2,8 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <sstream>
+#include <iterator>
 
 using namespace std;
 
@@ -32,6 +34,28 @@ namespace libmeshenger
 			throw WrongPacketTypeException();
 	}
 
+	string
+	ClearMessage::bodyString() const
+	{
+		/* Treat the body as a plain, ASCII string
+		 * Weird output will result if it isn't */
+		string s((const char *) (body().data()));
+		return s;
+	}
+
+	string
+	ClearMessage::idString() const
+	{
+		/* Convert the ID to hex */
+		char buffer[3];
+		string s;
+		for(uint8_t i = 0; i < 16; i++) {
+			snprintf(buffer, 3, "%02X", id()[i]);
+			s += buffer;
+		}
+
+		return s;
+	}
 
 	/* Equality */
 	bool
