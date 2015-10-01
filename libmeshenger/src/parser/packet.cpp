@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdint>
 
 #include <parser.h>
@@ -65,7 +66,7 @@ namespace libmeshenger
 	bool
 	operator==(const Packet& lhs, const Packet& rhs)
 	{
-		if (lhs.size() != rhs.size())
+		if (lhs.length() != rhs.length())
 			return false;
 
 		if (lhs.type() != rhs.type())
@@ -75,12 +76,12 @@ namespace libmeshenger
 			case 0x00: return true;
 					   break;
 
-			case 0x01: ClearMessage m1(lhs);
-					   ClearMessage m2(rhs);
-					   return m1 == m2;
+			case 0x01: return equal(lhs.body().begin(), lhs.body().end(),
+							   		rhs.body().begin());
 					   break;
 
 			default: return false;
+		}
 	}
 
 	/* Class methods */
