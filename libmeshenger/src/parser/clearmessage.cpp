@@ -34,6 +34,20 @@ namespace libmeshenger
 			throw WrongPacketTypeException();
 	}
 
+
+	/* String-based constructor */
+	ClearMessage::ClearMessage(string s)
+	{
+		uint8_t * str = (uint8_t *) s.c_str();
+		vector<uint8_t> raw_body(str, str + s.size());
+
+		/* ID is first 16 bytes of body. Such hash, very secure */
+		vector<uint8_t> raw_id(raw_body.begin(), raw_body.begin() + 16);
+
+		raw_m = vector<uint8_t>(raw_id);
+		raw_m.insert(raw_m.end(), raw_body.begin(), raw_body.end());
+	}
+
 	string
 	ClearMessage::bodyString() const
 	{
