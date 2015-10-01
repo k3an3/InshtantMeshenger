@@ -97,31 +97,6 @@ namespace libmeshenger
 		return type_m;
 	}
 
-	Message::Message(Packet p)
-		:	raw_m(p.body())
-	{
-		if (p.type() != 1)
-			throw WrongPacketTypeException();
-	}
-
-	uint16_t
-	Message::length()
-	{
-		return raw_m.size() - 16;
-	}
-
-	vector<uint8_t>
-	Message::body()
-	{
-		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
-	}
-
-	vector<uint8_t>
-	Message::id()
-	{
-		return vector<uint8_t>(raw_m.begin(), raw_m.end());
-	}
-
 	/* Exception definitions */
 
 	InvalidPacketException::InvalidPacketException(string const& error)

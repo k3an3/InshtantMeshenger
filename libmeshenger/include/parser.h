@@ -33,7 +33,7 @@ namespace libmeshenger
 	};
 
 	/* Packet type 1 */
-	class Message final
+	class ClearMessage final
 	{
 		private:
 			std::vector<std::uint8_t> raw_m;
@@ -46,10 +46,10 @@ namespace libmeshenger
 			uint16_t length();
 
 			/* Construct from a Packet */
-			Message(Packet);
+			ClearMessage(Packet);
 
 			/* Construct from a String */
-			Message(std::string);
+			ClearMessage(std::string);
 	};
 
 	/* Parser exceptions */
