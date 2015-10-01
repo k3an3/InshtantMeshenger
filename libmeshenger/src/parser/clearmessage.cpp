@@ -2,6 +2,7 @@
 #include <string>
 #include <cstdint>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -40,10 +41,6 @@ namespace libmeshenger
 		if (lhs.id().size() != rhs.id().size())
 			return false;
 
-		for (int i = 0; i < lhs.id().size(); i++) {
-			if (lhs.id()[i] != rhs.id()[i])
-				return false;
-		}
-		return true;
+		return equal(lhs.id().begin(), lhs.id().end(), rhs.id().begin());
 	}
 }
