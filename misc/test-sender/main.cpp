@@ -29,9 +29,15 @@ int main(int argc, char * argv)
 	cout << "Message " << m.idString() << endl;
 	cout << "    `" << s << "`" << endl;
 	
+
+	/* Depends on the following unipmelement funtionality:
+	 *  - a LibMeshenger::Net class with
+	 *  	- addPeer(std::string)
+	 *  	- SendToAllPeers(LibMeshenger::Packet)
+	 * */
 	string peer(argv[1]);
 	Net net(NetConstructorArgs);
-	net.addPeer(peer);
+	net.AddPeer(peer);
 	net.SendToAllPeers(p);
 
 	cout << "MessageSent!" << endl;
