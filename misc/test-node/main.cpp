@@ -41,7 +41,9 @@ int main(int argc, char * argv)
 		/* Main loop */
 
 		/* Check for any inbound connections */
-		Message m = net.CheckReceive();
+		Message m;
+		if (net.CheckIncoming())
+			m = net.GetMessage();
 
 		/* Give message to the engine. If it's a new message, it will
 		 * be passed to the callbacks (Print and SendToAllPeers), otherwise
