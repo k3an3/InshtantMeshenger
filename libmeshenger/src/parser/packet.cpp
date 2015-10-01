@@ -94,6 +94,21 @@ namespace libmeshenger
 		type_m = data[5]; /* Store type */
 	}
 
+	Packet::Packet(ClearMessage m)
+	{
+		/* Magic, version, res, type (ClearMessage), length (blank) */
+		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 1, 0, 0 };
+		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
+		
+		/* Length */
+		preamble[7] = (m.length() + 16) % 256;
+		preamble[6] = (m.length() + 16) / 256;
+
+		/* Body */
+		preamble.insert(preamble.end(), m.id().begin(), m.id().end());
+		preamble.insert(preamble.end(), m.body().begin(), m.body().end());
+	}
+
 	uint16_t
 	Packet::length() const
 	{
