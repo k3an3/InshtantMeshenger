@@ -47,6 +47,9 @@ namespace libmeshenger
 
 			/* Construct from a Packet */
 			Message(Packet);
+
+			/* Construct from a String */
+			Message(std::string);
 	};
 
 	/* Parser exceptions */

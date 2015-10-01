@@ -16,7 +16,15 @@ Preamble Structure
 | Magic "IM" | Version | Reserved |  Type   |  Length  |
 --------------------------------------------------------
 
-Message Structure (Type 0x01)
+ClearMessage Structure (Type 0x01)
+
+-------------------------------------
+| 16 octets  | (Length - 16) octets |
+-------------------------------------
+| Message ID |  Plaintext message   |
+-------------------------------------
+
+Message Structure (Type 0x02)
 
 -------------------------------------
 | 16 octets  | (Length - 16) octets |
