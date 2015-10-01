@@ -1,5 +1,5 @@
 add_library(libmeshenger-parse
-	parser.cpp
+	packet.cpp
 	clearmessage.cpp)
 
 add_executable (hello main.cpp)

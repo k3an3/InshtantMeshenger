@@ -58,6 +58,9 @@ namespace libmeshenger
 	/* Message equality */
 	bool operator==(const ClearMessage& lhs, const ClearMessage& rhs);
 
+	/* Packet equality */
+	bool operator==(const Packet& lhs, const Packet& rhs);
+
 	/* Parser exceptions */
 	class InvalidPacketException final : public std::runtime_error
 	{

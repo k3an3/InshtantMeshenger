@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstdint>
-#include <algorithm>
 
 #include <parser.h>
 
@@ -9,11 +8,11 @@ using namespace std;
 namespace libmeshenger
 {
 	static bool
-	validateMessage(vector<uint8_t> msg);
+	validateClearMessage(vector<uint8_t> msg);
 
 	/* Statics */
 	static bool
-	validateMessage(vector<uint8_t> body)
+	validateClearMessage(vector<uint8_t> body)
 	{
 		if (body.size() < 32)
 		{
@@ -56,16 +55,37 @@ namespace libmeshenger
 		/* Validate message body based on body type */
 		switch (msg[5]) {
 			case 0x01:
-				return validateMessage(body);
+				return validateClearMessage(body);
 				break;
 			default:
 				return false;
 		}
 	}
 
+	bool
+	operator==(const Packet& lhs, const Packet& rhs)
+	{
+		if (lhs.size() != rhs.size())
+			return false;
+
+		if (lhs.type() != rhs.type())
+			return false;
+
+		switch (lhs.type()) {
+			case 0x00: return true;
+					   break;
+
+			case 0x01: ClearMessage m1(lhs);
+					   ClearMessage m2(rhs);
+					   return m1 == m2;
+					   break;
+
+			default: return false;
+	}
+
 	/* Class methods */
 	Packet::Packet(vector<uint8_t> data)
-		: raw_m(data)
+	: raw_m(data)
 	{
 		if (ValidatePacket(data) == false)
 			throw InvalidPacketException();
