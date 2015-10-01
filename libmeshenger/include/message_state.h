@@ -7,11 +7,20 @@
 
 namespace libmeshenger
 {
-	class StateEngine
+	class MessageState
 	{
 		public:
-			MessageEngine();
-			void MessageRetransmitted(Message m);
+			/* Constructor, creates an empty message state engine */
+			MessageState();
+
+			/* Add a message to the list of messages that have already
+			 * been "seen" and broadcast to all peers
+			 * */
+			void FlagMessage(Message m);
+
+			/* Return true if a message is "new" (hasn't already been
+			 * retransmitted) or false if it has already been "seen"
+			 * */
 			bool IsMessageNew(Message m);
 	}
 }
