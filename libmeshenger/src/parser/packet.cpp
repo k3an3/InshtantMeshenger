@@ -1,6 +1,6 @@
 #include <iostream>
-#include <cstdint>
 #include <algorithm>
+#include <cstdint>
 
 #include <parser.h>
 
@@ -9,11 +9,11 @@ using namespace std;
 namespace libmeshenger
 {
 	static bool
-	validateMessage(vector<uint8_t> msg);
+	validateClearMessage(vector<uint8_t> msg);
 
 	/* Statics */
 	static bool
-	validateMessage(vector<uint8_t> body)
+	validateClearMessage(vector<uint8_t> body)
 	{
 		if (body.size() < 32)
 		{
@@ -56,16 +56,37 @@ namespace libmeshenger
 		/* Validate message body based on body type */
 		switch (msg[5]) {
 			case 0x01:
-				return validateMessage(body);
+				return validateClearMessage(body);
 				break;
 			default:
 				return false;
 		}
 	}
 
+	bool
+	operator==(const Packet& lhs, const Packet& rhs)
+	{
+		if (lhs.length() != rhs.length())
+			return false;
+
+		if (lhs.type() != rhs.type())
+			return false;
+
+		switch (lhs.type()) {
+			case 0x00: return true;
+					   break;
+
+			case 0x01: return equal(lhs.body().begin(), lhs.body().end(),
+							   		rhs.body().begin());
+					   break;
+
+			default: return false;
+		}
+	}
+
 	/* Class methods */
 	Packet::Packet(vector<uint8_t> data)
-		: raw_m(data)
+	: raw_m(data)
 	{
 		if (ValidatePacket(data) == false)
 			throw InvalidPacketException();
@@ -97,47 +118,6 @@ namespace libmeshenger
 	{
 		return type_m;
 	}
-
-	Message::Message(Packet p)
-		:	raw_m(p.body())
-	{
-		if (p.type() != 1)
-			throw WrongPacketTypeException();
-	}
-
-	uint16_t
-	Message::length() const
-	{
-		return raw_m.size() - 16;
-	}
-
-	vector<uint8_t>
-	Message::body() const
-	{
-		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
-	}
-
-	vector<uint8_t>
-	Message::id() const
-	{
-		return vector<uint8_t>(raw_m.begin(), raw_m.end());
-	}
-
-	/* Equality */
-	bool
-	operator==(const Message& lhs, const Message& rhs)
-	{
-		if (lhs.id().size() != rhs.id().size()) 
-			return false;
-
-		for (int i = 0; i < lhs.id().size(); i++)
-		{
-			if (lhs.id()[i] != rhs.id()[i])
-				return false;
-		}
-		return true;
-	}
-
 
 	/* Exception definitions */
 

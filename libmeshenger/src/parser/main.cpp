@@ -30,7 +30,7 @@ main()
 	cout << (int) p.type() << endl;
 
 	/* Construct message */
-	libmeshenger::Message m(p);
+	libmeshenger::ClearMessage m(p);
 
 	/* Print calculated value */
 	cout << m.length() << endl;
@@ -47,11 +47,11 @@ main()
 	cout << endl;
 
 	/* Create additional packets for operator== testing */
-	libmeshenger::Message m2(p);
+	libmeshenger::ClearMessage m2(p);
 
 	raw_data[8] = 2;
 	p = libmeshenger::Packet(raw_data);
-	libmeshenger::Message m3(p);
+	libmeshenger::ClearMessage m3(p);
 
 	cout << "M and M1 should be equal, M3 should be different" << endl;
 	cout << "M1 and M2 are " << ((m == m2) ? "Equal" : "Inequal") << endl;
