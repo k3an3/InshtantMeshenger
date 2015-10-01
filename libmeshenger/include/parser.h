@@ -32,6 +32,7 @@ namespace libmeshenger
 			Packet(std::vector<std::uint8_t>);
 	};
 
+
 	/* Packet type 1 */
 	class Message final
 	{
@@ -48,6 +49,9 @@ namespace libmeshenger
 			/* Construct from a Packet */
 			Message(Packet);
 	};
+
+	/* Message equality */
+	bool operator==(const Message& lhs, const Message& rhs);
 
 	/* Parser exceptions */
 	class InvalidPacketException final : public std::runtime_error
