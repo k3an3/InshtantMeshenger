@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <cstdint>
 
+using boost::asio::ip::udp;
+
 namespace libmeshenger
 {
 	/* Networking class */
@@ -27,7 +29,7 @@ namespace libmeshenger
 			 * create new node objects upon new connections and responds to the
 			 * remote host. */
 			void discoveryListen(u_int16_t port);
-	}
+	};
 
 	/* Peer class */
 	class Peer final
@@ -37,6 +39,6 @@ namespace libmeshenger
 			boost::asio::ip::address ip_addr;
 
 			/* Default constructor */
-			Peer(boost::asio::ip:address ip_addr);
-	}
+			Peer(boost::asio::ip::address ip_addr);
+	};
 }
