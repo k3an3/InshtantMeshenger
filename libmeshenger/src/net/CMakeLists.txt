@@ -1,5 +1,5 @@
 add_library(libmeshenger-net
-	discovery_server.cpp)
+	net.cpp)
 
 find_package (Boost 1.55.0 REQUIRED COMPONENTS system)
 if (Boost_FOUND)

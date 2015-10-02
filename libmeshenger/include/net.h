@@ -5,6 +5,7 @@
 
 namespace libmeshenger
 {
+	/* Networking class */
 	class Net final
 	{
 		private:
@@ -17,7 +18,7 @@ namespace libmeshenger
 			/* UDP port number to listen on */
 			u_int16_t port;
 			/* Temporary/unused: data received on the socket */
-			char data[1024];
+			uint8_t data[1024];
 		public:
 			/* Construct with io_service object */
 			Net(boost::asio::io_service& io_service);
@@ -26,5 +27,16 @@ namespace libmeshenger
 			 * create new node objects upon new connections and responds to the
 			 * remote host. */
 			void discoveryListen(u_int16_t port);
+	}
+
+	/* Peer class */
+	class Peer final
+	{
+		public:
+			/* The peer's IP address */
+			boost::asio::ip::address ip_addr;
+
+			/* Default constructor */
+			Peer(boost::asio::ip:address ip_addr);
 	}
 }
