@@ -18,17 +18,23 @@ namespace libmeshenger
 			/* Endpoint for any remote connections */
 			udp::endpoint remote_endpoint;
 			/* UDP port number to listen on */
-			u_int16_t port;
+			uint16_t udp_port;
+			/* TCP port number to listen on */
+			uint16_t tcp_port;
 			/* Temporary/unused: data received on the socket */
 			uint8_t data[1024];
 		public:
 			/* Construct with io_service object */
-			Net(boost::asio::io_service& io_service);
+			Net(boost::asio::io_service& io_service, uint16_t udp_port, uint16_t tcp_port);
 
 			/* Starts a UDP listener on the provided port. The listener will
-			 * create new node objects upon new connections and responds to the
+			 * create new peer objects upon new connections and responds to the
 			 * remote host. */
-			void discoveryListen(u_int16_t port);
+			void discoveryListen();
+
+			/* Sends a UDP broadcast to discover peers. Received replies will
+			 * be used to construct peer objects. */
+			void discoverPeers();
 	};
 
 	/* Peer class */
