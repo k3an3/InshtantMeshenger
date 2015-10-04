@@ -47,7 +47,6 @@ namespace libmeshenger
 	{
 		/* Bind handler for new connections. */
 		/* TODO: Construct node object if node is previously unseen */
-		data = "";
 		if (!peerExistsByAddress(remote_endpoint.address())) {
 			peers.insert(peers.end(), Peer(remote_endpoint.address()));
 			cout << "Found new peer at " << remote_endpoint.address() << "\n";
