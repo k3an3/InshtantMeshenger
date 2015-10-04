@@ -11,11 +11,10 @@ using namespace libmeshenger;
 int
 main(int argc, char** argv)
 {
-    cout << "Starting test server...";
+    cout << "Starting test server...\n";
     boost::asio::io_service io_service;
     Net net(io_service, 1234, 1235);
 
     net.discoveryListen();
-    cin.ignore();
-    cout << "Done\n";
+    io_service.run();
 }

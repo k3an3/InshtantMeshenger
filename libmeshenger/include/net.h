@@ -2,11 +2,24 @@
 #include <boost/bind.hpp>
 #include <cstdlib>
 #include <cstdint>
+#include <vector>
 
 using boost::asio::ip::udp;
+using namespace std;
 
 namespace libmeshenger
 {
+	/* Peer class */
+	class Peer final
+	{
+		public:
+			/* The peer's IP address */
+			boost::asio::ip::address ip_addr;
+
+			/* Default constructor */
+			Peer(boost::asio::ip::address ip_addr);
+	};
+
 	/* Networking class */
 	class Net final
 	{
@@ -24,7 +37,10 @@ namespace libmeshenger
 			/* Temporary/unused: data received on the socket */
 			uint8_t data[1024];
 
-			void acceptConn(const boost::system::error_code& error, size_t len);
+			vector<Peer> peers;
+
+			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
+			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
 			void send_discovery_reply(const boost::system::error_code& error, size_t len);
 		public:
 			/* Construct with io_service object */
@@ -41,14 +57,4 @@ namespace libmeshenger
 
 	};
 
-	/* Peer class */
-	class Peer final
-	{
-		public:
-			/* The peer's IP address */
-			boost::asio::ip::address ip_addr;
-
-			/* Default constructor */
-			Peer(boost::asio::ip::address ip_addr);
-	};
 }
