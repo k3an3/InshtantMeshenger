@@ -23,6 +23,9 @@ namespace libmeshenger
 			uint16_t tcp_port;
 			/* Temporary/unused: data received on the socket */
 			uint8_t data[1024];
+
+			void acceptConn(const boost::system::error_code& error, size_t len);
+			void send_discovery_reply(const boost::system::error_code& error, size_t len);
 		public:
 			/* Construct with io_service object */
 			Net(boost::asio::io_service& io_service, uint16_t udp_port, uint16_t tcp_port);
@@ -35,6 +38,7 @@ namespace libmeshenger
 			/* Sends a UDP broadcast to discover peers. Received replies will
 			 * be used to construct peer objects. */
 			void discoverPeers();
+
 	};
 
 	/* Peer class */
