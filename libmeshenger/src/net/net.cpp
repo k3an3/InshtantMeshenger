@@ -12,7 +12,8 @@ using boost::asio::ip::udp;
 using namespace std;
 
 const int32_t MAX_LENGTH = 1024;
-const uint8_t RESP[] = "meshenger-discovery-response\n";
+const uint8_t RESP[] = "meshenger-discovery-response";
+const uint8_t MSG[] = "meshenger-discovery-probe";
 
 namespace libmeshenger
 {
@@ -21,6 +22,7 @@ namespace libmeshenger
 	{
 		cout << "\033[1;31m[libmeshenger-net]\033[0m-> " << s << std::endl;
 	}
+
 	/* Net class methods */
 
 	/* Default constructor. Initializes io_service */
@@ -54,7 +56,7 @@ namespace libmeshenger
 		/* Bind handler for new connections. */
 
 		/* Check if we received a discovery packet and if it is from a new peer */
-		if (!strcmp((char*) data, "meshenger-discovery-probe\n")) {
+		if (!strcmp((char*) data, (char*) MSG)) {
 			netVerbosePrint("Received probe from peer " +
 					remote_endpoint.address().to_string());
 			if (!peerExistsByAddress(remote_endpoint.address())) {
