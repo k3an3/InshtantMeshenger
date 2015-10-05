@@ -9,6 +9,9 @@ using namespace std;
 
 namespace libmeshenger
 {
+
+	void netVerbosePrint(string s);
+
 	/* Peer class */
 	class Peer final
 	{

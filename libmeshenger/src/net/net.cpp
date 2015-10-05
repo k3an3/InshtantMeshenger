@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 #include <net.h>
 
@@ -15,6 +16,11 @@ const uint8_t RESP[] = "meshenger-discovery-response\n";
 
 namespace libmeshenger
 {
+	void
+	netVerbosePrint(string s)
+	{
+		cout << "\033[1;31m[libmeshenger-net]\033[0m-> " << s << std::endl;
+	}
 	/* Net class methods */
 
 	/* Default constructor. Initializes io_service */
@@ -46,12 +52,17 @@ namespace libmeshenger
 	Net::acceptDiscoveryConn(const boost::system::error_code& error, size_t recv_len)
 	{
 		/* Bind handler for new connections. */
-		/* TODO: Construct node object if node is previously unseen */
-		if (!peerExistsByAddress(remote_endpoint.address())) {
-			peers.insert(peers.end(), Peer(remote_endpoint.address()));
-			cout << "Found new peer at " << remote_endpoint.address() << "\n";
+
+		/* Check if we received a discovery packet and if it is from a new peer */
+		if (!strcmp((char*) data, "meshenger-discovery-probe\n")) {
+			netVerbosePrint("Received probe from peer " +
+					remote_endpoint.address().to_string());
+			if (!peerExistsByAddress(remote_endpoint.address())) {
+				peers.insert(peers.end(), Peer(remote_endpoint.address()));
+				netVerbosePrint("Found new peer at " +
+						remote_endpoint.address().to_string());
+			}
 		}
-		cout << remote_endpoint.address() << ": " << data;
 		if (recv_len > 0)
 			listen_socket.async_send_to(
 				boost::asio::buffer(RESP, MAX_LENGTH), remote_endpoint,
@@ -107,6 +118,7 @@ namespace libmeshenger
 
 		while(1) {
 			size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), endpoint);
+			cout << data << "\n";
 		}
 	}
 
