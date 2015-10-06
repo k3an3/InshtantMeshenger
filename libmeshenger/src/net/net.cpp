@@ -75,12 +75,12 @@ namespace libmeshenger
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netVerbosePrint("Received discovery response from peer " +
 						remote_endpoint.address().to_string());
-			} else
 				socket.async_send_to(
 					boost::asio::buffer("", 0), remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+			}
 			if (!peerExistsByAddress(remote_endpoint.address())) {
 				peers.insert(peers.end(), Peer(remote_endpoint.address()));
 				netVerbosePrint("Found new peer at " +
