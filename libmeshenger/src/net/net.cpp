@@ -18,9 +18,10 @@ const uint8_t MSG[] = "meshenger-discovery-probe";
 namespace libmeshenger
 {
 	void
-	netVerbosePrint(string s)
+	netVerbosePrint(string s, int color)
 	{
-		cout << "\033[1;31m[libmeshenger-net]\033[0m-> " << s << std::endl;
+		cout << "\033[1;31m[libmeshenger-net]\033[0m-> " <<
+			"\033[1;" << color << "m" << s << "\033[0m" << std::endl;
 	}
 
 	/* Net class methods */
@@ -33,7 +34,7 @@ namespace libmeshenger
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
 		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
-		data("")
+		data()
 	{
 
 	}
@@ -62,7 +63,7 @@ namespace libmeshenger
 			if (!peerExistsByAddress(remote_endpoint.address())) {
 				peers.insert(peers.end(), Peer(remote_endpoint.address()));
 				netVerbosePrint("Found new peer at " +
-						remote_endpoint.address().to_string());
+						remote_endpoint.address().to_string(), 32);
 			}
 		}
 		if (recv_len > 0)
@@ -104,6 +105,8 @@ namespace libmeshenger
 	{
 		/* Discover peers on the LAN using UDP broadcast */
 
+		netVerbosePrint("Starting LAN Discovery", 33);
+
 		/* Create the socket that will send UDP broadcast */
 		udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 
@@ -120,7 +123,15 @@ namespace libmeshenger
 
 		while(1) {
 			size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), endpoint);
-			cout << data << "\n";
+			if (!strcmp((char*) data, (char*) RESP)) {
+				netVerbosePrint("Received discovery response from " + endpoint.address().to_string());
+				boost::asio::ip::address addr = endpoint.address();
+				if (!peerExistsByAddress(addr)) {
+					peers.insert(peers.end(), Peer(addr));
+					netVerbosePrint("Found new peer at " +
+							addr.to_string(), 32);
+				}
+			}
 		}
 	}
 

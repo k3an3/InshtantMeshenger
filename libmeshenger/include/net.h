@@ -10,7 +10,7 @@ using namespace std;
 namespace libmeshenger
 {
 
-	void netVerbosePrint(string s);
+	void netVerbosePrint(string s, int color = 0);
 
 	/* Peer class */
 	class Peer final
