@@ -44,7 +44,7 @@ namespace libmeshenger
 
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
-			void send_discovery_reply(const boost::system::error_code& error, size_t len);
+			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
 		public:
 			/* Construct with io_service object */
 			Net(boost::asio::io_service& io_service, uint16_t udp_port, uint16_t tcp_port);

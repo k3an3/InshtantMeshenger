@@ -16,5 +16,6 @@ main(int argc, char** argv)
     Net net(io_service, 1234, 1235);
 
     net.discoveryListen();
+    net.discoverPeers();
     io_service.run();
 }
