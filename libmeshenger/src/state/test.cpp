@@ -35,6 +35,14 @@ main()
 	cout << "Processing packet 1" << endl;
 	e.ProcessPacket(p);
 
-	e.processPacket(p);
+	cout << "Processing packet again" << endl;
+	e.ProcessPacket(p);
+
+	m = ClearMessage("Hello again! This is another awesome packet!");
+	p = Packet(m);
+
+	e.ProcessPacket(p);
+
+	cout e.PacketsHandled();
 
 }

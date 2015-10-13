@@ -10,7 +10,7 @@ namespace libmeshenger
 	class PacketEngine
 	{
 		private:
-		   	std::vector<std::uint8_t[16]> seenMessages;
+		   	std::vector<std::vector<uint8_t>> seenMessages;
 			std::vector<void (*)(ClearMessage&)> callbacks;
 			bool compareIds(uint8_t *, uint8_t *);
 		public:

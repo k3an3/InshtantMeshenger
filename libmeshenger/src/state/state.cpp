@@ -34,7 +34,7 @@ namespace libmeshenger
 		ClearMessage m(p);
 
 		for(int i = 0; i < seenMessages.size(); i++) {
-			if (compareIds(seenMessages[i], m.id().data()))
+			if (compareIds(seenMessages[i].data(), m.id().data()))
 				return false;
 		}
 
@@ -43,7 +43,7 @@ namespace libmeshenger
 
 	PacketEngine::PacketEngine()
 	{
-		seenMessages = vector<uint8_t[16]>();
+		seenMessages = vector<vector<uint8_t>>();
 		callbacks = vector<void (*)(ClearMessage&)>();
 	}
 
@@ -61,6 +61,7 @@ namespace libmeshenger
 			for(int i = 0; i < callbacks.size(); i++) {
 				callbacks[i](m);
 			}
+			seenMessages.push_back(m.id());
 		}
 	}
 }
