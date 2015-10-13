@@ -15,6 +15,9 @@ namespace libmeshenger
 	*/
 	ValidatePacket(std::vector<std::uint8_t> message);
 
+	class Packet;
+	class ClearMessage;
+
 	class Packet final
 	{
 		private:
@@ -33,6 +36,9 @@ namespace libmeshenger
 
 			/* Construct from raw data */
 			Packet(std::vector<std::uint8_t>);
+
+			/* Construct from a ClearMessage */
+			Packet(ClearMessage);
 	};
 
 

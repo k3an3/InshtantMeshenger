@@ -4,6 +4,7 @@
 #include <iostream>
 
 using namespace std;
+using namespace libmeshenger;
 
 int
 main()
@@ -20,17 +21,17 @@ main()
 	std::vector<uint8_t> raw_data(test_data, test_data+40);
 	
 	/* Validate */
-	cout << (libmeshenger::ValidatePacket(raw_data) ? "Good" : "Bad") << endl;
+	cout << (ValidatePacket(raw_data) ? "Good" : "Bad") << endl;
 
 	/* Try packet constructor */
-	libmeshenger::Packet p(raw_data);
+	Packet p(raw_data);
 
 	/* Print calculated values */
 	cout << p.length() << endl;
 	cout << (int) p.type() << endl;
 
 	/* Construct message */
-	libmeshenger::ClearMessage m(p);
+	ClearMessage m(p);
 
 	/* Print calculated value */
 	cout << m.length() << endl;
@@ -47,11 +48,11 @@ main()
 	cout << endl;
 
 	/* Create additional packets for operator== testing */
-	libmeshenger::ClearMessage m2(p);
+	ClearMessage m2(p);
 
 	raw_data[8] = 2;
-	p = libmeshenger::Packet(raw_data);
-	libmeshenger::ClearMessage m3(p);
+	p = Packet(raw_data);
+	ClearMessage m3(p);
 
 	cout << "M and M1 should be equal, M3 should be different" << endl;
 	cout << "M1 and M2 are " << ((m == m2) ? "Equal" : "Inequal") << endl;
@@ -60,6 +61,13 @@ main()
 	cout << "M1 ID: " << m.idString() << endl;
 	cout << "M1 body: " << m.bodyString() << endl;
 
+	cout << "Constructing packet" << endl;
+
+	m = ClearMessage("This one was constructed instead of parsed");
+
+	cout << "M1 ID: " << m.idString() << endl;
+	cout << "M1 body: " << m.bodyString() << endl;
+
 	raw_data[1] = 'm'; /* Mangle packet */
-	p = libmeshenger::Packet(raw_data); /* Throw exception */
+	p = Packet(raw_data); /* Throw exception */
 }
