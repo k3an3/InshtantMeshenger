@@ -24,6 +24,7 @@ namespace libmeshenger
 			std::vector<std::uint8_t> raw_m;
 			std::uint8_t type_m;
 		public:
+			static const uint8_t CLEARMESSAGE_TYPE = 0x01;
 			/* Returns a new (copy) vector of the appropriate bytes */
 			std::vector<std::uint8_t> raw() const;
 			std::vector<std::uint8_t> body() const;
@@ -38,7 +39,7 @@ namespace libmeshenger
 			Packet(std::vector<std::uint8_t>);
 
 			/* Construct from a ClearMessage */
-			Packet(ClearMessage);
+			Packet(ClearMessage &);
 	};
 
 

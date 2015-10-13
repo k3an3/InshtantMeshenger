@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <iterator>
+#include <iostream>
 
 using namespace std;
 
@@ -18,13 +19,13 @@ namespace libmeshenger
 	vector<uint8_t>
 	ClearMessage::body() const
 	{
-		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
+		return vector<uint8_t>(raw_m.begin() + 16, raw_m.end());
 	}
 
 	vector<uint8_t>
 	ClearMessage::id() const
 	{
-		return vector<uint8_t>(raw_m.begin(), raw_m.end());
+		return vector<uint8_t>(raw_m.begin(), raw_m.begin() + 16);
 	}
 
 	ClearMessage::ClearMessage(Packet p)

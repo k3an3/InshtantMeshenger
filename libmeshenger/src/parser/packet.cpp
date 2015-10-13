@@ -94,7 +94,7 @@ namespace libmeshenger
 		type_m = data[5]; /* Store type */
 	}
 
-	Packet::Packet(ClearMessage m)
+	Packet::Packet(ClearMessage &m)
 	{
 		/* Magic, version, res, type (ClearMessage), length (blank) */
 		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 1, 0, 0 };
@@ -104,9 +104,19 @@ namespace libmeshenger
 		preamble[7] = (m.length() + 16) % 256;
 		preamble[6] = (m.length() + 16) / 256;
 
-		/* Body */
-		preamble.insert(preamble.end(), m.id().begin(), m.id().end());
-		preamble.insert(preamble.end(), m.body().begin(), m.body().end());
+		vector<uint8_t> id = m.id();
+		vector<uint8_t> body = m.body();
+
+		/* Build */
+		raw_m = vector<uint8_t>();
+		raw_m.insert(raw_m.end(), preamble.begin(), preamble.end());
+		raw_m.insert(raw_m.end(), id.begin(), id.end());
+		raw_m.insert(raw_m.end(), body.begin(), body.end());
+
+		if (ValidatePacket(raw_m) == false)
+			throw InvalidPacketException();
+
+		type_m = raw_m[5];
 	}
 
 	uint16_t
