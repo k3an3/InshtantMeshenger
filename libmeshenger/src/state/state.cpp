@@ -42,6 +42,7 @@ namespace libmeshenger
 	}
 
 	PacketEngine::PacketEngine()
+		: packets_processed(0)
 	{
 		seenMessages = vector<vector<uint8_t>>();
 		callbacks = vector<void (*)(ClearMessage&)>();
@@ -63,5 +64,12 @@ namespace libmeshenger
 			}
 			seenMessages.push_back(m.id());
 		}
+		packets_processed++;
+	}
+
+	uint32_t
+	PacketEngine::PacketsProcessed()
+	{
+		return packets_processed;
 	}
 }

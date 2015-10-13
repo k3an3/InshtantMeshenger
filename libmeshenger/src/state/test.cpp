@@ -43,6 +43,5 @@ main()
 
 	e.ProcessPacket(p);
 
-	cout e.PacketsHandled();
-
+	cout << e.PacketsProcessed();
 }
