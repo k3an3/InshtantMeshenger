@@ -158,6 +158,12 @@ namespace libmeshenger
 		peers.push_back(p);
 	}
 
+	void
+	Net::addPeer(std::string s)
+	{
+		peers.push_back(Peer(s));
+	}
+
 	std::vector<Peer>
 	Net::getPeers()
 	{

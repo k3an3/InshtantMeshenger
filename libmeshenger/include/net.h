@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
+#include <string>
 
 class Packet;
 
@@ -62,6 +63,7 @@ namespace libmeshenger
 			void discoverPeers();
 
 			void addPeer(Peer);
+			void addPeer(std::string);
 
 			vector<Peer> getPeers();
 
