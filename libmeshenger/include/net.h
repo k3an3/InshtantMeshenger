@@ -6,8 +6,6 @@
 
 #include <parser.h>
 
-class Packet;
-
 using boost::asio::ip::udp;
 
 namespace libmeshenger

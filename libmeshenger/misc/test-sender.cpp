@@ -3,13 +3,14 @@
 #include <string>
 
 #include <parser.h>
+#include <net.h>
 /* Whatever the net library is */
 // #include <libmeshenger_net.h>
 
 using namespace std;
 using namespace libmeshenger;
 
-int main(int argc, char * argv)
+int main(int argc, char ** argv)
 {
 	if (argc < 3){
 		cout << "Usage: TestSender <peer> 'message'" << endl;
@@ -20,10 +21,10 @@ int main(int argc, char * argv)
 	string s = string(argv[2]);
 
 	/* Use string -> encoded message constructor */
-	Message m(s);
+	ClearMessage m(s);
 
 	/* Use Message -> Packet constructor */
-	Packet p(s);
+	Packet p(m);
 
 	/* Use message.idString method */
 	cout << "Message " << m.idString() << endl;
