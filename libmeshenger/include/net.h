@@ -67,8 +67,11 @@ namespace libmeshenger
 			std::vector<Peer> getPeers();
 
 			void sendToAllPeers(Packet p);
+
 			/* Starts a TCP listener to receive any packets sent on the wire */
 			bool receivePacket();
+
+			Packet getPacket();
 	};
 
 }

@@ -151,6 +151,14 @@ namespace libmeshenger
 		*/
 	}
 
+	Packet
+	Net::getPacket()
+	{
+		Packet p = packets.back();
+		packets.pop_back();
+		return p;
+	}
+
 	void
 	Net::addPeer(Peer p)
 	{
