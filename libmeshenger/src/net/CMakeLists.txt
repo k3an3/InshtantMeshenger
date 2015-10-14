@@ -3,7 +3,7 @@ add_library(libmeshenger-net
 
 add_executable (nettest main.cpp)
 
-find_package (Boost 1.55.0 REQUIRED COMPONENTS system)
+find_package (Boost 1.54.0 REQUIRED COMPONENTS system)
 if (Boost_FOUND)
 	include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 endif ()
