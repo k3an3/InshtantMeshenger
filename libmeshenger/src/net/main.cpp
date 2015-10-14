@@ -17,5 +17,7 @@ main(int argc, char** argv)
 
     net.discoveryListen();
     net.discoverPeers();
+    //net.discoveryListen();
+    net.receivePacket();
     io_service.run();
 }
