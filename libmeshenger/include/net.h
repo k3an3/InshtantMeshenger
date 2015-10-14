@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <parser.h>
+
 class Packet;
 
 using boost::asio::ip::udp;
@@ -43,6 +45,7 @@ namespace libmeshenger
 			std::uint8_t data[1024];
 
 			std::vector<Peer> peers;
+			std::vector<Packet> packets;
 
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
