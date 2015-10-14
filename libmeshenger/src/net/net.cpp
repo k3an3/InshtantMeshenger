@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 
+#include <parser.h>
 #include <net.h>
 
 using boost::asio::ip::udp;
@@ -151,10 +152,32 @@ namespace libmeshenger
 		*/
 	}
 
+	void
+	Net::addPeer(Peer p)
+	{
+		peers.push_back(p);
+	}
+
+	std::vector<Peer>
+	Net::getPeers()
+	{
+		return std::vector<Peer>(peers.begin(), peers.end());
+	}
+
+	void
+	sendToAllPeers(Packet p)
+	{
+	}
+
 	/* Peer class methods */
 	Peer::Peer(boost::asio::ip::address ip_addr)
 		: ip_addr(ip_addr)
 	{
 
+	}
+
+	Peer::Peer(std::string s)
+	{
+		ip_addr = boost::asio::ip::address::from_string(s);
 	}
 }

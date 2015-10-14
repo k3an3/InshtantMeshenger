@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+class Packet;
+
 using boost::asio::ip::udp;
 using namespace std;
 
@@ -21,6 +23,7 @@ namespace libmeshenger
 
 			/* Default constructor */
 			Peer(boost::asio::ip::address ip_addr);
+			Peer(std::string);
 	};
 
 	/* Networking class */
@@ -58,6 +61,11 @@ namespace libmeshenger
 			 * be used to construct peer objects. */
 			void discoverPeers();
 
+			void addPeer(Peer);
+
+			vector<Peer> getPeers();
+
+			void sendToAllPeers(Packet p);
 	};
 
 }
