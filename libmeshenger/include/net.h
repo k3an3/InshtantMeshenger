@@ -32,7 +32,7 @@ namespace libmeshenger
 	{
 		private:
 			/* IO service for async asio operations */
-			boost::asio::io_service& io_service;
+			boost::asio::io_service io_service;
 			/* Socket the server will listen on*/
 			udp::socket listen_socket;
 			/* Endpoint for any remote connections */
@@ -52,7 +52,7 @@ namespace libmeshenger
 			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
 		public:
 			/* Construct with io_service object */
-			Net(boost::asio::io_service& io_service, uint16_t udp_port, uint16_t tcp_port);
+			Net(uint16_t udp_port, uint16_t tcp_port);
 
 			/* Starts a UDP listener on the provided port. The listener will
 			 * create new peer objects upon new connections and responds to the
