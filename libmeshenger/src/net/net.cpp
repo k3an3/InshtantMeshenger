@@ -25,7 +25,7 @@ namespace libmeshenger
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
 		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
-		data("")
+		data()
 	{
 
 	}
