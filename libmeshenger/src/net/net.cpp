@@ -173,6 +173,16 @@ namespace libmeshenger
 	void
 	sendToAllPeers(Packet p)
 	{
+		for(int i = 0; i < peers.size(); i++) {
+			boost::asio::ip::address addr = peers[i].ip_addr;
+
+			ip::basic_endpoint endpoint(addr, tcp_port);
+
+			tcp::socket sock(io_svc);
+
+			sock.connect(endpoint);
+			sock.send(boost::asio:buffer(p.raw().data(), p.raw().size()));
+		}
 	}
 
 	bool
