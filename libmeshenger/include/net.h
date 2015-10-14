@@ -3,7 +3,6 @@
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
-#include <string>
 
 class Packet;
 
@@ -12,7 +11,7 @@ using boost::asio::ip::udp;
 namespace libmeshenger
 {
 
-	void netVerbosePrint(string s, int color = 0);
+	void netVerbosePrint(std::string s, int color = 0);
 
 	/* Peer class */
 	class Peer final
@@ -64,7 +63,7 @@ namespace libmeshenger
 			void addPeer(Peer);
 			void addPeer(std::string);
 
-			vector<Peer> getPeers();
+			std::vector<Peer> getPeers();
 
 			void sendToAllPeers(Packet p);
 			/* Starts a TCP listener to receive any packets sent on the wire */
