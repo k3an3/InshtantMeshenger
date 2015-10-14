@@ -110,6 +110,34 @@ namespace libmeshenger
 		}
 	}
 
+	bool
+	Net::receivePacket()
+	{
+	    try {
+			boost::asio::io_service io_service;
+			boost::asio::ip::tcp::acceptor acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), tcp_port));
+
+			{
+				boost::asio::ip::tcp::socket socket(io_service);
+
+				acceptor.accept(socket);
+
+				boost::asio::streambuf sb;
+				boost::system::error_code ec;
+				boost::asio::read(socket, sb, ec);
+				std::cout << "received: '" << &sb << "'\n";// prints the messages
+				socket.close();
+				if (ec) {
+					std::cout << "status: " << ec.message() << "\n";// print the status of everything when all the messages are sent
+				}
+			}
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Exception: " << e.what() << std::endl;
+		}
+	}
+
 	/* Peer class methods */
 	Peer::Peer(boost::asio::ip::address ip_addr)
 		: ip_addr(ip_addr)

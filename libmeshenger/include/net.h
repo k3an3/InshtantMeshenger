@@ -5,7 +5,6 @@
 #include <vector>
 
 using boost::asio::ip::udp;
-using namespace std;
 
 namespace libmeshenger
 {
@@ -31,13 +30,13 @@ namespace libmeshenger
 			/* Endpoint for any remote connections */
 			udp::endpoint remote_endpoint;
 			/* UDP port number to listen on */
-			uint16_t udp_port;
+			std::uint16_t udp_port;
 			/* TCP port number to listen on */
-			uint16_t tcp_port;
+			std::uint16_t tcp_port;
 			/* Temporary/unused: data received on the socket */
-			uint8_t data[1024];
+			std::uint8_t data[1024];
 
-			vector<Peer> peers;
+			std::vector<Peer> peers;
 
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
@@ -54,6 +53,9 @@ namespace libmeshenger
 			/* Sends a UDP broadcast to discover peers. Received replies will
 			 * be used to construct peer objects. */
 			void discoverPeers();
+
+			/* Starts a TCP listener to receive any packets sent on the wire */
+			bool receivePacket();
 
 	};
 
