@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdint>
 
 #include <parser.h>
@@ -8,11 +9,11 @@ using namespace std;
 namespace libmeshenger
 {
 	static bool
-	validateMessage(vector<uint8_t> msg);
+	validateClearMessage(vector<uint8_t> msg);
 
 	/* Statics */
 	static bool
-	validateMessage(vector<uint8_t> body)
+	validateClearMessage(vector<uint8_t> body)
 	{
 		if (body.size() < 32)
 		{
@@ -55,16 +56,37 @@ namespace libmeshenger
 		/* Validate message body based on body type */
 		switch (msg[5]) {
 			case 0x01:
-				return validateMessage(body);
+				return validateClearMessage(body);
 				break;
 			default:
 				return false;
 		}
 	}
 
+	bool
+	operator==(const Packet& lhs, const Packet& rhs)
+	{
+		if (lhs.length() != rhs.length())
+			return false;
+
+		if (lhs.type() != rhs.type())
+			return false;
+
+		switch (lhs.type()) {
+			case 0x00: return true;
+					   break;
+
+			case 0x01: return equal(lhs.body().begin(), lhs.body().end(),
+							   		rhs.body().begin());
+					   break;
+
+			default: return false;
+		}
+	}
+
 	/* Class methods */
 	Packet::Packet(vector<uint8_t> data)
-		: raw_m(data)
+	: raw_m(data)
 	{
 		if (ValidatePacket(data) == false)
 			throw InvalidPacketException();
@@ -72,54 +94,54 @@ namespace libmeshenger
 		type_m = data[5]; /* Store type */
 	}
 
+	Packet::Packet(ClearMessage &m)
+	{
+		/* Magic, version, res, type (ClearMessage), length (blank) */
+		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 1, 0, 0 };
+		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
+		
+		/* Length */
+		preamble[7] = (m.length() + 16) % 256;
+		preamble[6] = (m.length() + 16) / 256;
+
+		vector<uint8_t> id = m.id();
+		vector<uint8_t> body = m.body();
+
+		/* Build */
+		raw_m = vector<uint8_t>();
+		raw_m.insert(raw_m.end(), preamble.begin(), preamble.end());
+		raw_m.insert(raw_m.end(), id.begin(), id.end());
+		raw_m.insert(raw_m.end(), body.begin(), body.end());
+
+		if (ValidatePacket(raw_m) == false)
+			throw InvalidPacketException();
+
+		type_m = raw_m[5];
+	}
+
 	uint16_t
-	Packet::length()
+	Packet::length() const
 	{
 		return body().size();
 	}
 
 	vector<uint8_t>
-	Packet::body()
+	Packet::body() const
 	{
 		/* Return (by value) a copy of the body */
 		return vector<uint8_t>(raw_m.begin() + 8, raw_m.end());
 	}
 
 	vector<uint8_t>
-	Packet::raw()
+	Packet::raw() const
 	{
 		return vector<uint8_t>(raw_m);
 	}
 
 	uint8_t
-	Packet::type()
+	Packet::type() const
 	{
 		return type_m;
-	}
-
-	Message::Message(Packet p)
-		:	raw_m(p.body())
-	{
-		if (p.type() != 1)
-			throw WrongPacketTypeException();
-	}
-
-	uint16_t
-	Message::length()
-	{
-		return raw_m.size() - 16;
-	}
-
-	vector<uint8_t>
-	Message::body()
-	{
-		return vector<uint8_t>(raw_m.begin()+16, raw_m.end());
-	}
-
-	vector<uint8_t>
-	Message::id()
-	{
-		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}
 
 	/* Exception definitions */
