@@ -29,16 +29,14 @@ namespace libmeshenger
 	/* Net class methods */
 
 	/* Default constructor. Initializes io_service */
-	Net::Net(boost::asio::io_service& io_service, uint16_t udp_port,
+	Net::Net(uint16_t udp_port,
 			uint16_t tcp_port)
-		: io_service(io_service),
-		udp_port(udp_port),
+		: udp_port(udp_port),
+		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
-		data()
+		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port))
 	{
-
 	}
 
 	void
