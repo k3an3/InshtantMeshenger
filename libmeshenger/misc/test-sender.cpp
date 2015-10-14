@@ -17,7 +17,7 @@ int main(int argc, char * argv)
 	}
 
 
-	string s = argv[2];
+	string s = string(argv[2]);
 
 	/* Use string -> encoded message constructor */
 	Message m(s);
@@ -30,15 +30,13 @@ int main(int argc, char * argv)
 	cout << "    `" << s << "`" << endl;
 	
 
-	/* Depends on the following unipmelement funtionality:
-	 *  - a LibMeshenger::Net class with
-	 *  	- addPeer(std::string)
-	 *  	- SendToAllPeers(LibMeshenger::Packet)
-	 * */
 	string peer(argv[1]);
-	Net net(NetConstructorArgs);
-	net.AddPeer(peer);
-	net.SendToAllPeers(p);
+
+	/* UDP port, TCP port */
+	Net net(5555, 5556);
+
+	net.addPeer(peer);
+	net.sendToAllPeers(p);
 
 	cout << "MessageSent!" << endl;
 }
