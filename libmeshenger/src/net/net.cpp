@@ -8,6 +8,7 @@
 
 #include <parser.h>
 #include <net.h>
+#include <parser.h>
 
 using boost::asio::ip::udp;
 using namespace std;
@@ -199,8 +200,13 @@ namespace libmeshenger
 
 				boost::asio::streambuf sb;
 				boost::system::error_code ec;
-				boost::asio::read(socket, sb, ec);
-				std::cout << "received: '" << &sb << "'\n";// prints the messages
+				uint8_t b[MAX_LENGTH];
+				size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
+				vector<uint8_t> v(b, b + bytes);
+				if (ValidatePacket(v)) {
+					packets.push_back(Packet(v));
+				}
+				std::cout << "received: '" << b << "'\n";// prints the messages
 				socket.close();
 				if (ec) {
 					std::cout << "status: " << ec.message() << "\n";// print the status of everything when all the messages are sent
