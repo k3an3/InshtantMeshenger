@@ -210,12 +210,13 @@ namespace libmeshenger
 				size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
 				vector<uint8_t> v(b, b + bytes);
 				if (ValidatePacket(v)) {
+					netVerbosePrint("Message received: ", 36);
+					netVerbosePrint((char*) v.data() + 8);
 					packets.push_back(Packet(v));
 				}
-				std::cout << "received: '" << b << "'\n";// prints the messages
 				socket.close();
 				if (ec) {
-					std::cout << "status: " << ec.message() << "\n";// print the status of everything when all the messages are sent
+					netVerbosePrint("Connection closed.", 35);
 				}
 			}
 		}
