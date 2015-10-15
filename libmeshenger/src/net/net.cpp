@@ -187,43 +187,47 @@ namespace libmeshenger
 
 			boost::asio::ip::tcp::socket sock(io_service);
 
-			sock.connect(endpoint);
-			sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+			try {
+				sock.connect(endpoint);
+				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+			} catch(std::exception &e) {
+				cout << "Peer " << addr.to_string();
+			    cout << " is problematic. Removing" << endl;
+				peers.erase(peers.begin() + i);
+			}
 		}
 	}
 
-	bool
+	uint16_t
 	Net::receivePacket()
 	{
 	    try {
-			boost::asio::io_service io_service;
-			boost::asio::ip::tcp::acceptor acceptor(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), tcp_port));
+			boost::asio::ip::tcp::acceptor acceptor(io_service, 
+					boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 
+					tcp_port)); 
 
-			{
-				boost::asio::ip::tcp::socket socket(io_service);
+			boost::asio::ip::tcp::socket socket(io_service);
 
-				acceptor.accept(socket);
+			acceptor.accept(socket);
 
-				boost::asio::streambuf sb;
-				boost::system::error_code ec;
-				uint8_t b[MAX_LENGTH];
-				size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
-				vector<uint8_t> v(b, b + bytes);
-				if (ValidatePacket(v)) {
-					netVerbosePrint("Message received: ", 36);
-					netVerbosePrint((char*) v.data() + 8);
-					packets.push_back(Packet(v));
-				}
-				socket.close();
-				if (ec) {
-					netVerbosePrint("Connection closed.", 35);
-				}
+			boost::asio::streambuf sb;
+			boost::system::error_code ec;
+			uint8_t b[MAX_LENGTH];
+			size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
+			vector<uint8_t> v(b, b + bytes);
+			if (ValidatePacket(v)) {
+				netVerbosePrint("Message received: ", 36);
+				netVerbosePrint((char*) v.data() + 8);
+				packets.push_back(Packet(v));
 			}
-		}
-		catch (std::exception& e)
-		{
+			socket.close();
+			if (ec) {
+				netVerbosePrint("Connection closed.", 35);
+			}
+		} catch (std::exception& e) {
 			std::cerr << "Exception: " << e.what() << std::endl;
 		}
+		return packets.size();
 	}
 
 	/* Peer class methods */

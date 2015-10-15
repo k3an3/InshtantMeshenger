@@ -59,10 +59,13 @@ int main(int argc, char** argv)
 		 * check the packet type (should be 0x01), then send it to
 		 * the Packet constructor and store it somewhere. GetPacket()
 		 * returns a stored packet */
-		if (net.receivePacket()) {
-			Packet p = net.getPacket();
-			cout << "Packet received from net" << endl;
-            engine.ProcessPacket(p);
+		uint16_t numPackets = net.receivePacket();
+		if (numPackets) {
+			for (int i = 0; i < numPackets; i++) {
+				Packet p = net.getPacket();
+				cout << "Packet received from net" << endl;
+				engine.ProcessPacket(p);
+			}
         }
 
 		/* Give message to the engine. If it's a new message, it will

@@ -69,7 +69,7 @@ namespace libmeshenger
 			void sendToAllPeers(Packet p);
 
 			/* Starts a TCP listener to receive any packets sent on the wire */
-			bool receivePacket();
+			uint16_t receivePacket();
 
 			Packet getPacket();
 	};
