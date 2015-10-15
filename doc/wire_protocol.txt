@@ -1,5 +1,7 @@
 Inshtant Meshenger binary protocol (Version 1)
 
+All multi-octet ints are in Network Byte Order (Big-endian)
+
 ------------------------------
 | 8 octets | (Length) octets |
 ------------------------------
@@ -8,24 +10,24 @@ Inshtant Meshenger binary protocol (Version 1)
 
 Preamble Structure
 
-----------------------------------------------
-|  2 octets  | 1 octet | 3 octets | 2 octets |
-----------------------------------------------
-| Magic "IM" | Version | Reserved |  Length  |
-----------------------------------------------
+--------------------------------------------------------
+|  2 octets  | 1 octet | 2 octets | 1 octet | 2 octets |
+--------------------------------------------------------
+| Magic "IM" | Version | Reserved |  Type   |  Length  |
+--------------------------------------------------------
 
-Body Structure
+ClearMessage Structure (Type 0x01)
 
----------------------------------
-| 1 octet | (Length - 1) octets |
----------------------------------
-| Type ID | Type-specific data  |
----------------------------------
+-------------------------------------
+| 16 octets  | (Length - 16) octets |
+-------------------------------------
+| Message ID |  Plaintext message   |
+-------------------------------------
 
-Message Structure
+Message Structure (Type 0x02)
 
-------------------------------------------------------
-|    1 octet     | 16 octets  | (Length - 17) octets |
-------------------------------------------------------
-| Type ID (0x01) | Message ID |  Encrypted message   |
-------------------------------------------------------
+-------------------------------------
+| 16 octets  | (Length - 16) octets |
+-------------------------------------
+| Message ID |  Encrypted message   |
+-------------------------------------
