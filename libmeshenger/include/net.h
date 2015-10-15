@@ -19,6 +19,8 @@ namespace libmeshenger
 		public:
 			/* The peer's IP address */
 			boost::asio::ip::address ip_addr;
+			/* Number of strikes */
+			std::uint8_t strikes;
 
 			/* Default constructor */
 			Peer(boost::asio::ip::address ip_addr);

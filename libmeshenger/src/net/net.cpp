@@ -191,10 +191,17 @@ namespace libmeshenger
 			try {
 				sock.connect(endpoint);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-				netVerbosePrint("Peer " + addr.to_string() + " is problematic. Removing", 33);
 				netVerbosePrint(e.what(), 33);
-				peers.erase(peers.begin() + i);
+				netVerbosePrint("Peer " + addr.to_string() + 
+						" is problematic. Strike.", 33);
+				peers[i].strikes++;
+		
+				if (peers[i].strikes >= 3) {
+					netVerbosePrint("Three strikes. Removing.");
+					peers.erase(peers.begin() + i);
+				}
 			}
 		}
 	}
@@ -232,12 +239,14 @@ namespace libmeshenger
 
 	/* Peer class methods */
 	Peer::Peer(boost::asio::ip::address ip_addr)
-		: ip_addr(ip_addr)
+		: ip_addr(ip_addr),
+		strikes(0)
 	{
 
 	}
 
 	Peer::Peer(std::string s)
+		: strikes(0)
 	{
 		ip_addr = boost::asio::ip::address::from_string(s);
 	}
