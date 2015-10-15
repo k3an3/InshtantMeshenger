@@ -37,6 +37,7 @@ namespace libmeshenger
 		/* Initialize UDP listen socket on all interfaces */
 		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port))
 	{
+		listen_socket.close();
 	}
 
 	void
@@ -191,8 +192,7 @@ namespace libmeshenger
 				sock.connect(endpoint);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
 			} catch(std::exception &e) {
-				cout << "Peer " << addr.to_string();
-			    cout << " is problematic. Removing" << endl;
+				netVerbosePrint("Peer " + addr.to_string() + " is problematic. Removing", 33);
 				peers.erase(peers.begin() + i);
 			}
 		}
@@ -202,9 +202,9 @@ namespace libmeshenger
 	Net::receivePacket()
 	{
 	    try {
-			boost::asio::ip::tcp::acceptor acceptor(io_service, 
-					boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), 
-					tcp_port)); 
+			boost::asio::ip::tcp::acceptor acceptor(io_service,
+					boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
+					tcp_port));
 
 			boost::asio::ip::tcp::socket socket(io_service);
 
