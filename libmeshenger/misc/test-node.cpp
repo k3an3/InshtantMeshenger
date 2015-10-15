@@ -12,7 +12,7 @@ using namespace libmeshenger;
 void PrintMessage(ClearMessage& m)
 {
 	/* Print the message (Fully implemented) */
-	cout << m.bodyString() << endl;
+	cout << "GOT A MESSAGE! " << m.bodyString() << endl;
 }
 
 /* Sort of a closure, needed for callback magic */
@@ -61,6 +61,7 @@ int main(int argc, char** argv)
 		 * returns a stored packet */
 		if (net.receivePacket()) {
 			Packet p = net.getPacket();
+			cout << "Packet received from net" << endl;
             engine.ProcessPacket(p);
         }
 
