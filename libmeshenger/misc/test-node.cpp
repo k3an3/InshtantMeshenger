@@ -26,17 +26,14 @@ void ForwardMessageToPeers(ClearMessage& m)
 
 int main(int argc, char** argv)
 {
-	if (argc < 3) {
-		cout << "Usage: TestNode <some args>" << endl;
-		return 1;
-	}
 
 	/* Instantiate a net. The net is static because it
 	 * is needed by the "closure" ForwardMessage */
 
 	/* add a few peers */
-	net.addPeer("10.0.50.102");
-	net.addPeer("10.26.42.127");
+	for (int i = 1; i < argv; i++) {
+		net.addPeer(argv[i]);
+	}
 
 	/* Instantiate a packet engine
 	 *
