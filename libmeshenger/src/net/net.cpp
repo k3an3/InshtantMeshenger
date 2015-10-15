@@ -192,8 +192,8 @@ namespace libmeshenger
 				sock.connect(endpoint);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
 			} catch(std::exception &e) {
-				netVerbosePrint(e.what());
 				netVerbosePrint("Peer " + addr.to_string() + " is problematic. Removing", 33);
+				netVerbosePrint(e.what(), 33);
 				peers.erase(peers.begin() + i);
 			}
 		}
