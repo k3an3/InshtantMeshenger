@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	 * is needed by the "closure" ForwardMessage */
 
 	/* add a few peers */
-	for (int i = 1; i < argv; i++) {
+	for (int i = 1; i < argc; i++) {
 		net.addPeer(argv[i]);
 	}
 
