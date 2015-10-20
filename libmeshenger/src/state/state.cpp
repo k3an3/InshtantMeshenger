@@ -10,6 +10,7 @@
  */
 
 #include <state.h>
+#include <iostream>
 
 using std::vector;
 
@@ -34,8 +35,10 @@ namespace libmeshenger
 		ClearMessage m(p);
 
 		for(int i = 0; i < seenMessages.size(); i++) {
-			if (compareIds(seenMessages[i].data(), m.id().data()))
+			if (compareIds(seenMessages[i].data(), m.id().data())) {
+				std::cout << "Got a message, but it is old!" << std::endl;
 				return false;
+			}
 		}
 
 		return true;

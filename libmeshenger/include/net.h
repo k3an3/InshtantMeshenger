@@ -4,13 +4,14 @@
 #include <cstdint>
 #include <vector>
 
+#include <parser.h>
+
 using boost::asio::ip::udp;
-using namespace std;
 
 namespace libmeshenger
 {
 
-	void netVerbosePrint(string s, int color = 0);
+	void netVerbosePrint(std::string s, int color = 0);
 
 	/* Peer class */
 	class Peer final
@@ -18,9 +19,12 @@ namespace libmeshenger
 		public:
 			/* The peer's IP address */
 			boost::asio::ip::address ip_addr;
+			/* Number of strikes */
+			std::uint8_t strikes;
 
 			/* Default constructor */
 			Peer(boost::asio::ip::address ip_addr);
+			Peer(std::string);
 	};
 
 	/* Networking class */
@@ -28,26 +32,27 @@ namespace libmeshenger
 	{
 		private:
 			/* IO service for async asio operations */
-			boost::asio::io_service& io_service;
+			boost::asio::io_service io_service;
 			/* Socket the server will listen on*/
 			udp::socket listen_socket;
 			/* Endpoint for any remote connections */
 			udp::endpoint remote_endpoint;
 			/* UDP port number to listen on */
-			uint16_t udp_port;
+			std::uint16_t udp_port;
 			/* TCP port number to listen on */
-			uint16_t tcp_port;
+			std::uint16_t tcp_port;
 			/* Temporary/unused: data received on the socket */
-			uint8_t data[1024];
+			std::uint8_t data[1024];
 
-			vector<Peer> peers;
+			std::vector<Peer> peers;
+			std::vector<Packet> packets;
 
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
 			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
 		public:
 			/* Construct with io_service object */
-			Net(boost::asio::io_service& io_service, uint16_t udp_port, uint16_t tcp_port);
+			Net(uint16_t udp_port, uint16_t tcp_port);
 
 			/* Starts a UDP listener on the provided port. The listener will
 			 * create new peer objects upon new connections and responds to the
@@ -58,6 +63,17 @@ namespace libmeshenger
 			 * be used to construct peer objects. */
 			void discoverPeers();
 
+			void addPeer(Peer);
+			void addPeer(std::string);
+
+			std::vector<Peer> getPeers();
+
+			void sendToAllPeers(Packet p);
+
+			/* Starts a TCP listener to receive any packets sent on the wire */
+			uint16_t receivePacket();
+
+			Packet getPacket();
 	};
 
 }

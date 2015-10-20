@@ -14,3 +14,4 @@ set (Boost_USE_STATIC_RUNTIME OFF)
 set (BOOST_ALL_DYN_LINK OFF)
 
 target_link_libraries(nettest LINK_PUBLIC boost_system libmeshenger-net)
+target_link_libraries(nettest LINK_PUBLIC boost_system libmeshenger-parse)
