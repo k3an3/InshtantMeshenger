@@ -40,7 +40,11 @@ namespace libmeshenger
 		/* Initialize UDP listen socket on all interfaces */
 		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port))
 	{
-		listen_socket.close();
+	}
+
+	void
+	Net::run() {
+		io_service.run();
 	}
 
 	void
@@ -62,20 +66,25 @@ namespace libmeshenger
 		/* Bind handler for new connections. */
 
 		/* Check if we received a discovery packet and if it is from a new peer */
-		if (error) netVerbosePrint("ERROR", 31);
+		if (error) netVerbosePrint("ERROR", 33);
 		if (recv_len > 0) {
-			remote_endpoint.port(1234);
+			remote_endpoint.port(udp_port);
 			udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 			socket.set_option(udp::socket::reuse_address(true));
 		   	if (!strcmp((char*) data, (char*) MSG)) {
-				netVerbosePrint("Received probe from peer " +
+				netVerbosePrint("Received discovery probe from peer " +
 						remote_endpoint.address().to_string());
-			//	socket.send_to(boost::asio::buffer(RESP, strlen((char*) RESP)), remote_endpoint);
 				socket.async_send_to(
-					boost::asio::buffer(RESP, strlen((char*) RESP)), remote_endpoint,
+					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+				if (!peerExistsByAddress(remote_endpoint.address())) {
+					peers.insert(peers.end(), Peer(remote_endpoint.address()));
+					netVerbosePrint("Found new peer at " +
+							remote_endpoint.address().to_string(), 32);
+				return;
+				}
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netVerbosePrint("Received discovery response from peer " +
 						remote_endpoint.address().to_string());
@@ -84,19 +93,20 @@ namespace libmeshenger
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
-			}
-			if (!peerExistsByAddress(remote_endpoint.address())) {
-				peers.insert(peers.end(), Peer(remote_endpoint.address()));
-				netVerbosePrint("Found new peer at " +
-						remote_endpoint.address().to_string(), 32);
-			}
+				if (!peerExistsByAddress(remote_endpoint.address())) {
+					peers.insert(peers.end(), Peer(remote_endpoint.address()));
+					netVerbosePrint("Found new peer at " +
+							remote_endpoint.address().to_string(), 32);
+				return;
+				}
+			} else
+				netVerbosePrint("Received invalid probe", 30);
 		}
-		else
-			listen_socket.async_receive_from(
-				boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
-				boost::bind(&Net::acceptDiscoveryConn, this,
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
+		listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+			boost::bind(&Net::acceptDiscoveryConn, this,
+				boost::asio::placeholders::error,
+				boost::asio::placeholders::bytes_transferred));
 	}
 
 	/* Not the best way to do this */
@@ -113,6 +123,7 @@ namespace libmeshenger
 	{
 		/* Simply a bind handler */
 		if (error) netVerbosePrint("ERROR", 31);
+		netVerbosePrint("Sending discovery response to " + remote_endpoint.address(), 33);
 		listen_socket.async_receive_from(
 			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
@@ -139,7 +150,7 @@ namespace libmeshenger
 		udp::endpoint endpoint(boost::asio::ip::address_v4::broadcast(), udp_port);
 
 		/* Send discovery packet */
-		socket.send_to(boost::asio::buffer(MSG, strlen((char*) MSG)), endpoint);
+		socket.send_to(boost::asio::buffer(MSG, strlen((char*) MSG) + 1), endpoint);
 
 		/*
 		size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), endpoint);

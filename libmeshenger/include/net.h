@@ -54,6 +54,8 @@ namespace libmeshenger
 			/* Construct with io_service object */
 			Net(uint16_t udp_port, uint16_t tcp_port);
 
+			void run();
+
 			/* Starts a UDP listener on the provided port. The listener will
 			 * create new peer objects upon new connections and responds to the
 			 * remote host. */

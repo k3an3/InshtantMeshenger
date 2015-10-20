@@ -13,11 +13,9 @@ main(int argc, char** argv)
 {
     cout << "Starting test server...\n";
     boost::asio::io_service io_service;
-    Net net(1234, 1235);
+    Net net(5555, 5556);
 
     net.discoveryListen();
     net.discoverPeers();
-    //net.discoveryListen();
-    net.receivePacket();
-    io_service.run();
+    net.run();
 }
