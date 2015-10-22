@@ -11,7 +11,7 @@ using boost::asio::ip::udp;
 namespace libmeshenger
 {
 
-	void netVerbosePrint(std::string s, int color = 0);
+	void netDebugPrint(std::string s, int color = 0);
 
 	/* Peer class */
 	class Peer final

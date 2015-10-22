@@ -11,7 +11,7 @@ using namespace libmeshenger;
 int
 main(int argc, char** argv)
 {
-    cout << "Starting test server...\n";
+    cout << "Starting test net...\n";
     boost::asio::io_service io_service;
     Net net(5555, 5556);
 

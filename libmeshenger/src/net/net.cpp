@@ -16,7 +16,7 @@ using boost::asio::ip::udp;
 using namespace std;
 
 const int32_t MAX_LENGTH = 1024;
-const uint8_t RESP[] = "meshenger-discovery-response";
+const uint8_t RESP[] = "meshenger-discovery-reply";
 const uint8_t MSG[] = "meshenger-discovery-probe";
 
 namespace libmeshenger
@@ -86,7 +86,7 @@ namespace libmeshenger
 				return;
 				}
 			} else if (!strcmp((char*) data, (char*) RESP)) {
-				netVerbosePrint("Received discovery response from peer " +
+				netVerbosePrint("Received discovery reply from peer " +
 						remote_endpoint.address().to_string());
 				socket.async_send_to(
 					boost::asio::buffer("", 0), remote_endpoint,
@@ -123,7 +123,7 @@ namespace libmeshenger
 	{
 		/* Simply a bind handler */
 		if (error) netVerbosePrint("ERROR", 31);
-		netVerbosePrint("Sending discovery response to " + remote_endpoint.address(), 33);
+		netVerbosePrint("Sending discovery reply to " + remote_endpoint.address().to_string(), 33);
 		listen_socket.async_receive_from(
 			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
@@ -155,7 +155,7 @@ namespace libmeshenger
 		/*
 		size_t recv_length = socket.receive_from(boost::asio::buffer(data, MAX_LENGTH), endpoint);
 		if (!strcmp((char*) data, (char*) RESP)) {
-			netVerbosePrint("Received discovery response from " + endpoint.address().to_string());
+			netVerbosePrint("Received discovery reply from " + endpoint.address().to_string());
 			boost::asio::ip::address addr = endpoint.address();
 			if (!peerExistsByAddress(addr)) {
 				peers.insert(peers.end(), Peer(addr));
