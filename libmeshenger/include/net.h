@@ -24,6 +24,7 @@ namespace libmeshenger
 
 			/* Default constructor */
 			Peer(boost::asio::ip::address ip_addr);
+			/* Construct from IP address as string */
 			Peer(std::string);
 	};
 
@@ -50,8 +51,9 @@ namespace libmeshenger
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
 			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
+			void addPeerIfNew(boost::asio::ip::address ip_addr);
 		public:
-			/* Construct with io_service object */
+			/* Construct a Net */
 			Net(uint16_t udp_port, uint16_t tcp_port);
 
 			void run();
