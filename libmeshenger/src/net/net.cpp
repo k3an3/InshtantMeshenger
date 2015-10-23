@@ -79,7 +79,7 @@ namespace libmeshenger
 
 		   	if (!strcmp((char*) data, (char*) MSG)) {
 				netDebugPrint("Received discovery probe from peer " +
-						remote_endpoint.address().to_string());
+						remote_endpoint.address().to_string(), 32);
 				socket.async_send_to(
 					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
@@ -89,7 +89,7 @@ namespace libmeshenger
 				return;
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netDebugPrint("Received discovery reply from peer " +
-						remote_endpoint.address().to_string());
+						remote_endpoint.address().to_string(), 33);
 				addPeerIfNew(remote_endpoint.address());
 			} else
 				netDebugPrint("Received invalid probe", 30);
@@ -105,7 +105,7 @@ namespace libmeshenger
 	Net::addPeerIfNew(boost::asio::ip::address ip_addr)
 	{
 		if (!peerExistsByAddress(ip_addr)) {
-			peers.insert(peers.end(), Peer(ip_addr));
+			addPeer(ip_addr);
 			netDebugPrint("Added new peer " +
 					ip_addr.to_string(), 32);
 		} else {
@@ -258,14 +258,15 @@ namespace libmeshenger
 			size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
 			vector<uint8_t> v(b, b + bytes);
 			/* If the packet is valid, construct and add to packet vector */
+			string s = socket.remote_endpoint().address().to_string();
 			if (ValidatePacket(v)) {
-				netDebugPrint("Packet received ", 36);
+				netDebugPrint("Packet received from " + s, 36);
 				packets.push_back(Packet(v));
 			}
 			/* Close connection */
 			socket.close();
 			if (ec) {
-				netDebugPrint("Connection closed.", 35);
+				netDebugPrint("Connection to " + s + " closed.", 35);
 			}
 			/* Report any exceptions */
 		} catch (std::exception& e) {
