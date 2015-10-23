@@ -55,6 +55,8 @@ namespace libmeshenger
 		public:
 			/* Construct a Net */
 			Net(uint16_t udp_port, uint16_t tcp_port);
+			void discoveryHandler(const boost::system::error_code& error,
+					  std::size_t bytes_transferred);
 
 			void run();
 
