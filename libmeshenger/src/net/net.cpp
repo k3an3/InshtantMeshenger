@@ -13,6 +13,7 @@
 #define NET_DEBUG true
 
 using boost::asio::ip::udp;
+using boost::asio::ip::tcp;
 using namespace std;
 
 const int32_t MAX_LENGTH = 1024;
@@ -38,7 +39,8 @@ namespace libmeshenger
 		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port))
+		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
+		msg_socket(io_service, tcp::endpoint(tcp::v4(), tcp_port))
 	{
 	}
 
@@ -205,10 +207,10 @@ namespace libmeshenger
 			boost::asio::ip::address addr = peers[i].ip_addr;
 
 			/* Endpoint for the peer */
-			boost::asio::ip::tcp::endpoint endpoint(addr, tcp_port);
+			tcp::endpoint endpoint(addr, tcp_port);
 
 			/* Socket used to create the connection */
-			boost::asio::ip::tcp::socket sock(io_service);
+			tcp::socket sock(io_service);
 
 			/* Try to connect and report any connection errors */
 			try {
@@ -232,46 +234,35 @@ namespace libmeshenger
 		}
 	}
 
+	void
+	Net::startListen()
+	{
+		receivePacket();
+	}
+
 	/* Accept TCP connections on tcp_port and attempt to create a valid packet
 	 * if possible. Adds packet to the packets vector and returns the length
 	 * of the packet. */
 	uint16_t
 	Net::receivePacket()
 	{
-	    try {
-			/* Attempt to bind to tcp_port */
-			// Should probably have addr reuse in here
-			boost::asio::ip::tcp::acceptor acceptor(io_service,
-					boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
-					tcp_port));
+		auto self(shared_from_this());
+		msg_socket.async_receive(boost::asio::buffer(msg, MAX_LENGTH),
+				[this, self](boost::system::error_code error, size_t bytes)
+				{
+				if (!error) {
+					vector<uint8_t> v(msg, msg + bytes);
+					if (ValidatePacket(v)) {
+						netDebugPrint("Packet received from", 36);
+						packets.push_back(Packet(v));
+					}
+				}
 
-			boost::asio::ip::tcp::socket socket(io_service);
-
-			/* Begin accepting connections */
-			acceptor.accept(socket);
-
-			boost::asio::streambuf sb;
-			boost::system::error_code ec;
-			uint8_t b[MAX_LENGTH];
-
-			/* Read from socket into buffer */
+				});
+		/*
 			size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
-			vector<uint8_t> v(b, b + bytes);
 			/* If the packet is valid, construct and add to packet vector */
-			string s = socket.remote_endpoint().address().to_string();
-			if (ValidatePacket(v)) {
-				netDebugPrint("Packet received from " + s, 36);
-				packets.push_back(Packet(v));
-			}
-			/* Close connection */
-			socket.close();
-			if (ec) {
-				netDebugPrint("Connection to " + s + " closed.", 35);
-			}
-			/* Report any exceptions */
-		} catch (std::exception& e) {
-			std::cerr << "Exception: " << e.what() << std::endl;
-		}
+			//string s = socket.remote_endpoint().address().to_string();
 		return packets.size();
 	}
 

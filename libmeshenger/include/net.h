@@ -7,6 +7,7 @@
 #include <parser.h>
 
 using boost::asio::ip::udp;
+using boost::asio::ip::tcp;
 
 namespace libmeshenger
 {
@@ -30,20 +31,23 @@ namespace libmeshenger
 
 	/* Networking class */
 	class Net final
+		: public std::enable_shared_from_this<Net>
 	{
 		private:
 			/* IO service for async asio operations */
 			boost::asio::io_service io_service;
-			/* Socket the server will listen on*/
+			/* UDP socket the discovery server will listen on*/
 			udp::socket listen_socket;
-			/* Endpoint for any remote connections */
+			/* Endpoint for any remote UDP connections */
 			udp::endpoint remote_endpoint;
+			/* TCP socket */
+			tcp::socket msg_socket;
 			/* UDP port number to listen on */
 			std::uint16_t udp_port;
 			/* TCP port number to listen on */
 			std::uint16_t tcp_port;
-			/* Temporary/unused: data received on the socket */
-			std::uint8_t data[1024];
+			/* Data received on the socket */
+			std::uint8_t data[1024], msg[1024]; // shouldn't be hardcoded
 
 			std::vector<Peer> peers;
 			std::vector<Packet> packets;
@@ -52,13 +56,16 @@ namespace libmeshenger
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
 			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
 			void addPeerIfNew(boost::asio::ip::address ip_addr);
+			void discoveryHandler(const boost::system::error_code& error,
+					  std::size_t bytes_transferred);
 		public:
 			/* Construct a Net */
 			Net(uint16_t udp_port, uint16_t tcp_port);
-			void discoveryHandler(const boost::system::error_code& error,
-					  std::size_t bytes_transferred);
 
+			uint16_t receivePacket();
 			void run();
+
+			void startListen();
 
 			/* Starts a UDP listener on the provided port. The listener will
 			 * create new peer objects upon new connections and responds to the
@@ -77,7 +84,6 @@ namespace libmeshenger
 			void sendToAllPeers(Packet p);
 
 			/* Starts a TCP listener to receive any packets sent on the wire */
-			uint16_t receivePacket();
 
 			Packet getPacket();
 	};
