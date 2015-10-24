@@ -24,11 +24,12 @@ namespace libmeshenger
 			throw PacketStateException("Message is not encrypted!");
 
 		vector<uint8_t> plaintext;
+		vector<uint8_t> ciphertext = em.encryptedBody();
 
 		RSAES_OAEP_SHA_Decryptor d(privkey);
 
-		plaintext.reserve(d.MaxPlaintextLength(em.m_body_enc.size()));
+		plaintext.resize(d.MaxPlaintextLength(em.m_body_enc.size()));
 
-
+		d.
 	}
 }
