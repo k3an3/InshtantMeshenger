@@ -1,6 +1,7 @@
 add_library(libmeshenger-parse
 	packet.cpp
-	clearmessage.cpp)
+	clearmessage.cpp
+	encryptedmessage.cpp)
 
 find_library (Cryptopp crypto++ /usr/lib64)
 if (Cryptopp_FOUND)
