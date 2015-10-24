@@ -1,7 +1,6 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-#include <boost/thread.hpp>
 
 #include <parser.h>
 #include <state.h>

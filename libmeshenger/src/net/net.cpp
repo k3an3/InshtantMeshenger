@@ -225,6 +225,8 @@ namespace libmeshenger
 			try {
 				sock.connect(endpoint);
 				/* Send the data */
+				netDebugPrint("Sending message to " +
+						endpoint.address().to_string(), 35);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
@@ -257,13 +259,15 @@ namespace libmeshenger
 		{
 			if (!ec) {
 				size_t bytes = msg_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
-				cerr << "It happened! " << msg << endl;
 				vector<uint8_t> v(msg, msg + bytes);
 				if (ValidatePacket(v)) {
-					netDebugPrint("Packet received from", 36);
+					netDebugPrint("Packet received from " +
+							msg_socket.remote_endpoint().address().to_string(),
+						   	36);
 					packets.push_back(Packet(v));
 				}
 			}
+			msg_socket.close();
 
 			messageAcceptor();
 		});
