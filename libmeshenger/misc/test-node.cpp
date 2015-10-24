@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <boost/thread.hpp>
 
 #include <parser.h>
 #include <state.h>
@@ -50,7 +51,8 @@ int main(int argc, char** argv)
     net.discoveryListen();
     net.discoverPeers();
 
-	net.receivePacket();
+    net.startListen();
+	//net.receivePacket();
     net.run();
 	while (true) {
 		/* Main loop */

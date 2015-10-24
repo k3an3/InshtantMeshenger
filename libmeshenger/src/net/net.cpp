@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
@@ -40,13 +41,21 @@ namespace libmeshenger
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
 		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
-		msg_socket(io_service, tcp::endpoint(tcp::v4(), tcp_port))
+		msg_socket(io_service),
+		msg_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
 	{
 	}
 
-	/* Run the io_service object to facilitate async operations */
+	/* Run the io_service object in a new thread to facilitate async operations */
 	void
-	Net::run() {
+	Net::run()
+	{
+		boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	}
+
+	void
+	Net::actuallyRun()
+	{
 		io_service.run();
 	}
 
@@ -237,7 +246,27 @@ namespace libmeshenger
 	void
 	Net::startListen()
 	{
-		receivePacket();
+		messageAcceptor();
+	}
+
+	void
+	Net::messageAcceptor()
+	{
+		msg_acceptor.async_accept(msg_socket,
+				[this](boost::system::error_code ec)
+		{
+			if (!ec) {
+				size_t bytes = msg_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+				cerr << "It happened! " << msg << endl;
+				vector<uint8_t> v(msg, msg + bytes);
+				if (ValidatePacket(v)) {
+					netDebugPrint("Packet received from", 36);
+					packets.push_back(Packet(v));
+				}
+			}
+
+			messageAcceptor();
+		});
 	}
 
 	/* Accept TCP connections on tcp_port and attempt to create a valid packet
@@ -246,6 +275,7 @@ namespace libmeshenger
 	uint16_t
 	Net::receivePacket()
 	{
+		/*
 		auto self(shared_from_this());
 		msg_socket.async_receive(boost::asio::buffer(msg, MAX_LENGTH),
 				[this, self](boost::system::error_code error, size_t bytes)
