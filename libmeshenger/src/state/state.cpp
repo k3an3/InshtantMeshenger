@@ -46,11 +46,11 @@ namespace libmeshenger
 		: packets_processed(0)
 	{
 		seenMessages = vector<vector<uint8_t>>();
-		callbacks = vector<void (*)(ClearMessage&)>();
+		callbacks = vector<void (*)(Packet&)>();
 	}
 
 	void
-	PacketEngine::AddCallback(void (*cb)(ClearMessage&))
+	PacketEngine::AddCallback(void (*cb)(Packet&))
 	{
 		callbacks.push_back(cb);
 	}
@@ -59,9 +59,8 @@ namespace libmeshenger
 	PacketEngine::ProcessPacket(Packet &p)
 	{
 		if (IsPacketNew(p)) {
-			ClearMessage m(p);
 			for(int i = 0; i < callbacks.size(); i++) {
-				callbacks[i](m);
+				callbacks[i](p);
 			}
 			seenMessages.push_back(p.id());
 		}

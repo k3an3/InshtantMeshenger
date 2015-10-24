@@ -9,18 +9,18 @@
 using namespace std;
 using namespace libmeshenger;
 
-void PrintMessage(ClearMessage& m)
+void PrintMessage(Packet& p)
 {
+	ClearMessage m(p);
 	/* Print the message (Fully implemented) */
 	cout << "GOT A MESSAGE! " << m.bodyString() << endl;
 }
 
 /* Sort of a closure, needed for callback magic */
 static Net net(5555, 5556);
-void ForwardMessageToPeers(ClearMessage& m)
+void ForwardPacketToPeers(Packet& p)
 {
 	/* Encapsulate message in packet */
-	Packet p(m);
 	net.sendToAllPeers(p);
 }
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 	 *
 	 * This is currently 100% functional*/
 	engine.AddCallback(PrintMessage);
-	engine.AddCallback(ForwardMessageToPeers);
+	engine.AddCallback(ForwardPacketToPeers);
 
 	/* Start listening asynchronously */
 	//net.StartListen();
