@@ -238,7 +238,7 @@ namespace libmeshenger
 
 				/* Remove peer if it fails to be reached 3 times */
 				if (peers[i].strikes >= 3) {
-					netDebugPrint("Three strikes. Removing.");
+					netDebugPrint("Three strikes. Removing.", 31);
 					peers.erase(peers.begin() + i);
 				}
 			}
