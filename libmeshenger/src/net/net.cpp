@@ -231,7 +231,7 @@ namespace libmeshenger
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
 				/* Handle connection errors */
-				netDebugPrint(e.what(), 33);
+				netDebugPrint(e.what(), 41);
 				netDebugPrint("Peer " + addr.to_string() +
 						" is problematic. Strike.", 33);
 				peers[i].strikes++;
