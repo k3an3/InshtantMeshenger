@@ -13,13 +13,13 @@ namespace libmeshenger
 	uint16_t
 	ClearMessage::length() const
 	{
-		return raw_m.size() - 16;
+		return raw_m.size();
 	}
 
 	vector<uint8_t>
 	ClearMessage::body() const
 	{
-		return vector<uint8_t>(raw_m.begin() + 16, raw_m.end());
+		return vector<uint8_t>(raw_m.begin(), raw_m.end());
 	}
 
 	ClearMessage::ClearMessage(Packet p)
