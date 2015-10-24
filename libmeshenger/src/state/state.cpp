@@ -32,10 +32,8 @@ namespace libmeshenger
 		if (p.type() != Packet::CLEARMESSAGE_TYPE)
 			return false;
 
-		ClearMessage m(p);
-
 		for(int i = 0; i < seenMessages.size(); i++) {
-			if (compareIds(seenMessages[i].data(), m.id().data())) {
+			if (compareIds(seenMessages[i].data(), p.id().data())) {
 				std::cout << "Got a message, but it is old!" << std::endl;
 				return false;
 			}
@@ -65,7 +63,7 @@ namespace libmeshenger
 			for(int i = 0; i < callbacks.size(); i++) {
 				callbacks[i](m);
 			}
-			seenMessages.push_back(m.id());
+			seenMessages.push_back(p.id());
 		}
 		packets_processed++;
 	}

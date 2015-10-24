@@ -28,6 +28,10 @@ namespace libmeshenger
 			/* Returns a new (copy) vector of the appropriate bytes */
 			std::vector<std::uint8_t> raw() const;
 			std::vector<std::uint8_t> body() const;
+			std::vector<std::uint8_t> id() const;
+
+			/* ID as string */
+			std::string idString() const;
 
 			/* Packet type */
 			std::uint8_t type() const;
@@ -52,7 +56,6 @@ namespace libmeshenger
 			std::vector<std::uint8_t> raw_m;
 		public:
 			/* Returns a vector copy containing the appropriate bytes */
-			std::vector<std::uint8_t> id() const;
 			std::vector<std::uint8_t> body() const;
 			
 			/* Body length */
@@ -60,7 +63,6 @@ namespace libmeshenger
 
 			/* ID and body as strings */
 			std::string bodyString() const;
-			std::string idString() const;
 
 			/* Construct from a Packet */
 			ClearMessage(Packet);

@@ -63,6 +63,26 @@ namespace libmeshenger
 		}
 	}
 
+	vector<uint8_t>
+	Packet::id() const
+	{
+		return vector<uint8_t>(raw_m.begin() + 8, raw_m.begin() + 24);
+	}
+
+	string
+	Packet::idString() const
+	{
+		/* Convert the ID to hex */
+		char buffer[3];
+		string s;
+		for(uint8_t i = 0; i < 16; i++) {
+			snprintf(buffer, 3, "%02X", id()[i]);
+			s += buffer;
+		}
+
+		return s;
+	}
+
 	bool
 	operator==(const Packet& lhs, const Packet& rhs)
 	{
@@ -104,7 +124,7 @@ namespace libmeshenger
 		preamble[7] = (m.length() + 16) % 256;
 		preamble[6] = (m.length() + 16) / 256;
 
-		vector<uint8_t> id = m.id();
+		vector<uint8_t> id = vector<uint8_t>(m.body().begin(), m.body().begin()+16);
 		vector<uint8_t> body = m.body();
 
 		/* Build */
