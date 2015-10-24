@@ -15,7 +15,7 @@ namespace libmeshenger
 	static bool
 	validateClearMessage(vector<uint8_t> body)
 	{
-		if (body.size() < 32)
+		if (body.size() < 16)
 		{
 			return false;
 		}
@@ -27,7 +27,7 @@ namespace libmeshenger
 	ValidatePacket(vector<uint8_t> msg)
 	{
 		/* Validate minimum size */
-		if (msg.size() < 8)
+		if (msg.size() < 24)
 			return false;
 
 		/* Validate magic */
@@ -43,15 +43,15 @@ namespace libmeshenger
 		bodyLength |= (msg[6] << 8);
 
 		/* Validate body length */
-		if (msg.size() != bodyLength + 8)
+		if (msg.size() != bodyLength + 24)
 			return false;
 
 		/* Return true if valid empty packet */
-		if (msg.size() == 8 && msg[5] == 0x00)
+		if (msg.size() == 24 && msg[5] == 0x00)
 			return true;
 
 		/* Create body vector */
-		vector<uint8_t> body(msg.begin() + 8, msg.end());
+		vector<uint8_t> body(msg.begin() + 24, msg.end());
 
 		/* Validate message body based on body type */
 		switch (msg[5]) {
@@ -61,6 +61,26 @@ namespace libmeshenger
 			default:
 				return false;
 		}
+	}
+
+	vector<uint8_t>
+	Packet::id() const
+	{
+		return vector<uint8_t>(raw_m.begin() + 8, raw_m.begin() + 24);
+	}
+
+	string
+	Packet::idString() const
+	{
+		/* Convert the ID to hex */
+		char buffer[3];
+		string s;
+		for(uint8_t i = 0; i < 16; i++) {
+			snprintf(buffer, 3, "%02X", id()[i]);
+			s += buffer;
+		}
+
+		return s;
 	}
 
 	bool
@@ -101,11 +121,12 @@ namespace libmeshenger
 		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
 		
 		/* Length */
-		preamble[7] = (m.length() + 16) % 256;
-		preamble[6] = (m.length() + 16) / 256;
+		preamble[7] = m.length() % 256;
+		preamble[6] = m.length() / 256;
 
-		vector<uint8_t> id = m.id();
+
 		vector<uint8_t> body = m.body();
+		vector<uint8_t> id = vector<uint8_t>(body.begin(), body.begin() + 16);
 
 		/* Build */
 		raw_m = vector<uint8_t>();

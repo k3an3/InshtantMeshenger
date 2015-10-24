@@ -27,7 +27,7 @@ int main(int argc, char ** argv)
 	Packet p(m);
 
 	/* Use message.idString method */
-	cout << "Message " << m.idString() << endl;
+	cout << "Message " << p.idString() << endl;
 	cout << "    `" << s << "`" << endl;
 	
 

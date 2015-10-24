@@ -37,8 +37,8 @@ main()
 	cout << m.length() << endl;
 
 	/* Print subset vectors (id, body) */
-	for(int i = 0; i < m.id().size(); i++) {
-		cout << (int) m.id()[i];
+	for(int i = 0; i < p.id().size(); i++) {
+		cout << (int) p.id()[i];
 	}
 	cout << endl;
 	
@@ -58,14 +58,14 @@ main()
 	cout << "M1 and M2 are " << ((m == m2) ? "Equal" : "Inequal") << endl;
 	cout << "M2 and M3 are " << ((m2 == m3) ? "Equal" : "Inequal") << endl;
 
-	cout << "M1 ID: " << m.idString() << endl;
+	cout << "M1 ID: " << p.idString() << endl;
 	cout << "M1 body: " << m.bodyString() << endl;
 
 	cout << "Constructing packet" << endl;
 
 	m = ClearMessage("This one was constructed instead of parsed");
 
-	cout << "M1 ID: " << m.idString() << endl;
+	cout << "M1 ID: " << p.idString() << endl;
 	cout << "M1 body: " << m.bodyString() << endl;
 
 	raw_data[1] = 'm'; /* Mangle packet */
