@@ -1,6 +1,9 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+#include <ctime>
+
+#include <cryptopp/sha.h>
 
 #include <parser.h>
 
@@ -126,7 +129,17 @@ namespace libmeshenger
 
 
 		vector<uint8_t> body = m.body();
-		vector<uint8_t> id = vector<uint8_t>(body.begin(), body.begin() + 16);
+		vector<uint8_t> hash_input = vector<uint8_t>(body.begin(), body.end());
+		uint8_t hash[32];
+
+		hash_input.push_back(time(NULL));
+		hash_input.push_back(time(NULL) >> 8);
+		hash_input.push_back(time(NULL) >> 16);
+		hash_input.push_back(time(NULL) >> 24);
+
+		CryptoPP::SHA256().CalculateDigest(hash, hash_input.data(), hash_input.size());
+
+		vector<uint8_t> id = vector<uint8_t>(hash, hash + 16);
 
 		/* Build */
 		raw_m = vector<uint8_t>();
