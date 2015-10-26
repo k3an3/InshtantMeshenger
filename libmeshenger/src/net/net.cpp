@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
@@ -13,6 +14,7 @@
 #define NET_DEBUG true
 
 using boost::asio::ip::udp;
+using boost::asio::ip::tcp;
 using namespace std;
 
 const int32_t MAX_LENGTH = 1024;
@@ -38,14 +40,17 @@ namespace libmeshenger
 		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port))
+		udp_listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
+		tcp_listen_socket(io_service),
+		tcp_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
 	{
 	}
 
-	/* Run the io_service object to facilitate async operations */
+	/* Run the io_service object in a new thread to facilitate async operations */
 	void
-	Net::run() {
-		io_service.run();
+	Net::run()
+	{
+		boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 	}
 
 	/* Starts a UDP listener on the provided port. The listener will
@@ -56,8 +61,8 @@ namespace libmeshenger
 	{
 		netDebugPrint("Starting discovery listener...", 43);
 		/* Handle any incoming connections asynchronously */
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			/* Bind connection to acceptDiscoveryConn method */
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
@@ -73,29 +78,29 @@ namespace libmeshenger
 		if (recv_len > 0) {
 			/* Need to reply to the server port, not the one that was used to
 			 * connect to us */
-			remote_endpoint.port(udp_port);
+			udp_remote_endpoint.port(udp_port);
 			udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 			socket.set_option(udp::socket::reuse_address(true));
 
 		   	if (!strcmp((char*) data, (char*) MSG)) {
 				netDebugPrint("Received discovery probe from peer " +
-						remote_endpoint.address().to_string(), 32);
+						udp_remote_endpoint.address().to_string(), 32);
 				socket.async_send_to(
-					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), remote_endpoint,
+					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), udp_remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
-				addPeerIfNew(remote_endpoint.address());
+				addPeerIfNew(udp_remote_endpoint.address());
 				return;
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netDebugPrint("Received discovery reply from peer " +
-						remote_endpoint.address().to_string(), 33);
-				addPeerIfNew(remote_endpoint.address());
+						udp_remote_endpoint.address().to_string(), 33);
+				addPeerIfNew(udp_remote_endpoint.address());
 			} else
 				netDebugPrint("Received invalid probe", 30);
 		}
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -123,24 +128,23 @@ namespace libmeshenger
 		return false;
 	}
 
+	/* Bind handler for sending discovery replies */
 	void
 	Net::handleDiscoveryReply(const boost::system::error_code& error, size_t send_len)
 	{
-		/* Simply a bind handler */
 		if (error) netDebugPrint("ERROR", 31);
-		netDebugPrint("Sending discovery reply to " + remote_endpoint.address().to_string(), 33);
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		netDebugPrint("Sending discovery reply to " + udp_remote_endpoint.address().to_string(), 33);
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
 	}
 
+	/* Discover peers on the LAN using UDP broadcast */
 	void
 	Net::discoverPeers()
 	{
-		/* Discover peers on the LAN using UDP broadcast */
-
 		netDebugPrint("Sending discovery probe...", 42);
 
 		/* Create the socket that will send UDP broadcast */
@@ -156,16 +160,11 @@ namespace libmeshenger
 
 		/* Send discovery packet */
 		socket.async_send_to(boost::asio::buffer(MSG, strlen((char*) MSG) + 1),
-				endpoint, boost::bind(&Net::discoveryHandler, this,
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
-	}
+				endpoint, [this](boost::system::error_code ec,
+					size_t bytes_transferred)
+			   	{
 
-	void
-	Net::discoveryHandler(const boost::system::error_code& error,
-			  size_t bytes_transferred)
-	{
-
+				});
 	}
 
 	Packet
@@ -195,41 +194,66 @@ namespace libmeshenger
 	}
 
 	/* Sends a Packet to all previously discovered peers using TCP */
+	// NOT ASYNC YET
 	void
 	Net::sendToAllPeers(Packet p)
 	{
-		// Should probably have addr reuse in here
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
 			/* Peer IP address */
 			boost::asio::ip::address addr = peers[i].ip_addr;
 
 			/* Endpoint for the peer */
-			boost::asio::ip::tcp::endpoint endpoint(addr, tcp_port);
+			tcp::endpoint endpoint(addr, tcp_port);
 
 			/* Socket used to create the connection */
-			boost::asio::ip::tcp::socket sock(io_service);
+			tcp::socket sock(io_service);
 
 			/* Try to connect and report any connection errors */
 			try {
 				sock.connect(endpoint);
 				/* Send the data */
+				netDebugPrint("Sending packet to " +
+						endpoint.address().to_string(), 35);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
 				/* Handle connection errors */
-				netDebugPrint(e.what(), 33);
+				netDebugPrint(e.what(), 41);
 				netDebugPrint("Peer " + addr.to_string() +
 						" is problematic. Strike.", 33);
 				peers[i].strikes++;
 
 				/* Remove peer if it fails to be reached 3 times */
 				if (peers[i].strikes >= 3) {
-					netDebugPrint("Three strikes. Removing.");
+					netDebugPrint("Three strikes. Removing.", 31);
 					peers.erase(peers.begin() + i);
 				}
 			}
 		}
+	}
+
+	/* Start a TCP acceptor to accept incoming packets */
+	void
+	Net::startListen()
+	{
+		tcp_acceptor.async_accept(tcp_listen_socket,
+				[this](boost::system::error_code ec)
+		{
+			if (!ec) {
+				size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+				vector<uint8_t> v(msg, msg + bytes);
+				if (ValidatePacket(v)) {
+					netDebugPrint("Packet received from " +
+							tcp_listen_socket.remote_endpoint().address().to_string(),
+						   	36);
+					packets.push_back(Packet(v));
+				}
+			}
+			tcp_listen_socket.close();
+
+			startListen();
+		});
 	}
 
 	/* Accept TCP connections on tcp_port and attempt to create a valid packet
@@ -238,40 +262,7 @@ namespace libmeshenger
 	uint16_t
 	Net::receivePacket()
 	{
-	    try {
-			/* Attempt to bind to tcp_port */
-			// Should probably have addr reuse in here
-			boost::asio::ip::tcp::acceptor acceptor(io_service,
-					boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(),
-					tcp_port));
-
-			boost::asio::ip::tcp::socket socket(io_service);
-
-			/* Begin accepting connections */
-			acceptor.accept(socket);
-
-			boost::asio::streambuf sb;
-			boost::system::error_code ec;
-			uint8_t b[MAX_LENGTH];
-
-			/* Read from socket into buffer */
-			size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
-			vector<uint8_t> v(b, b + bytes);
-			/* If the packet is valid, construct and add to packet vector */
-			string s = socket.remote_endpoint().address().to_string();
-			if (ValidatePacket(v)) {
-				netDebugPrint("Packet received from " + s, 36);
-				packets.push_back(Packet(v));
-			}
-			/* Close connection */
-			socket.close();
-			if (ec) {
-				netDebugPrint("Connection to " + s + " closed.", 35);
-			}
-			/* Report any exceptions */
-		} catch (std::exception& e) {
-			std::cerr << "Exception: " << e.what() << std::endl;
-		}
+		// Change this?
 		return packets.size();
 	}
 

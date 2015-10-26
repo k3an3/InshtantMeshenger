@@ -32,7 +32,7 @@ int main(int argc, char** argv)
 
 	/* add a few peers */
 	for (int i = 1; i < argc; i++) {
-		net.addPeer(argv[i]);
+	//	net.addPeer(argv[i]);
 	}
 
 	/* Instantiate a packet engine
@@ -47,7 +47,12 @@ int main(int argc, char** argv)
 	engine.AddCallback(ForwardPacketToPeers);
 
 	/* Start listening asynchronously */
-	//net.StartListen();
+    net.discoveryListen();
+    net.discoverPeers();
+
+    net.startListen();
+	//net.receivePacket();
+    net.run();
 	while (true) {
 		/* Main loop */
 
