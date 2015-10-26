@@ -40,9 +40,9 @@ namespace libmeshenger
 		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
-		msg_socket(io_service),
-		msg_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
+		udp_listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
+		tcp_listen_socket(io_service),
+		tcp_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
 	{
 	}
 
@@ -53,12 +53,6 @@ namespace libmeshenger
 		boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
 	}
 
-	void
-	Net::actuallyRun()
-	{
-		io_service.run();
-	}
-
 	/* Starts a UDP listener on the provided port. The listener will
 	 * create new peer objects upon new connections and responds to the
 	 * remote host. */
@@ -67,8 +61,8 @@ namespace libmeshenger
 	{
 		netDebugPrint("Starting discovery listener...", 43);
 		/* Handle any incoming connections asynchronously */
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			/* Bind connection to acceptDiscoveryConn method */
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
@@ -84,29 +78,29 @@ namespace libmeshenger
 		if (recv_len > 0) {
 			/* Need to reply to the server port, not the one that was used to
 			 * connect to us */
-			remote_endpoint.port(udp_port);
+			udp_remote_endpoint.port(udp_port);
 			udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 			socket.set_option(udp::socket::reuse_address(true));
 
 		   	if (!strcmp((char*) data, (char*) MSG)) {
 				netDebugPrint("Received discovery probe from peer " +
-						remote_endpoint.address().to_string(), 32);
+						udp_remote_endpoint.address().to_string(), 32);
 				socket.async_send_to(
-					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), remote_endpoint,
+					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), udp_remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
-				addPeerIfNew(remote_endpoint.address());
+				addPeerIfNew(udp_remote_endpoint.address());
 				return;
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netDebugPrint("Received discovery reply from peer " +
-						remote_endpoint.address().to_string(), 33);
-				addPeerIfNew(remote_endpoint.address());
+						udp_remote_endpoint.address().to_string(), 33);
+				addPeerIfNew(udp_remote_endpoint.address());
 			} else
 				netDebugPrint("Received invalid probe", 30);
 		}
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
@@ -134,24 +128,23 @@ namespace libmeshenger
 		return false;
 	}
 
+	/* Bind handler for sending discovery replies */
 	void
 	Net::handleDiscoveryReply(const boost::system::error_code& error, size_t send_len)
 	{
-		/* Simply a bind handler */
 		if (error) netDebugPrint("ERROR", 31);
-		netDebugPrint("Sending discovery reply to " + remote_endpoint.address().to_string(), 33);
-		listen_socket.async_receive_from(
-			boost::asio::buffer(data, MAX_LENGTH), remote_endpoint,
+		netDebugPrint("Sending discovery reply to " + udp_remote_endpoint.address().to_string(), 33);
+		udp_listen_socket.async_receive_from(
+			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
 				boost::asio::placeholders::error,
 				boost::asio::placeholders::bytes_transferred));
 	}
 
+	/* Discover peers on the LAN using UDP broadcast */
 	void
 	Net::discoverPeers()
 	{
-		/* Discover peers on the LAN using UDP broadcast */
-
 		netDebugPrint("Sending discovery probe...", 42);
 
 		/* Create the socket that will send UDP broadcast */
@@ -167,16 +160,11 @@ namespace libmeshenger
 
 		/* Send discovery packet */
 		socket.async_send_to(boost::asio::buffer(MSG, strlen((char*) MSG) + 1),
-				endpoint, boost::bind(&Net::discoveryHandler, this,
-					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
-	}
+				endpoint, [this](boost::system::error_code ec,
+					size_t bytes_transferred)
+			   	{
 
-	void
-	Net::discoveryHandler(const boost::system::error_code& error,
-			  size_t bytes_transferred)
-	{
-
+				});
 	}
 
 	Packet
@@ -206,10 +194,10 @@ namespace libmeshenger
 	}
 
 	/* Sends a Packet to all previously discovered peers using TCP */
+	// NOT ASYNC YET
 	void
 	Net::sendToAllPeers(Packet p)
 	{
-		// Should probably have addr reuse in here
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
 			/* Peer IP address */
@@ -225,7 +213,7 @@ namespace libmeshenger
 			try {
 				sock.connect(endpoint);
 				/* Send the data */
-				netDebugPrint("Sending message to " +
+				netDebugPrint("Sending packet to " +
 						endpoint.address().to_string(), 35);
 				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
 				peers[i].strikes = 0;
@@ -245,31 +233,26 @@ namespace libmeshenger
 		}
 	}
 
+	/* Start a TCP acceptor to accept incoming packets */
 	void
 	Net::startListen()
 	{
-		messageAcceptor();
-	}
-
-	void
-	Net::messageAcceptor()
-	{
-		msg_acceptor.async_accept(msg_socket,
+		tcp_acceptor.async_accept(tcp_listen_socket,
 				[this](boost::system::error_code ec)
 		{
 			if (!ec) {
-				size_t bytes = msg_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+				size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
 				vector<uint8_t> v(msg, msg + bytes);
 				if (ValidatePacket(v)) {
 					netDebugPrint("Packet received from " +
-							msg_socket.remote_endpoint().address().to_string(),
+							tcp_listen_socket.remote_endpoint().address().to_string(),
 						   	36);
 					packets.push_back(Packet(v));
 				}
 			}
-			msg_socket.close();
+			tcp_listen_socket.close();
 
-			messageAcceptor();
+			startListen();
 		});
 	}
 
@@ -279,24 +262,7 @@ namespace libmeshenger
 	uint16_t
 	Net::receivePacket()
 	{
-		/*
-		auto self(shared_from_this());
-		msg_socket.async_receive(boost::asio::buffer(msg, MAX_LENGTH),
-				[this, self](boost::system::error_code error, size_t bytes)
-				{
-				if (!error) {
-					vector<uint8_t> v(msg, msg + bytes);
-					if (ValidatePacket(v)) {
-						netDebugPrint("Packet received from", 36);
-						packets.push_back(Packet(v));
-					}
-				}
-
-				});
-		/*
-			size_t bytes = boost::asio::read(socket, boost::asio::buffer(b, MAX_LENGTH), ec);
-			/* If the packet is valid, construct and add to packet vector */
-			//string s = socket.remote_endpoint().address().to_string();
+		// Change this?
 		return packets.size();
 	}
 
