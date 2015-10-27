@@ -8,8 +8,9 @@ using namespace std;
 using namespace libmeshenger;
 
 void
-testCb(ClearMessage& m)
+testCb(Packet& p)
 {
+	ClearMessage m(p);
 	cout << "Printing message:" << endl;
 	cout << m.bodyString() << endl;
 }
@@ -25,9 +26,8 @@ main()
 	cout << m.body().size() << endl;
 
 	cout << "Testing CB" << endl;
-	testCb(m);
-
 	Packet p(m);
+	testCb(p);
 
 	cout << "Registering Callback" << endl;
 	e.AddCallback(testCb);
