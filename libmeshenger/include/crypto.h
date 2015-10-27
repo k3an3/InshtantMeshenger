@@ -12,13 +12,13 @@ namespace libmeshenger
 	{
 		friend class EncryptedMessage;
 		private:
-			CryptoPP::InvertibleRSAFunction m_privkey;
+			CryptoPP::RSA::PrivateKey m_privkey;
 		public:
 			bool tryDecrypt(EncryptedMessage&);
-			void encrypt(EncryptedMessage&, CryptoPP::RSAFunction);
+			void encryptMessage(EncryptedMessage&, CryptoPP::RSAFunction);
 
 			CryptoEngine(CryptoPP::InvertibleRSAFunction);
-	}
+	};
 }
 
 #endif

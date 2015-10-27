@@ -46,6 +46,8 @@ namespace libmeshenger
 
 			/* Construct from a ClearMessage */
 			Packet(ClearMessage &);
+
+			Packet(EncryptedMessage &);
 	};
 
 
@@ -75,6 +77,7 @@ namespace libmeshenger
 
 	class EncryptedMessage final
 	{
+		friend class CryptoEngine;
 		protected:
 			std::vector<uint8_t> m_body_enc;
 			std::vector<uint8_t> m_body_dec;
