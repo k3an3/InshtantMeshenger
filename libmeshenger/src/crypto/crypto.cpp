@@ -46,16 +46,16 @@ namespace libmeshenger
 		plaintext.resize(res.messageLength);
 
 		em.m_body_dec = plaintext;
-
+		em.m_decrypted = true;
 	}
 
 	void
 	CryptoEngine::encryptMessage(EncryptedMessage &em, RSA::PublicKey pubkey)
 	{
-		if (!em.encrypted())
+		if (em.encrypted())
 			throw PacketStateException("Message already encrypted!");
 
-		if (em.decrypted())
+		if (!em.decrypted())
 			throw PacketStateException("Message not decrypted!");
 
 		AutoSeededRandomPool rng;
@@ -70,5 +70,6 @@ namespace libmeshenger
 		e.Encrypt(rng, plaintext.data(), plaintext.size(), ciphertext.data());
 
 		em.m_body_enc = ciphertext;
+		em.m_encrypted = true;
 	}
 }

@@ -46,6 +46,8 @@ namespace libmeshenger
 		if (!m_encrypted) {
 			throw PacketStateException("Packet not encrypted!");
 		}
+
+		return m_body_enc;
 	}
 
 	vector<uint8_t>
@@ -54,6 +56,8 @@ namespace libmeshenger
 		if (!m_decrypted) {
 			throw PacketStateException("Packet not decrypted!");
 		}
+
+		return m_body_dec;
 	}
 
 	PacketStateException::PacketStateException(string const& error)
