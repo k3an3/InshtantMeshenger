@@ -163,7 +163,7 @@ namespace libmeshenger
 	Packet::body() const
 	{
 		/* Return (by value) a copy of the body */
-		return vector<uint8_t>(raw_m.begin() + 8, raw_m.end());
+		return vector<uint8_t>(raw_m.begin() + 24, raw_m.end());
 	}
 
 	vector<uint8_t>
