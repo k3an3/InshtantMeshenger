@@ -40,9 +40,9 @@ namespace libmeshenger
 		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		udp_listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
+		udp_listen_socket(io_service),
 		tcp_listen_socket(io_service),
-		tcp_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
+		tcp_acceptor(io_service)
 	{
 	}
 
@@ -59,6 +59,7 @@ namespace libmeshenger
 	void
 	Net::discoveryListen()
 	{
+		udp_listen_socket = udp::socket(io_service, udp::endpoint(udp::v4(), udp_port));
 		netDebugPrint("Starting discovery listener...", 43);
 		/* Handle any incoming connections asynchronously */
 		udp_listen_socket.async_receive_from(
@@ -237,6 +238,9 @@ namespace libmeshenger
 	void
 	Net::startListen()
 	{
+		if (!tcp_acceptor.is_open()) {
+			tcp_acceptor = tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port));
+		}
 		tcp_acceptor.async_accept(tcp_listen_socket,
 				[this](boost::system::error_code ec)
 		{
