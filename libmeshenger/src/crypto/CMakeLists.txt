@@ -6,6 +6,6 @@ if (Cryptopp_FOUND)
 	include_directories (SYSTEM ${Cryptopp_INCLUDE_DIR})
 endif ()
 
-add_executable (test main.cpp)
-target_link_libraries(test LINK_PUBLIC libmeshenger-crypto cryptopp libmeshenger-parse)
+add_executable (test-crypto main.cpp)
+target_link_libraries(test-crypto LINK_PUBLIC cryptopp ${LIBMESHENGER})
 
