@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdint>
 #include <parser.h>
+#include <exception>
 
 #include <cryptopp/osrng.h>
 
@@ -13,8 +14,20 @@ using namespace CryptoPP;
 namespace libmeshenger
 {
 	CryptoEngine::CryptoEngine(RSA::PrivateKey privkey)
-		: m_privkey(privkey)
+		: m_privkey(privkey), privkey_initialized(true)
 	{
+	}
+
+	CryptoEngine::CryptoEngine()
+		: privkey_initialized(false)
+	{
+	}
+
+	void
+	CryptoEngine::setPrivateKey(InvertibleRSAFunction privkey)
+	{
+		m_privkey = privkey;
+		privkey_initialized = true;
 	}
 
 	bool
@@ -25,6 +38,9 @@ namespace libmeshenger
 
 		if (!em.encrypted())
 			throw PacketStateException("Message is not encrypted!");
+
+		if (!privkey_initialized)
+			throw runtime_error("Private key sot set");
 
 		vector<uint8_t> plaintext;
 		vector<uint8_t> ciphertext = em.encryptedBody();
