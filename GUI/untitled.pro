@@ -14,14 +14,20 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    chat.cpp
+    chat.cpp \
+    dialog.cpp
 
 HEADERS  += mainwindow.h \
-    chat.h
+    chat.h \
+    dialog.h
 
 FORMS    += mainwindow.ui \
-    chat.ui
+    chat.ui \
+    dialog.ui
 
 DISTFILES += \
     ChatForm.ui.qml \
-    Chat.qml
+    Chat.qml \
+    Php_KeyForm.ui.qml \
+    Key_PHPForm.ui.qml \
+    Key_PHP.qml

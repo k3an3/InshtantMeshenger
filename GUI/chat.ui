@@ -45,6 +45,9 @@
      <height>281</height>
     </rect>
    </property>
+   <property name="currentIndex">
+    <number>3</number>
+   </property>
    <widget class="QWidget" name="User1">
     <attribute name="title">
      <string>Tab 1</string>
@@ -64,6 +67,16 @@
       </rect>
      </property>
     </widget>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>Page</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>Page</string>
+    </attribute>
    </widget>
   </widget>
  </widget>
