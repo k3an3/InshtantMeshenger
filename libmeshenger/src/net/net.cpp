@@ -195,7 +195,6 @@ namespace libmeshenger
 	}
 
 	/* Sends a Packet to all previously discovered peers using TCP */
-	// NOT ASYNC YET
 	void
 	Net::sendToAllPeers(Packet p)
 	{
@@ -216,7 +215,12 @@ namespace libmeshenger
 				/* Send the data */
 				netDebugPrint("Sending packet to " +
 						endpoint.address().to_string(), 35);
-				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+				sock.async_send(boost::asio::buffer(p.raw().data(),
+							p.raw().size()), [this](boost::system::error_code ec,
+							size_t bytes)
+						{
+							// Handle something
+						});
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
 				/* Handle connection errors */
