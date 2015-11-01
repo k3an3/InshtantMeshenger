@@ -1,22 +1,22 @@
 #ifndef CHAT_H
 #define CHAT_H
 
-#include <QMainWindow>
+#include <QChat>
 
 namespace Ui {
-class MainWindow;
+class Chat;
 }
 
-class MainWindow : public QMainWindow
+class Chat : public QChat
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit Chat(QWidget *parent = 0);
+    ~Chat();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::Chat *ui;
 };
 
 #endif // CHAT_H

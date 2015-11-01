@@ -1,6 +1,6 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2015-10-24T14:32:55
+# Project created by QtCreator 2015-10-31T15:21:15
 #
 #-------------------------------------------------
 
@@ -8,7 +8,7 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = untitled
+TARGET = 309_test
 TEMPLATE = app
 
 
@@ -27,7 +27,4 @@ FORMS    += mainwindow.ui \
 
 DISTFILES += \
     ChatForm.ui.qml \
-    Chat.qml \
-    Php_KeyForm.ui.qml \
-    Key_PHPForm.ui.qml \
-    Key_PHP.qml
+    Chat.qml
