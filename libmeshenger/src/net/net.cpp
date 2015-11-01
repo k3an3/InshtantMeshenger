@@ -223,16 +223,20 @@ namespace libmeshenger
 						});
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-				/* Handle connection errors */
-				netDebugPrint(e.what(), 41);
-				netDebugPrint("Peer " + addr.to_string() +
-						" is problematic. Strike.", 33);
-				peers[i].strikes++;
+				if (!strcmp(e.what(), "connect: Connection refused")) {
+					/* Handle connection errors */
+					netDebugPrint(e.what(), 41);
+					netDebugPrint("Peer " + addr.to_string() +
+							" is problematic. Strike.", 33);
+					peers[i].strikes++;
 
-				/* Remove peer if it fails to be reached 3 times */
-				if (peers[i].strikes >= 3) {
-					netDebugPrint("Three strikes. Removing.", 31);
-					peers.erase(peers.begin() + i);
+					/* Remove peer if it fails to be reached 3 times */
+					if (peers[i].strikes >= 3) {
+						netDebugPrint("Three strikes. Removing.", 31);
+						peers.erase(peers.begin() + i);
+					}
+				}else {
+						 netDebugPrint(e.what(), 41);
 				}
 			}
 		}
