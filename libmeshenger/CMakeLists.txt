@@ -2,9 +2,9 @@ cmake_minimum_required (VERSION 2.6)
 project (LibMeshenger)
 
 SET(CMAKE_CXX_FLAGS "-g -std=c++11")
+SET(LIBMESHENGER libmeshenger-net libmeshenger-parse libmeshenger-state libmeshenger-crypto)
 
 include_directories("include")
-
 include_directories("src/parser")
 include_directories("src/net")
 include_directories("src/state")
@@ -13,3 +13,4 @@ add_subdirectory("src/parser" "bin")
 add_subdirectory("src/net" "bin_net")
 add_subdirectory("misc" "bin_demo")
 add_subdirectory("../inshtant_meshenger/gui" "bin_gui")
+add_subdirectory("src/crypto" "bin_crypto")

@@ -1,6 +1,9 @@
 #include <iostream>
 #include <algorithm>
 #include <cstdint>
+#include <ctime>
+
+#include <cryptopp/sha.h>
 
 #include <parser.h>
 
@@ -58,6 +61,10 @@ namespace libmeshenger
 			case 0x01:
 				return validateClearMessage(body);
 				break;
+			case 0x02:
+				/* Fuck it */
+				return true;
+				break;
 			default:
 				return false;
 		}
@@ -114,6 +121,45 @@ namespace libmeshenger
 		type_m = data[5]; /* Store type */
 	}
 
+	Packet::Packet(EncryptedMessage &em)
+	{
+		if (!em.encrypted())
+			throw PacketStateException("Message not encrypted!");
+
+		/* Magic, version, res, type (EncryptedMessage), length (blank) */
+		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 2, 0, 0 };
+		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
+		
+		/* Length */
+		preamble[7] = em.encryptedBody().size() % 256;
+		preamble[6] = em.encryptedBody().size() / 256;
+
+
+		vector<uint8_t> body = em.encryptedBody();
+		vector<uint8_t> hash_input = vector<uint8_t>(body.begin(), body.end());
+		uint8_t hash[32];
+
+		hash_input.push_back(time(NULL));
+		hash_input.push_back(time(NULL) >> 8);
+		hash_input.push_back(time(NULL) >> 16);
+		hash_input.push_back(time(NULL) >> 24);
+
+		CryptoPP::SHA256().CalculateDigest(hash, hash_input.data(), hash_input.size());
+
+		vector<uint8_t> id = vector<uint8_t>(hash, hash + 16);
+
+		/* Build */
+		raw_m = vector<uint8_t>();
+		raw_m.insert(raw_m.end(), preamble.begin(), preamble.end());
+		raw_m.insert(raw_m.end(), id.begin(), id.end());
+		raw_m.insert(raw_m.end(), body.begin(), body.end());
+
+		if (ValidatePacket(raw_m) == false)
+			throw InvalidPacketException();
+
+		type_m = raw_m[5];
+	}
+
 	Packet::Packet(ClearMessage &m)
 	{
 		/* Magic, version, res, type (ClearMessage), length (blank) */
@@ -126,7 +172,17 @@ namespace libmeshenger
 
 
 		vector<uint8_t> body = m.body();
-		vector<uint8_t> id = vector<uint8_t>(body.begin(), body.begin() + 16);
+		vector<uint8_t> hash_input = vector<uint8_t>(body.begin(), body.end());
+		uint8_t hash[32];
+
+		hash_input.push_back(time(NULL));
+		hash_input.push_back(time(NULL) >> 8);
+		hash_input.push_back(time(NULL) >> 16);
+		hash_input.push_back(time(NULL) >> 24);
+
+		CryptoPP::SHA256().CalculateDigest(hash, hash_input.data(), hash_input.size());
+
+		vector<uint8_t> id = vector<uint8_t>(hash, hash + 16);
 
 		/* Build */
 		raw_m = vector<uint8_t>();
@@ -150,7 +206,7 @@ namespace libmeshenger
 	Packet::body() const
 	{
 		/* Return (by value) a copy of the body */
-		return vector<uint8_t>(raw_m.begin() + 8, raw_m.end());
+		return vector<uint8_t>(raw_m.begin() + 24, raw_m.end());
 	}
 
 	vector<uint8_t>

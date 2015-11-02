@@ -17,6 +17,7 @@ namespace libmeshenger
 
 	class Packet;
 	class ClearMessage;
+	class EncryptedMessage;
 
 	class Packet final
 	{
@@ -25,6 +26,7 @@ namespace libmeshenger
 			std::uint8_t type_m;
 		public:
 			static const uint8_t CLEARMESSAGE_TYPE = 0x01;
+			static const uint8_t ENCRYPTEDMESSAGE_TYPE = 0x02;
 			/* Returns a new (copy) vector of the appropriate bytes */
 			std::vector<std::uint8_t> raw() const;
 			std::vector<std::uint8_t> body() const;
@@ -44,6 +46,8 @@ namespace libmeshenger
 
 			/* Construct from a ClearMessage */
 			Packet(ClearMessage &);
+
+			Packet(EncryptedMessage &);
 	};
 
 
@@ -69,6 +73,24 @@ namespace libmeshenger
 
 			/* Construct from a String */
 			ClearMessage(std::string);
+	};
+
+	class EncryptedMessage final
+	{
+		friend class CryptoEngine;
+		protected:
+			std::vector<uint8_t> m_body_enc;
+			std::vector<uint8_t> m_body_dec;
+			bool m_encrypted;
+			bool m_decrypted;
+		public:
+			std::vector<uint8_t> encryptedBody();
+			std::vector<uint8_t> decryptedBody();
+			bool encrypted();
+			bool decrypted();
+
+			EncryptedMessage(std::string);
+			EncryptedMessage(Packet&);
 	};
 
 	/* Message equality */
@@ -100,6 +122,12 @@ namespace libmeshenger
 		public:
 			PacketParsingException(std::string const& error);
 			PacketParsingException();
+	};
+
+	class PacketStateException final : public std::runtime_error
+	{
+		public:
+			PacketStateException(std::string const& error);
 	};
 }
 

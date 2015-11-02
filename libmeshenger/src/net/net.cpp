@@ -40,9 +40,9 @@ namespace libmeshenger
 		io_service(),
 		tcp_port(tcp_port),
 		/* Initialize UDP listen socket on all interfaces */
-		udp_listen_socket(io_service, udp::endpoint(udp::v4(), udp_port)),
+		udp_listen_socket(io_service),
 		tcp_listen_socket(io_service),
-		tcp_acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port))
+		tcp_acceptor(io_service)
 	{
 	}
 
@@ -59,6 +59,7 @@ namespace libmeshenger
 	void
 	Net::discoveryListen()
 	{
+		udp_listen_socket = udp::socket(io_service, udp::endpoint(udp::v4(), udp_port));
 		netDebugPrint("Starting discovery listener...", 43);
 		/* Handle any incoming connections asynchronously */
 		udp_listen_socket.async_receive_from(
@@ -194,7 +195,6 @@ namespace libmeshenger
 	}
 
 	/* Sends a Packet to all previously discovered peers using TCP */
-	// NOT ASYNC YET
 	void
 	Net::sendToAllPeers(Packet p)
 	{
@@ -215,19 +215,28 @@ namespace libmeshenger
 				/* Send the data */
 				netDebugPrint("Sending packet to " +
 						endpoint.address().to_string(), 35);
-				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+				sock.async_send(boost::asio::buffer(p.raw().data(),
+							p.raw().size()), [this](boost::system::error_code ec,
+							size_t bytes)
+						{
+							// Handle something
+						});
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-				/* Handle connection errors */
-				netDebugPrint(e.what(), 41);
-				netDebugPrint("Peer " + addr.to_string() +
-						" is problematic. Strike.", 33);
-				peers[i].strikes++;
+				if (!strcmp(e.what(), "connect: Connection refused")) {
+					/* Handle connection errors */
+					netDebugPrint(e.what(), 41);
+					netDebugPrint("Peer " + addr.to_string() +
+							" is problematic. Strike.", 33);
+					peers[i].strikes++;
 
-				/* Remove peer if it fails to be reached 3 times */
-				if (peers[i].strikes >= 3) {
-					netDebugPrint("Three strikes. Removing.", 31);
-					peers.erase(peers.begin() + i);
+					/* Remove peer if it fails to be reached 3 times */
+					if (peers[i].strikes >= 3) {
+						netDebugPrint("Three strikes. Removing.", 31);
+						peers.erase(peers.begin() + i);
+					}
+				}else {
+						 netDebugPrint(e.what(), 41);
 				}
 			}
 		}
@@ -237,6 +246,9 @@ namespace libmeshenger
 	void
 	Net::startListen()
 	{
+		if (!tcp_acceptor.is_open()) {
+			tcp_acceptor = tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port));
+		}
 		tcp_acceptor.async_accept(tcp_listen_socket,
 				[this](boost::system::error_code ec)
 		{
