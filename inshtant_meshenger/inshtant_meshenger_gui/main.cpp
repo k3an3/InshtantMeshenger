@@ -1,5 +1,8 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include <net.h>
+
+using namespace libmeshenger;
 
 int main(int argc, char *argv[])
 {
