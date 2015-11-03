@@ -21,7 +21,7 @@ int main()
 
 	string original = "This is a test message that will be encrypted";
 
-	CryptoEngine engine(privkey);
+	CryptoEngine engine;
 
 	EncryptedMessage em_orig(original);
 

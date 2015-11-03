@@ -9,5 +9,5 @@ if (Cryptopp_FOUND)
 endif ()
 
 add_executable (hello main.cpp)
-target_link_libraries(hello LINK_PUBLIC libmeshenger-parse cryptopp)
+target_link_libraries(hello LINK_PUBLIC cryptopp ${LIBMESHENGER})
 
