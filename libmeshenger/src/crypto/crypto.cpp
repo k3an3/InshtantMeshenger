@@ -34,6 +34,12 @@ namespace libmeshenger
 		privkey_initialized = true;
 	}
 
+	void
+	CryptoEngine::setPrivateKeyFromFile(string filename)
+	{
+		m_privkey = privkeyFromFile(filename);
+	}
+
 	bool
 	CryptoEngine::tryDecrypt(EncryptedMessage& em)
 	{

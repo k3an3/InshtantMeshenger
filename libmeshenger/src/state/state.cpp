@@ -12,7 +12,7 @@
 #include <state.h>
 #include <iostream>
 
-using std::vector;
+using namespace std;
 
 namespace libmeshenger
 {
@@ -34,7 +34,8 @@ namespace libmeshenger
 
 		for(int i = 0; i < seenMessages.size(); i++) {
 			if (compareIds(seenMessages[i].data(), p.id().data())) {
-				std::cout << "Got a message, but it is old!" << std::endl;
+				cout << "\033[1;32m[packet-engine   ]\033[0m-> ";
+				cout << "\033[1;31mPacket is old\033[0m" << endl;
 				return false;
 			}
 		}
@@ -59,6 +60,8 @@ namespace libmeshenger
 	PacketEngine::ProcessPacket(Packet &p)
 	{
 		if (IsPacketNew(p)) {
+			cout << "\033[1;32m[packet-engine   ]\033[0m-> ";
+			cout << "\033[1;35mProcessing through callbacks\033[0m" << endl;
 			for(int i = 0; i < callbacks.size(); i++) {
 				callbacks[i](p);
 			}

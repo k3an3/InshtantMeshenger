@@ -5,21 +5,45 @@
 #include <parser.h>
 #include <state.h>
 #include <net.h>
+#include <crypto.h>
 
 using namespace std;
 using namespace libmeshenger;
 
 void PrintMessage(Packet& p)
 {
-	ClearMessage m(p);
-	/* Print the message (Fully implemented) */
-	cout << "GOT A MESSAGE! " << m.bodyString() << endl;
+	if (p.type() == 0x01) {
+		ClearMessage m(p);
+
+		/* Print the message (Fully implemented) */
+		cout << "\033[1;32m[Cleartext Message received!]\033[0m-> ";
+		cout << m.bodyString() << endl;
+	}
+}
+
+/* CryptoEngine (used by CB)*/
+CryptoEngine cryptoEngine;
+void PrintEncryptedMessage(Packet& p)
+{
+	if (p.type() == 0x02) {
+		EncryptedMessage em(p);
+
+		cout << "\033[1;32m[Encrypted Message Received!]\033[0m-> ";
+
+		if (cryptoEngine.tryDecrypt(em)) {
+			vector<uint8_t> body = em.decryptedBody();
+			cout << string((char *) body.data()) << endl;
+		} else {
+			cout << "\033[1;31mUnable to decrypt!\033[0m" << endl;
+		}
+	}
 }
 
 /* Sort of a closure, needed for callback magic */
 static Net net(5555, 5556);
 void ForwardPacketToPeers(Packet& p)
 {
+	cout << "\033[1;32m[Forwarding packet to peers!]\033[0m" << endl;
 	/* Encapsulate message in packet */
 	net.sendToAllPeers(p);
 }
@@ -27,12 +51,9 @@ void ForwardPacketToPeers(Packet& p)
 int main(int argc, char** argv)
 {
 
-	/* Instantiate a net. The net is static because it
-	 * is needed by the "closure" ForwardMessage */
-
-	/* add a few peers */
-	for (int i = 1; i < argc; i++) {
-	//	net.addPeer(argv[i]);
+	if (argc != 2) {
+		cout << "Usage: TestNode <privkeyfile>" << endl;
+		return -1;
 	}
 
 	/* Instantiate a packet engine
@@ -40,11 +61,15 @@ int main(int argc, char** argv)
 	 * This is 100% functional */
 	PacketEngine engine;
 
+	/* Set the private key */
+	cryptoEngine.setPrivateKeyFromFile(argv[1]);
+
 	/* Register the two callbacks
 	 *
 	 * This is currently 100% functional*/
 	engine.AddCallback(PrintMessage);
 	engine.AddCallback(ForwardPacketToPeers);
+	engine.AddCallback(PrintEncryptedMessage);
 
 	/* Start listening asynchronously */
     net.discoveryListen();
@@ -68,7 +93,6 @@ int main(int argc, char** argv)
 		if (numPackets) {
 			for (int i = 0; i < numPackets; i++) {
 				Packet p = net.getPacket();
-				cout << "Packet received from net" << endl;
 				engine.ProcessPacket(p);
 			}
         }

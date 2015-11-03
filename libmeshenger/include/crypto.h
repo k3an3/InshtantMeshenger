@@ -24,6 +24,7 @@ namespace libmeshenger
 			void encryptMessage(EncryptedMessage&, const std::string&);
 			void encryptMessage(EncryptedMessage&, uint16_t);
 			void setPrivateKey(CryptoPP::InvertibleRSAFunction);
+			void setPrivateKeyFromFile(std::string);
 			std::vector<Buddy> buddies();
 			Buddy buddy(uint16_t);
 			Buddy buddy(std::string);
