@@ -9,6 +9,7 @@
 #include <fstream>
 
 #include <cryptopp/osrng.h>
+#include <cryptopp/files.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -139,18 +140,51 @@ namespace libmeshenger
 	void
 	CryptoEngine::pubkeyToFile(RSA::PublicKey key, string filename)
 	{
-		/* Simple serialization format:
-		 * Modulus
-		 * Public Exp.
-		 *
-		 * Currently, the default primes are used. That's probably not good
-		 * 				Johnny Treehorn presents
-		 * 				****** LOGJAMMIN' *******
-		 */
-		ofstream f(filename);
-		f << key.GetModulus() << endl;
-		f << key.GetPublicExponent() << endl;
-		f.close();
+		ByteQueue queue;
+		FileSink f(filename.c_str());
+
+		key.Save(queue);
+		queue.CopyTo(f);
+		f.MessageEnd();
+	}
+
+	void
+	CryptoEngine::privkeyToFile(RSA::PrivateKey key, string filename)
+	{
+		ByteQueue queue;
+		FileSink f(filename.c_str());
+
+		key.Save(queue);
+		queue.CopyTo(f);
+		f.MessageEnd();
+	}
+
+	RSA::PublicKey 
+	CryptoEngine::pubkeyFromFile(string filename)
+	{
+		RSA::PublicKey key;
+		FileSource f(filename.c_str(), true);
+		ByteQueue queue;
+
+		f.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
+	}
+
+	RSA::PrivateKey 
+	CryptoEngine::privkeyFromFile(string filename)
+	{
+		RSA::PrivateKey key;
+		FileSource f(filename.c_str(), true);
+		ByteQueue queue;
+
+		f.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
 	}
 
 	string

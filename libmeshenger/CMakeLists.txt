@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 project (LibMeshenger)
 
 SET(CMAKE_CXX_FLAGS "-g -std=c++11")
-SET(LIBMESHENGER libmeshenger-net libmeshenger-parse libmeshenger-state libmeshenger-crypto)
+SET(LIBMESHENGER libmeshenger-net libmeshenger-crypto libmeshenger-parse libmeshenger-state)
 
 include_directories("include")
 include_directories("src/parser")
