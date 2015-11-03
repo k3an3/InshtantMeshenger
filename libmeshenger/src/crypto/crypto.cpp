@@ -64,7 +64,14 @@ namespace libmeshenger
 
 		RSAES_OAEP_SHA_Encryptor e(pubkey);
 
-		plaintext = em.decryptedBody();
+		/* Known plaintext. Might be bad, who knows? 
+		 * This flag is checked to see if the decrypt was successful
+		 *
+		 * Will not be necessary once signatures are implemented */
+		const uint8_t * magic_flag = "DECRYPTION SUCCESSFUL";
+
+		plaintext = vector<uint8_t>(magic_flag);
+		plaintext.push_back(em.decryptedBody());
 		ciphertext.resize(e.CiphertextLength(plaintext.size()));
 
 		e.Encrypt(rng, plaintext.data(), plaintext.size(), ciphertext.data());
