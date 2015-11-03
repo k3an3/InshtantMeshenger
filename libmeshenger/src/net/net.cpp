@@ -195,7 +195,6 @@ namespace libmeshenger
 	}
 
 	/* Sends a Packet to all previously discovered peers using TCP */
-	// NOT ASYNC YET
 	void
 	Net::sendToAllPeers(Packet p)
 	{
@@ -216,19 +215,28 @@ namespace libmeshenger
 				/* Send the data */
 				netDebugPrint("Sending packet to " +
 						endpoint.address().to_string(), 35);
-				sock.send(boost::asio::buffer(p.raw().data(), p.raw().size()));
+				sock.async_send(boost::asio::buffer(p.raw().data(),
+							p.raw().size()), [this](boost::system::error_code ec,
+							size_t bytes)
+						{
+							// Handle something
+						});
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-				/* Handle connection errors */
-				netDebugPrint(e.what(), 41);
-				netDebugPrint("Peer " + addr.to_string() +
-						" is problematic. Strike.", 33);
-				peers[i].strikes++;
+				if (!strcmp(e.what(), "connect: Connection refused")) {
+					/* Handle connection errors */
+					netDebugPrint(e.what(), 41);
+					netDebugPrint("Peer " + addr.to_string() +
+							" is problematic. Strike.", 33);
+					peers[i].strikes++;
 
-				/* Remove peer if it fails to be reached 3 times */
-				if (peers[i].strikes >= 3) {
-					netDebugPrint("Three strikes. Removing.", 31);
-					peers.erase(peers.begin() + i);
+					/* Remove peer if it fails to be reached 3 times */
+					if (peers[i].strikes >= 3) {
+						netDebugPrint("Three strikes. Removing.", 31);
+						peers.erase(peers.begin() + i);
+					}
+				}else {
+						 netDebugPrint(e.what(), 41);
 				}
 			}
 		}

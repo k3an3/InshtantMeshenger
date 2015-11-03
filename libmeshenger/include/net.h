@@ -92,4 +92,14 @@ namespace libmeshenger
 			Packet getPacket();
 	};
 
+	/* Main Net exception class. Should be thrown when a critical error occurs,
+	* such as when there is no network connection or the network is unreachable */
+	class NetworkException final : public std::runtime_error
+	{
+		 public:
+			 NetworkException(std::string const& error);
+			 NetworkException();
+
+	};
+
 }
