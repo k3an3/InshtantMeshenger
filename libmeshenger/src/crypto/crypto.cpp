@@ -6,6 +6,8 @@
 #include <parser.h>
 #include <exception>
 
+#include <fstream>
+
 #include <cryptopp/osrng.h>
 
 using namespace std;
@@ -119,7 +121,7 @@ namespace libmeshenger
 	}
 
 	void
-	encryptMessage(EncryptedMessage &em, uint16_t i)
+	CryptoEngine::encryptMessage(EncryptedMessage &em, uint16_t i)
 	{
 		if (i >= m_buddies.size())
 			throw runtime_error("Buddy index out of bounds!");
@@ -128,13 +130,31 @@ namespace libmeshenger
 	}
 
 	RSA::PublicKey
-	Buddy::pubkey()
+	Buddy::pubkey() const
 	{
 		return m_pubkey;
 	}
 
+	/* Static key serialization functions */
+	void
+	CryptoEngine::pubkeyToFile(RSA::PublicKey key, string filename)
+	{
+		/* Simple serialization format:
+		 * Modulus
+		 * Public Exp.
+		 *
+		 * Currently, the default primes are used. That's probably not good
+		 * 				Johnny Treehorn presents
+		 * 				****** LOGJAMMIN' *******
+		 */
+		ofstream f(filename);
+		f << key.GetModulus() << endl;
+		f << key.GetPublicExponent() << endl;
+		f.close();
+	}
+
 	string
-	Buddy::name()
+	Buddy::name() const
 	{
 		return m_name;
 	}
@@ -148,4 +168,5 @@ namespace libmeshenger
 		: m_pubkey(pubkey), m_name("")
 	{
 	}
+
 }

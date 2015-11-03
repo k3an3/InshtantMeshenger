@@ -8,6 +8,8 @@
 
 namespace libmeshenger
 {
+	class Buddy;
+
 	class CryptoEngine
 	{
 		friend class EncryptedMessage;
@@ -24,10 +26,16 @@ namespace libmeshenger
 			void setPrivateKey(CryptoPP::InvertibleRSAFunction);
 			std::vector<Buddy> buddies();
 			Buddy buddy(uint16_t);
-			Buddy buddy(string);
+			Buddy buddy(std::string);
 
 			CryptoEngine();
 			CryptoEngine(CryptoPP::InvertibleRSAFunction);
+
+			static CryptoPP::RSA::PublicKey pubkeyFromFile(std::string);
+			static CryptoPP::RSA::PrivateKey privkeyFromFile(std::string);
+
+			static void pubkeyToFile(CryptoPP::RSA::PublicKey, std::string);
+			static void privkeyToFile(CryptoPP::RSA::PrivateKey, std::string);
 	};
 
 	class Buddy
@@ -36,12 +44,12 @@ namespace libmeshenger
 			std::string m_name;
 			CryptoPP::RSA::PublicKey m_pubkey;
 		public:
-			CryptoPP::RSA::PublicKey pubkey();
-			std::string name();
+			CryptoPP::RSA::PublicKey pubkey() const;
+			std::string name() const;
 
 			Buddy(CryptoPP::RSA::PublicKey, std::string);
 			Buddy(CryptoPP::RSA::PublicKey);
-	}
+	};
 }
 
 #endif
