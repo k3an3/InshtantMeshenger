@@ -29,9 +29,6 @@ namespace libmeshenger
 	bool
 	PacketEngine::IsPacketNew(Packet &p)
 	{
-		if (p.type() != Packet::CLEARMESSAGE_TYPE)
-			return false;
-
 		for(int i = 0; i < seenMessages.size(); i++) {
 			if (compareIds(seenMessages[i].data(), p.id().data())) {
 				cout << "\033[1;32m[packet-engine   ]\033[0m-> ";

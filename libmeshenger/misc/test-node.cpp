@@ -16,7 +16,7 @@ void PrintMessage(Packet& p)
 		ClearMessage m(p);
 
 		/* Print the message (Fully implemented) */
-		cout << "\033[1;32m[Cleartext Message received!]\033[0m-> ";
+		cout << "\033[1;32m[Cleartext Message received!]\033[0m ";
 		cout << m.bodyString() << endl;
 	}
 }
@@ -28,7 +28,7 @@ void PrintEncryptedMessage(Packet& p)
 	if (p.type() == 0x02) {
 		EncryptedMessage em(p);
 
-		cout << "\033[1;32m[Encrypted Message Received!]\033[0m-> ";
+		cout << "\033[1;32m[Encrypted Message Received!]\033[0m ";
 
 		if (cryptoEngine.tryDecrypt(em)) {
 			vector<uint8_t> body = em.decryptedBody();

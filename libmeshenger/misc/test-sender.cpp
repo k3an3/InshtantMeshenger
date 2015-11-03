@@ -4,6 +4,7 @@
 
 #include <parser.h>
 #include <net.h>
+#include <crypto.h>
 /* Whatever the net library is */
 // #include <libmeshenger_net.h>
 
@@ -14,6 +15,7 @@ int main(int argc, char ** argv)
 {
 	if (argc < 3){
 		cout << "Usage: TestSender <peer> 'message'" << endl;
+		cout << "       TestSender <peer> 'message' pubkey" << endl;
 		return 1;
 	}
 
@@ -25,6 +27,16 @@ int main(int argc, char ** argv)
 
 	/* Use Message -> Packet constructor */
 	Packet p(m);
+
+	/* Do encrypted message */
+	if (argc == 4) {
+		CryptoEngine e;
+		cout << "Sending an encrypted message" << endl;
+		EncryptedMessage em(s);
+		e.encryptMessage(em, CryptoEngine::pubkeyFromFile(argv[3]));
+
+		p = Packet(em);
+	}
 
 	/* Use message.idString method */
 	cout << "Message " << p.idString() << endl;

@@ -38,6 +38,7 @@ namespace libmeshenger
 	CryptoEngine::setPrivateKeyFromFile(string filename)
 	{
 		m_privkey = privkeyFromFile(filename);
+		privkey_initialized = true;
 	}
 
 	bool
