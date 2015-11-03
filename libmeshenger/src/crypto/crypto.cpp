@@ -68,7 +68,14 @@ namespace libmeshenger
 		/* Resize down to actual size */
 		plaintext.resize(res.messageLength);
 
-		em.m_body_dec = plaintext;
+		/* Check magic flag. Not needed once signing is implemented */
+		uint8_t * magic = (uint8_t *) "DECRYPTION GOOD!";
+		for (int i = 0; i < 16; i++) {
+			if (plaintext[i] != magic[i])
+				return false;
+		}
+
+		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 16, plaintext.end());
 		em.m_decrypted = true;
 	}
 
@@ -93,10 +100,13 @@ namespace libmeshenger
 		 * This flag is checked to see if the decrypt was successful
 		 *
 		 * Will not be necessary once signatures are implemented */
-		const uint8_t * magic_flag = "DECRYPTION SUCCESSFUL";
+		uint8_t * magic_flag = (uint8_t *) "DECRYPTION GOOD!";
 
-		plaintext = vector<uint8_t>(magic_flag);
-		plaintext.push_back(em.decryptedBody());
+		/* Appen decrypted body to magic */
+		plaintext = vector<uint8_t>(magic_flag, magic_flag + 16);
+		plaintext.insert(plaintext.end(), em.m_body_dec.begin(), em.m_body_dec.end());
+
+		/* Resize ciphertext vector */
 		ciphertext.resize(e.CiphertextLength(plaintext.size()));
 
 		e.Encrypt(rng, plaintext.data(), plaintext.size(), ciphertext.data());

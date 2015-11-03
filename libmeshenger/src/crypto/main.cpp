@@ -9,19 +9,25 @@ using namespace std;
 using namespace libmeshenger;
 using namespace CryptoPP;
 
-int main()
+int main(int argc, char ** argv)
 {
 	AutoSeededRandomPool rng;
 
-	InvertibleRSAFunction params;
-	params.GenerateRandomWithKeySize(rng, 3072);
+	RSA::PublicKey pubkey;
+	RSA::PrivateKey privkey;
 
-	RSA::PublicKey pubkey(params);
-	RSA::PrivateKey privkey(params);
+	if (argc != 3) {
+		cout << "Usage: test <privkeyfile> <pubkeyfile>" << endl;
+		return -1;
+	}
+
+	privkey = CryptoEngine::privkeyFromFile(argv[1]);
+	pubkey = CryptoEngine::pubkeyFromFile(argv[2]);
 
 	string original = "This is a test message that will be encrypted";
 
 	CryptoEngine engine;
+	engine.setPrivateKey(privkey);
 
 	EncryptedMessage em_orig(original);
 
