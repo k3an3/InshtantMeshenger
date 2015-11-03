@@ -13,6 +13,7 @@ using namespace CryptoPP;
 
 namespace libmeshenger
 {
+	/* Constructors */
 	CryptoEngine::CryptoEngine(RSA::PrivateKey privkey)
 		: m_privkey(privkey), privkey_initialized(true)
 	{
@@ -33,6 +34,7 @@ namespace libmeshenger
 	bool
 	CryptoEngine::tryDecrypt(EncryptedMessage& em)
 	{
+		/* Ensure state is valid */
 		if (em.decrypted())
 			throw PacketStateException("Message is already decrypted!");
 
@@ -55,6 +57,8 @@ namespace libmeshenger
 
 		res = d.Decrypt(rng, ciphertext.data(), ciphertext.size(), plaintext.data());
 
+		/* Return false if it didn't decrypt. This does not validate correct
+		 * key! */
 		if (!res.isValidCoding)
 			return false;
 
@@ -68,6 +72,7 @@ namespace libmeshenger
 	void
 	CryptoEngine::encryptMessage(EncryptedMessage &em, RSA::PublicKey pubkey)
 	{
+		/* Check state */
 		if (em.encrypted())
 			throw PacketStateException("Message already encrypted!");
 
@@ -78,8 +83,10 @@ namespace libmeshenger
 		vector<uint8_t> ciphertext;
 		vector<uint8_t> plaintext;
 
+		/* Create decryptor */
 		RSAES_OAEP_SHA_Encryptor e(pubkey);
 
+		/* Set size and plaintext */
 		plaintext = em.decryptedBody();
 		ciphertext.resize(e.CiphertextLength(plaintext.size()));
 
@@ -87,5 +94,58 @@ namespace libmeshenger
 
 		em.m_body_enc = ciphertext;
 		em.m_encrypted = true;
+	}
+
+	/* Other ways of getting public key */
+	void
+	CryptoEngine::encryptMessage(EncryptedMessage &em, const Buddy &b)
+	{
+		encryptMessage(em, b.pubkey());
+	}
+
+	void
+	CryptoEngine::encryptMessage(EncryptedMessage &em, const string &name)
+	{
+		// TODO: Change the exceptions to a new class
+		if (name == "")
+			throw runtime_error("Name cannot be empty!");
+
+		for(uint16_t i = 0; i < m_buddies.size(); i++){
+			if (m_buddies[i].name() == name)
+				encryptMessage(em, m_buddies[i].pubkey());
+		}
+
+		throw runtime_error("Buddy with name not found!");
+	}
+
+	void
+	encryptMessage(EncryptedMessage &em, uint16_t i)
+	{
+		if (i >= m_buddies.size())
+			throw runtime_error("Buddy index out of bounds!");
+
+		encryptMessage(em, m_buddies[i]);
+	}
+
+	RSA::PublicKey
+	Buddy::pubkey()
+	{
+		return m_pubkey;
+	}
+
+	string
+	Buddy::name()
+	{
+		return m_name;
+	}
+
+	Buddy::Buddy(RSA::PublicKey pubkey, string n)
+		: m_pubkey(pubkey), m_name(n)
+	{
+	}
+
+	Buddy::Buddy(RSA::PublicKey pubkey)
+		: m_pubkey(pubkey), m_name("")
+	{
 	}
 }
