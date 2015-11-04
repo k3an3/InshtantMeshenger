@@ -55,17 +55,17 @@
           <item>
            <layout class="QHBoxLayout" name="messageHorizontalLayout">
             <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="messageToSendLineEdit"/>
             </item>
             <item>
-             <widget class="QPushButton" name="sendPushButton_2">
+             <widget class="QPushButton" name="sendPushButton">
               <property name="text">
                <string>Send</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="getMessagesPushButton_2">
+             <widget class="QPushButton" name="getMessagesPushButton">
               <property name="text">
                <string>Get Messages</string>
               </property>
