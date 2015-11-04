@@ -27,6 +27,9 @@ namespace libmeshenger
 	{
 	}
 
+	/* Private key setting functions. Must be used before 
+	 * pretty much any functionality is available, or
+	 * exceptions will happen */
 	void
 	CryptoEngine::setPrivateKey(InvertibleRSAFunction privkey)
 	{
@@ -41,6 +44,7 @@ namespace libmeshenger
 		privkey_initialized = true;
 	}
 
+	/* Attempt to decrypt the message */
 	bool
 	CryptoEngine::tryDecrypt(EncryptedMessage& em)
 	{
@@ -210,6 +214,7 @@ namespace libmeshenger
 		return key;
 	}
 
+	/* Buddy functions and constructors (pretty basic) */
 	string
 	Buddy::name() const
 	{
