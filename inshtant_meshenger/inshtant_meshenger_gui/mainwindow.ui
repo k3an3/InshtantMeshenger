@@ -39,6 +39,11 @@
              <attribute name="title">
               <string>Tab 1</string>
              </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <widget class="QTextEdit" name="textEdit"/>
+              </item>
+             </layout>
             </widget>
             <widget class="QWidget" name="tab_2">
              <attribute name="title">
@@ -114,12 +119,9 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <zorder>chatFrame</zorder>
          </widget>
         </item>
        </layout>
-       <zorder></zorder>
-       <zorder></zorder>
        <zorder>buddiesFrame</zorder>
        <zorder>buddyListLabel</zorder>
        <zorder>line</zorder>

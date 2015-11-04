@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     palette.setColor(QPalette::Background, Qt::darkGray);
     palette.setColor(QPalette::WindowText, Qt::black);
     palette.setColor(QPalette::Foreground, Qt::black);
-    palette.setColor(QPalette::Base, Qt::gray);
+    palette.setColor(QPalette::Base, Qt::white);
     palette.setColor(QPalette::AlternateBase, Qt::lightGray);
     palette.setColor(QPalette::ToolTipBase, Qt::darkGray);
     palette.setColor(QPalette::Text, Qt::black);
@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->buddyListFrame->setFrameStyle(0x0000);
     ui->buddyListFrame->setAutoFillBackground(true);
     ui->buddyListFrame->setPalette(palette);
+
+    ui->tabWidget->removeTab(1);
 }
 
 MainWindow::~MainWindow()
