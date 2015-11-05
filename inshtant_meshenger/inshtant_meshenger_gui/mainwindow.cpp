@@ -12,7 +12,7 @@
 using namespace libmeshenger;
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent, libmeshenger::Net *net_p) :
+MainWindow::MainWindow(QWidget *parent, libmeshenger::Net *net_p, libmeshenger::PacketEngine *engine_p) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
@@ -44,39 +44,48 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net *net_p) :
     ui->tabWidget->removeTab(1);
 
     net = net_p;
+    engine = engine_p;
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
-    delete net;
 }
 
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
-    ClearMessage m(ui->lineEdit->text().toStdString());
+    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
     Packet p(m);
-    ui->textBrowser->append(ui->lineEdit->text());
+    ui->textEdit->append(ui->messageToSendLineEdit->text());
     net->sendToAllPeers(p);
-    ui->lineEdit->clear();
+    ui->messageToSendLineEdit->clear();
 }
 
 void MainWindow::on_sendPushButton_clicked()
 {
-    ClearMessage m(ui->lineEdit->text().toStdString());
+    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
     Packet p(m);
-    ui->textBrowser->append(ui->lineEdit->text());
+    ui->textEdit->append(ui->messageToSendLineEdit->text());
     net->sendToAllPeers(p);
-    ui->lineEdit->clear();
+    ui->messageToSendLineEdit->clear();
 }
 
 void MainWindow::on_getMessagesPushButton_clicked()
 {
     // get messages
+    uint16_t numPackets = net->receivePacket();
+    if (numPackets) {
+        for (int i = 0; i < numPackets; i++) {
+            Packet p = net->getPacket();
+
+            std::cout << "Packet received from net" << std::endl;
+            engine->ProcessPacket(p);
+        }
+    }
 }
 
 void MainWindow::displayMessage(Packet &p)
 {
     ClearMessage m(p);
-    ui->textBrowser->append(QString::fromStdString(m.bodyString()));
+    ui->textEdit->append(QString::fromStdString(m.bodyString()));
 }

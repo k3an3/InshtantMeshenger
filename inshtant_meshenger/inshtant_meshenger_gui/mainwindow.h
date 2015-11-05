@@ -5,6 +5,7 @@
 #include <net.h>
 #include <parser.h>
 #include <string>
+#include <state.h>
 
 namespace Ui {
 class MainWindow;
@@ -15,7 +16,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0, libmeshenger::Net *net = 0);
+    explicit MainWindow(QWidget *parent = 0, libmeshenger::Net *net = 0, libmeshenger::PacketEngine *engine_p = 0);
     ~MainWindow();
     void displayMessage(libmeshenger::Packet &p);
 
@@ -30,6 +31,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     libmeshenger::Net *net;
+    libmeshenger::PacketEngine *engine;
 };
 
 #endif // MAINWINDOW_H

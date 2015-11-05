@@ -40,17 +40,5 @@ int main(int argc, char *argv[])
     net.run();
 
     w.show();
-    a.exec();
-
-    while (true) {
-        uint16_t numPackets = net.receivePacket();
-        if (numPackets) {
-            for (int i = 0; i < numPackets; i++) {
-                Packet p = net.getPacket();
-                std::cout << "Packet received from net" << std::endl;
-                engine.ProcessPacket(p);
-            }
-        }
-    }
     return a.exec();
 }
