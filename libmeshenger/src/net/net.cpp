@@ -275,6 +275,17 @@ namespace libmeshenger
 	Net::receivePacket()
 	{
 		// Change this?
+		// This is where the threadsplosion is happening
+		// packets is modified both by the main thread (which calls
+		// receivePacket() and by the asio thread handling receives
+		// with the lambda function defined in start_listen
+		//
+		// Some mutex/queue magic must be used here to make sure nothing
+		// explodes between that lambda (running in the asio thread) and 
+		// this function (running in the main thread)
+		//
+		// Also, get rid of all the cout in the lambda function. That's a thread
+		// violation too.
 		return packets.size();
 	}
 
