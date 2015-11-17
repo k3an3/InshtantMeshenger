@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cstdint>
 #include <vector>
+#include <mutex>
 
 #include <parser.h>
 
@@ -52,6 +53,8 @@ namespace libmeshenger
 			std::uint8_t data[1024], msg[1024]; // shouldn't be hardcoded
 			/* Thread used to run the io_service */
 			boost::thread thread;
+			/* Mutex for threading */
+			std::mutex io_mutex;
 
 			/* Peer list */
 			std::vector<Peer> peers;
