@@ -42,6 +42,11 @@ namespace libmeshenger
 
 			/* Set the engine's private key */
 			void setPrivateKey(CryptoPP::InvertibleRSAFunction);
+
+			/* Base64 */
+			void setPrivateKey(std::string);
+
+			/* Load private key from file and set*/
 			void setPrivateKeyFromFile(std::string);
 
 			/* Retrieve the vector of buddies */
@@ -58,6 +63,9 @@ namespace libmeshenger
 			/* Constructors, with and without an initial key */
 			CryptoEngine();
 			CryptoEngine(CryptoPP::InvertibleRSAFunction);
+
+			/* Standard key generation */
+			static CryptoPP::RSA::PrivateKey genkey();
 
 			/* Private/public key serialization/deserialization functions */
 			static CryptoPP::RSA::PublicKey pubkeyFromFile(std::string);
@@ -83,7 +91,9 @@ namespace libmeshenger
 			CryptoPP::RSA::PublicKey pubkey() const;
 			std::string name() const;
 
+			/* Public key, name */
 			Buddy(CryptoPP::RSA::PublicKey, std::string);
+			/* Public key */
 			Buddy(CryptoPP::RSA::PublicKey);
 
 			/* Base64 pubkey, name */

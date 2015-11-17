@@ -38,6 +38,13 @@ namespace libmeshenger
 	}
 
 	void
+	CryptoEngine::setPrivateKey(string s)
+	{
+		m_privkey = privkeyFromBase64(s);
+		privkey_initialized = true;
+	}
+
+	void
 	CryptoEngine::setPrivateKeyFromFile(string filename)
 	{
 		m_privkey = privkeyFromFile(filename);
@@ -163,6 +170,19 @@ namespace libmeshenger
 		return m_pubkey;
 	}
 
+	/* Default key generator */
+	RSA::PrivateKey
+	genkey()
+	{
+		AutoSeededRandomPool rng;
+		InvertibleRSAFunction params;
+		params.GenerateRandomWithKeySize(rng, 3072);
+		RSA::PublicKey pubkey(params);
+		RSA::PrivateKey privkey(params);
+
+		return privkey;
+	}
+
 	/* Static key serialization functions */
 	void
 	CryptoEngine::pubkeyToFile(RSA::PublicKey key, string filename)
@@ -281,4 +301,15 @@ namespace libmeshenger
 	{
 	}
 
+	/* base64 pubkey, name */
+	Buddy::Buddy(string key, string name)
+		: m_pubkey(CryptoEngine::pubkeyFromBase64(key)), m_name(name)
+	{
+	}
+
+	/* base64 pubkey */
+	Buddy::Buddy(string key)
+		: m_pubkey(CryptoEngine::pubkeyFromBase64(key)), m_name("")
+	{
+	}
 }
