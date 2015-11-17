@@ -214,6 +214,56 @@ namespace libmeshenger
 		return key;
 	}
 
+	RSA::PublicKey
+	CryptoEngine::pubkeyFromBase64(string encoded)
+	{
+		RSA::PublicKey key;
+		StringSource ss(encoded, true);
+		ByteQueue queue;
+		ss.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
+	}
+
+	RSA::PrivateKey
+	CryptoEngine::privkeyFromBase64(string encoded)
+	{
+		RSA::PrivateKey key;
+		StringSource ss(encoded, true);
+		ByteQueue queue;
+		ss.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
+	}
+
+	string
+	CryptoEngine::pubkeyToBase64(RSA::PublicKey key)
+	{
+		ByteQueue queue;
+		string s;
+		StringSink ss(s);
+
+		key.Save(queue);
+		queue.CopyTo(ss);
+		ss.MessageEnd();
+	}
+
+	string
+	CryptoEngine::privkeyToBase64(RSA::PrivateKey key)
+	{
+		ByteQueue queue;
+		string s;
+		StringSink ss(s);
+
+		key.Save(queue);
+		queue.CopyTo(ss);
+		ss.MessageEnd();
+	}
+
 	/* Buddy functions and constructors (pretty basic) */
 	string
 	Buddy::name() const

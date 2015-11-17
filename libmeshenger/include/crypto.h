@@ -65,6 +65,12 @@ namespace libmeshenger
 
 			static void pubkeyToFile(CryptoPP::RSA::PublicKey, std::string);
 			static void privkeyToFile(CryptoPP::RSA::PrivateKey, std::string);
+
+			static CryptoPP::RSA::PublicKey pubkeyFromBase64(std::string);
+			static CryptoPP::RSA::PrivateKey privkeyFromBase64(std::string);
+
+			static std::string pubkeyToBase64(CryptoPP::RSA::PublicKey);
+			static std::string privkeyToBase64(CryptoPP::RSA::PrivateKey);
 	};
 
 	/* A buddy is a simple container of a name and a public key (for now) */
@@ -79,6 +85,11 @@ namespace libmeshenger
 
 			Buddy(CryptoPP::RSA::PublicKey, std::string);
 			Buddy(CryptoPP::RSA::PublicKey);
+
+			/* Base64 pubkey, name */
+			Buddy(std::string, std::string);
+			/* Base64 pubkey */
+			Buddy(std::string);
 	};
 }
 
