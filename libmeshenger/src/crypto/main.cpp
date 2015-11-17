@@ -24,10 +24,21 @@ int main(int argc, char ** argv)
 	privkey = CryptoEngine::privkeyFromFile(argv[1]);
 	pubkey = CryptoEngine::pubkeyFromFile(argv[2]);
 
+	cout << "Pubkey base64: " << endl << CryptoEngine::pubkeyToBase64(pubkey);
+	cout << "Pubkey fingerprint: " << CryptoEngine::fingerprint(pubkey) << endl;
+
+	cout << "Passing pubkey through base64 encode then decode" << endl;
+	string pub_base64 = CryptoEngine::pubkeyToBase64(pubkey);
+	cout << "Pubkey fingerprint: " << CryptoEngine::fingerprint(
+			CryptoEngine::pubkeyFromBase64(pub_base64)) << endl;
+
 	string original = "This is a test message that will be encrypted";
 
 	CryptoEngine engine;
 	engine.setPrivateKey(privkey);
+
+	cout << "Pubkey fingerprint from engine: " << CryptoEngine::fingerprint(
+			engine.getPubkey()) << endl;
 
 	EncryptedMessage em_orig(original);
 

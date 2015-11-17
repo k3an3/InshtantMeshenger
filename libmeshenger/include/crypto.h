@@ -49,6 +49,12 @@ namespace libmeshenger
 			/* Load private key from file and set*/
 			void setPrivateKeyFromFile(std::string);
 
+			/* Return private key */
+			CryptoPP::RSA::PrivateKey getPrivkey();
+
+			/* Return public key */
+			CryptoPP::RSA::PublicKey getPubkey();
+
 			/* Retrieve the vector of buddies */
 			std::vector<Buddy> buddies();
 
@@ -79,6 +85,9 @@ namespace libmeshenger
 
 			static std::string pubkeyToBase64(CryptoPP::RSA::PublicKey);
 			static std::string privkeyToBase64(CryptoPP::RSA::PrivateKey);
+
+			/* Return the fingerprint of a public key, in string format */
+			static std::string fingerprint(CryptoPP::RSA::PublicKey);
 	};
 
 	/* A buddy is a simple container of a name and a public key (for now) */
