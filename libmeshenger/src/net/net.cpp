@@ -6,10 +6,10 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <mutex>
 
 #include <parser.h>
 #include <net.h>
-#include <parser.h>
 
 #define NET_DEBUG true
 
@@ -20,6 +20,7 @@ using namespace std;
 const int32_t MAX_LENGTH = 1024;
 const uint8_t RESP[] = "meshenger-discovery-reply";
 const uint8_t MSG[] = "meshenger-discovery-probe";
+const uint8_t DIS[] = "meshenger-disconnect";
 
 namespace libmeshenger
 {
@@ -27,7 +28,7 @@ namespace libmeshenger
 	netDebugPrint(string s, int color)
 	{
 		if (NET_DEBUG)
-			cout << "\033[1;31m[libmeshenger-net]\033[0m-> " <<
+			cout << "\033[1;31m[net]\033[0m-> " <<
 				"\033[1;" << color << "m" << s << "\033[0m" << endl;
 	}
 
@@ -256,10 +257,14 @@ namespace libmeshenger
 				size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
 				vector<uint8_t> v(msg, msg + bytes);
 				if (ValidatePacket(v)) {
+				/*
 					netDebugPrint("Packet received from " +
 							tcp_listen_socket.remote_endpoint().address().to_string(),
 						   	36);
+							*/
+					io_mutex.lock();
 					packets.push_back(Packet(v));
+					io_mutex.unlock();
 				}
 			}
 			tcp_listen_socket.close();
@@ -281,7 +286,7 @@ namespace libmeshenger
 		// with the lambda function defined in start_listen
 		//
 		// Some mutex/queue magic must be used here to make sure nothing
-		// explodes between that lambda (running in the asio thread) and 
+		// explodes between that lambda (running in the asio thread) and
 		// this function (running in the main thread)
 		//
 		// Also, get rid of all the cout in the lambda function. That's a thread

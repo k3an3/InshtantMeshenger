@@ -28,7 +28,7 @@ namespace libmeshenger
 	{
 	}
 
-	/* Private key setting functions. Must be used before 
+	/* Private key setting functions. Must be used before
 	 * pretty much any functionality is available, or
 	 * exceptions will happen */
 	void
@@ -77,7 +77,11 @@ namespace libmeshenger
 		/* Resize to allow for max possible size */
 		plaintext.resize(d.MaxPlaintextLength(em.m_body_enc.size()));
 
-		res = d.Decrypt(rng, ciphertext.data(), ciphertext.size(), plaintext.data());
+        try {
+            res = d.Decrypt(rng, ciphertext.data(), ciphertext.size(), plaintext.data());
+        } catch (CryptoPP::Exception) {
+            return false;
+        }
 
 		/* Return false if it didn't decrypt. This does not validate correct
 		 * key! */
@@ -115,7 +119,7 @@ namespace libmeshenger
 		/* Create decryptor */
 		RSAES_OAEP_SHA_Encryptor e(pubkey);
 
-		/* Known plaintext. Might be bad, who knows? 
+		/* Known plaintext. Might be bad, who knows?
 		 * This flag is checked to see if the decrypt was successful
 		 *
 		 * Will not be necessary once signatures are implemented */
@@ -222,7 +226,7 @@ namespace libmeshenger
 		f.MessageEnd();
 	}
 
-	RSA::PublicKey 
+	RSA::PublicKey
 	CryptoEngine::pubkeyFromFile(string filename)
 	{
 		RSA::PublicKey key;
@@ -236,7 +240,7 @@ namespace libmeshenger
 		return key;
 	}
 
-	RSA::PrivateKey 
+	RSA::PrivateKey
 	CryptoEngine::privkeyFromFile(string filename)
 	{
 		RSA::PrivateKey key;
