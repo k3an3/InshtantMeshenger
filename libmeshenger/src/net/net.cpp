@@ -43,7 +43,8 @@ namespace libmeshenger
 		/* Initialize UDP listen socket on all interfaces */
 		udp_listen_socket(io_service),
 		tcp_listen_socket(io_service),
-		tcp_acceptor(io_service)
+		tcp_acceptor(io_service),
+		tcp_resolver(io_service)
 	{
 	}
 
@@ -186,7 +187,11 @@ namespace libmeshenger
 	void
 	Net::addPeer(std::string s)
 	{
-		peers.push_back(Peer(s));
+		tcp::resolver::query query(s, "");
+		tcp::resolver::iterator iter = tcp_resolver.resolve(query);
+		tcp::resolver::iterator end;
+		tcp::endpoint endpoint = *iter++;
+		peers.push_back(Peer(endpoint.address()));
 	}
 
 	std::vector<Peer>

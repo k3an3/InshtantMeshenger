@@ -45,6 +45,8 @@ namespace libmeshenger
 			tcp::socket tcp_listen_socket;
 			/* TCP acceptor used with tcp_listen_socket */
 			tcp::acceptor tcp_acceptor;
+			/* TCP resolver to resolve hostnames */
+			tcp::resolver tcp_resolver;
 			/* UDP port number to listen on for discovery*/
 			std::uint16_t udp_port;
 			/* TCP port number to listen on for packets*/

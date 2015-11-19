@@ -31,7 +31,7 @@ namespace libmeshenger
 	{
 		for(int i = 0; i < seenMessages.size(); i++) {
 			if (compareIds(seenMessages[i].data(), p.id().data())) {
-				cout << "\033[1;32m[packet-engine   ]\033[0m-> ";
+				cout << "\033[1;32m[packet-engine]\033[0m-> ";
 				cout << "\033[1;31mPacket is old\033[0m" << endl;
 				return false;
 			}
