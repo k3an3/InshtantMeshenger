@@ -173,8 +173,10 @@ namespace libmeshenger
 	Packet
 	Net::getPacket()
 	{
+		io_mutex.lock();
 		Packet p = packets.back();
 		packets.pop_back();
+		io_mutex.unlock();
 		return p;
 	}
 
@@ -259,17 +261,16 @@ namespace libmeshenger
 				[this](boost::system::error_code ec)
 		{
 			if (!ec) {
-				size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
-				vector<uint8_t> v(msg, msg + bytes);
-				if (ValidatePacket(v)) {
-				/*
-					netDebugPrint("Packet received from " +
-							tcp_listen_socket.remote_endpoint().address().to_string(),
-						   	36);
-							*/
-					io_mutex.lock();
-					packets.push_back(Packet(v));
-					io_mutex.unlock();
+				try {
+					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+					vector<uint8_t> v(msg, msg + bytes);
+					if (ValidatePacket(v)) {
+						io_mutex.lock();
+						packets.push_back(Packet(v));
+						io_mutex.unlock();
+					}
+				} catch(std::exception &e) {
+					cerr << "FAIL" << e.what() << endl;
 				}
 			}
 			tcp_listen_socket.close();
