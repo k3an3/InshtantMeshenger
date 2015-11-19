@@ -10,6 +10,7 @@
 
 #include <cryptopp/osrng.h>
 #include <cryptopp/files.h>
+#include <cryptopp/base64.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -34,6 +35,13 @@ namespace libmeshenger
 	CryptoEngine::setPrivateKey(InvertibleRSAFunction privkey)
 	{
 		m_privkey = privkey;
+		privkey_initialized = true;
+	}
+
+	void
+	CryptoEngine::setPrivateKey(string s)
+	{
+		m_privkey = privkeyFromBase64(s);
 		privkey_initialized = true;
 	}
 
@@ -161,11 +169,39 @@ namespace libmeshenger
 		encryptMessage(em, m_buddies[i]);
 	}
 
+	RSA::PrivateKey
+	CryptoEngine::getPrivkey()
+	{
+		return m_privkey;
+	}
+
+	RSA::PublicKey
+	CryptoEngine::getPubkey()
+	{
+		RSA::PublicKey key;
+		key.AssignFrom(m_privkey);
+		return key;
+	}
+
 	RSA::PublicKey
 	Buddy::pubkey() const
 	{
 		return m_pubkey;
 	}
+
+	/* Default key generator */
+	RSA::PrivateKey
+	genkey()
+	{
+		AutoSeededRandomPool rng;
+		InvertibleRSAFunction params;
+		params.GenerateRandomWithKeySize(rng, 3072);
+		RSA::PublicKey pubkey(params);
+		RSA::PrivateKey privkey(params);
+
+		return privkey;
+	}
+
 
 	/* Static key serialization functions */
 	void
@@ -218,6 +254,114 @@ namespace libmeshenger
 		return key;
 	}
 
+	RSA::PublicKey
+	CryptoEngine::pubkeyFromBase64(string encoded)
+	{
+		RSA::PublicKey key;
+		ByteQueue queue;
+		string decoded;
+
+		/* Use a pipeline to Base64 decode */
+		StringSource ss(encoded, true,
+		    new Base64Decoder(
+		        new StringSink(decoded)
+		    )
+		);
+	
+		StringSource dss(decoded, true);
+		dss.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
+	}
+
+	RSA::PrivateKey
+	CryptoEngine::privkeyFromBase64(string encoded)
+	{
+		RSA::PrivateKey key;
+		ByteQueue queue;
+		string decoded;
+
+		/* Use a pipeline to Base64 decode */
+		StringSource ss(encoded, true,
+		    new Base64Decoder(
+		        new StringSink(decoded)
+		    )
+		);
+	
+		StringSource dss(decoded, true);
+		dss.TransferTo(queue);
+		queue.MessageEnd();
+		key.Load(queue);
+
+		return key;
+	}
+
+	string
+	CryptoEngine::pubkeyToBase64(RSA::PublicKey key)
+	{
+		ByteQueue queue;
+		string decoded;
+		StringSink dss(decoded);
+		string encoded;
+
+		key.Save(queue);
+		queue.CopyTo(dss);
+		dss.MessageEnd();
+
+		/* Use a CryptoPP pipeline to base64 encode */
+		StringSource ss(decoded, true,
+		    new Base64Encoder(
+		        new StringSink(encoded)
+		    )
+		);
+
+		return encoded;
+	}
+
+	string
+	CryptoEngine::privkeyToBase64(RSA::PrivateKey key)
+	{
+		ByteQueue queue;
+		string decoded;
+		StringSink dss(decoded);
+		string encoded;
+
+		key.Save(queue);
+		queue.CopyTo(dss);
+		dss.MessageEnd();
+
+		/* Use a CryptoPP pipeline to base64 encode */
+		StringSource ss(decoded, true,
+		    new Base64Encoder(
+		        new StringSink(encoded)
+		    )
+		);
+
+		return encoded;
+	}
+
+	/* Fingerprint (static) */
+	string
+	CryptoEngine::fingerprint(RSA::PublicKey key)
+	{
+		uint8_t hash[32];
+		string fingerprint;
+		char buffer[3];
+		string encoded = pubkeyToBase64(key);
+		CryptoPP::SHA256().CalculateDigest(hash, 
+				(unsigned char *) encoded.c_str(), encoded.length());
+		
+		for(int i = 0; i < 16; i++) {
+			snprintf(buffer, 3, "%02X", (hash[i] ^ hash[16+i]));
+			fingerprint += buffer;
+			if (i != 15)
+				fingerprint += ':';
+		}
+		return fingerprint;
+	}
+
 	/* Buddy functions and constructors (pretty basic) */
 	string
 	Buddy::name() const
@@ -235,4 +379,15 @@ namespace libmeshenger
 	{
 	}
 
+	/* base64 pubkey, name */
+	Buddy::Buddy(string key, string name)
+		: m_pubkey(CryptoEngine::pubkeyFromBase64(key)), m_name(name)
+	{
+	}
+
+	/* base64 pubkey */
+	Buddy::Buddy(string key)
+		: m_pubkey(CryptoEngine::pubkeyFromBase64(key)), m_name("")
+	{
+	}
 }

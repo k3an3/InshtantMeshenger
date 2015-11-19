@@ -31,3 +31,11 @@ Message Structure (Type 0x02)
 ------------------------
 |  Encrypted message   |
 ------------------------
+
+Pubkey Advert Structure (Type 0x03)
+
+----------------------------------------
+| 256 octets   | (Length - 256) octets |
+----------------------------------------
+| Name (ASCII) |      Public Key       |
+----------------------------------------
