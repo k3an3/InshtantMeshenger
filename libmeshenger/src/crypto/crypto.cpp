@@ -98,7 +98,9 @@ namespace libmeshenger
 				return false;
 		}
 
-		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 16, plaintext.end());
+		uint16_t length = (plaintext[0] * 256) + plaintext[1];
+
+		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 18, plaintext.begin() + 18 + length);
 		em.m_decrypted = true;
 	}
 
@@ -115,8 +117,19 @@ namespace libmeshenger
 		AutoSeededRandomPool rng;
 		vector<uint8_t> ciphertext;
 		vector<uint8_t> plaintext;
+		string signature;
 
-		/* Create decryptor */
+		/* Sign the message */
+		RSASSA_PKCS1v15_SHA_Signer signer(m_privkey);
+		string message((char *) em.m_body_dec.data(), em.m_body_dec.size());
+
+		StringSource ss1(message, true, 
+			new SignerFilter(rng, signer,
+				new StringSink(signature)
+			)
+		);
+
+		/* Create encryptor */
 		RSAES_OAEP_SHA_Encryptor e(pubkey);
 
 		/* Known plaintext. Might be bad, who knows?
@@ -124,10 +137,24 @@ namespace libmeshenger
 		 *
 		 * Will not be necessary once signatures are implemented */
 		uint8_t * magic_flag = (uint8_t *) "DECRYPTION GOOD!";
-
-		/* Appen decrypted body to magic */
 		plaintext = vector<uint8_t>(magic_flag, magic_flag + 16);
+
+		/* Append MLength and SLength to the plaintext */
+		uint8_t length[2];
+		length[0] = em.m_body_dec.size() / 256;
+		length[1] = em.m_body_dec.size() % 256;
+		plaintext.insert(plaintext.end(), length, length + 2);
+
+		length[0] = signature.size() / 256;
+		length[1] = signature.size() % 256;
+		plaintext.insert(plaintext.end(), length, length + 2);
+
+		/* Append decrypted body to plaintext */
 		plaintext.insert(plaintext.end(), em.m_body_dec.begin(), em.m_body_dec.end());
+
+		/* Append signature to plaintext */
+		plaintext.insert(plaintext.end(), signature.c_str(), 
+				signature.c_str() + signature.length());
 
 		/* Resize ciphertext vector */
 		ciphertext.resize(e.CiphertextLength(plaintext.size()));

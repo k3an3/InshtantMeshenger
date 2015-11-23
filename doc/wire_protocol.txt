@@ -27,11 +27,13 @@ ClearMessage Structure (Type 0x01)
 Message Structure (Type 0x02)
 
 ---------------------------------------------------------------
-|                      (Length) octets                        |
+|                    (Length) octets                          |
+---------------------------------------------------------------
+|                   Encrypted Message                         |
 ---------------------------------------------------------------
 | 2 octets | 2 octets | (MLength octets)  | (SLength) octets  |
 ---------------------------------------------------------------
-| MLength  | SLength  | Encrypted Message | Message Signature |
+| MLength  | SLength  | Cleartext Message | Message Signature |
 ---------------------------------------------------------------
 
 Pubkey Advert Structure (Type 0x03)
