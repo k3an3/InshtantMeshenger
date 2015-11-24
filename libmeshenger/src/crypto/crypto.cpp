@@ -98,12 +98,38 @@ namespace libmeshenger
 				return false;
 		}
 
+		string message(plaintext.begin() + 18, plaintext.end());
+		em.m_trusted = false;
+
+		/* Verify signature */
+		for (int i = 0; i < m_buddies.size(); i++) {
+			RSASSA_PKCS1v15_SHA_Verifier verifier(m_buddies[i].pubkey());
+			try {
+				StringSource ss(message, true,
+					new SignatureVerificationFilter(
+						verifier, NULL,
+						SignatureVerificationFilter::THROW_EXCEPTION
+					)
+				);
+				em.m_sender = i;
+				em.m_trusted = true;
+			} catch (SignatureVerificationFilter::SignatureVerificationFailed e)
+			{
+				/* Proceed to next buddy */
+			}
+		}
+
 		uint16_t length = (plaintext[0] * 256) + plaintext[1];
 
 		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 18, plaintext.begin() + 18 + length);
 		em.m_decrypted = true;
 	}
 
+	Buddy
+	CryptoEngine::buddy(uint16_t i)
+	{
+		return m_buddies[i];
+	}
 	void
 	CryptoEngine::encryptMessage(EncryptedMessage &em, RSA::PublicKey pubkey)
 	{
