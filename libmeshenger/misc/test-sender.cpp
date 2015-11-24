@@ -30,10 +30,14 @@ int main(int argc, char ** argv)
 
 	/* Do encrypted message */
 	if (argc == 5) {
+		string pubkey_name = argv[4];
+		string privkey_name = argv[3];
+		cout << "Sending message from " << privkey_name << " to " << pubkey_name << endl;
 		CryptoEngine e;
+		e.setPrivateKey(CryptoEngine::privkeyFromFile(privkey_name));
 		cout << "Sending an encrypted message" << endl;
 		EncryptedMessage em(s);
-		e.encryptMessage(em, CryptoEngine::pubkeyFromFile(argv[4]));
+		e.encryptMessage(em, CryptoEngine::pubkeyFromFile(pubkey_name));
 
 		p = Packet(em);
 	}
