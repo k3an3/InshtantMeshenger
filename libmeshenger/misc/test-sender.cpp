@@ -15,7 +15,7 @@ int main(int argc, char ** argv)
 {
 	if (argc < 3){
 		cout << "Usage: TestSender <peer> 'message'" << endl;
-		cout << "       TestSender <peer> 'message' pubkey" << endl;
+		cout << "       TestSender <peer> 'message' <privkey> <pubkey>" << endl;
 		return 1;
 	}
 
@@ -29,11 +29,11 @@ int main(int argc, char ** argv)
 	Packet p(m);
 
 	/* Do encrypted message */
-	if (argc == 4) {
+	if (argc == 5) {
 		CryptoEngine e;
 		cout << "Sending an encrypted message" << endl;
 		EncryptedMessage em(s);
-		e.encryptMessage(em, CryptoEngine::pubkeyFromFile(argv[3]));
+		e.encryptMessage(em, CryptoEngine::pubkeyFromFile(argv[4]));
 
 		p = Packet(em);
 	}

@@ -11,6 +11,7 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/files.h>
 #include <cryptopp/base64.h>
+#include <cryptopp/pssr.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -91,6 +92,7 @@ namespace libmeshenger
 		/* Resize down to actual size */
 		plaintext.resize(res.messageLength);
 
+
 		/* Check magic flag. Not needed once signing is implemented */
 		uint8_t * magic = (uint8_t *) "DECRYPTION GOOD!";
 		for (int i = 0; i < 16; i++) {
@@ -98,30 +100,27 @@ namespace libmeshenger
 				return false;
 		}
 
-		string message(plaintext.begin() + 18, plaintext.end());
-		em.m_trusted = false;
+		uint16_t mlength = (plaintext[16] * 256) + plaintext[17];
+		uint16_t slength = (plaintext[18] * 256) + plaintext[19];
+
+		/* Possible check: Verify that mlength + slength + 20 ==
+		 * plaintext.length()
+		 */
+
+		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 20, plaintext.begin() + 20 + mlength);
+		vector<uint8_t> signature(plaintext.begin() + 20 + mlength, plaintext.end());
 
 		/* Verify signature */
+		em.m_trusted = false;
 		for (int i = 0; i < m_buddies.size(); i++) {
-			RSASSA_PKCS1v15_SHA_Verifier verifier(m_buddies[i].pubkey());
-			try {
-				StringSource ss(message, true,
-					new SignatureVerificationFilter(
-						verifier, NULL,
-						SignatureVerificationFilter::THROW_EXCEPTION
-					)
-				);
+			RSASS<PSS, SHA1>::Verifier verifier(m_buddies[i].pubkey());
+			if (verifier.VerifyMessage(em.m_body_dec.data(), mlength, signature.data(), slength)) {
 				em.m_sender = i;
 				em.m_trusted = true;
-			} catch (SignatureVerificationFilter::SignatureVerificationFailed e)
-			{
-				/* Proceed to next buddy */
 			}
 		}
 
-		uint16_t length = (plaintext[0] * 256) + plaintext[1];
 
-		em.m_body_dec = vector<uint8_t>(plaintext.begin() + 18, plaintext.begin() + 18 + length);
 		em.m_decrypted = true;
 	}
 
@@ -130,6 +129,7 @@ namespace libmeshenger
 	{
 		return m_buddies[i];
 	}
+
 	void
 	CryptoEngine::encryptMessage(EncryptedMessage &em, RSA::PublicKey pubkey)
 	{
@@ -143,17 +143,13 @@ namespace libmeshenger
 		AutoSeededRandomPool rng;
 		vector<uint8_t> ciphertext;
 		vector<uint8_t> plaintext;
-		string signature;
 
-		/* Sign the message */
-		RSASSA_PKCS1v15_SHA_Signer signer(m_privkey);
-		string message((char *) em.m_body_dec.data(), em.m_body_dec.size());
-
-		StringSource ss1(message, true, 
-			new SignerFilter(rng, signer,
-				new StringSink(signature)
-			)
-		);
+		RSASS<PSS, SHA1>::Signer signer(m_privkey);
+	 	size_t sig_size = signer.MaxSignatureLength();
+	 	SecByteBlock signature(sig_size);
+	
+	 	sig_size = signer.SignMessage(rng, em.m_body_dec.data(), em.m_body_dec.size(), signature);
+		signature.resize(sig_size);
 
 		/* Create encryptor */
 		RSAES_OAEP_SHA_Encryptor e(pubkey);
@@ -179,8 +175,7 @@ namespace libmeshenger
 		plaintext.insert(plaintext.end(), em.m_body_dec.begin(), em.m_body_dec.end());
 
 		/* Append signature to plaintext */
-		plaintext.insert(plaintext.end(), signature.c_str(), 
-				signature.c_str() + signature.length());
+		plaintext.insert(plaintext.end(), signature.begin(), signature.end());
 
 		/* Resize ciphertext vector */
 		ciphertext.resize(e.CiphertextLength(plaintext.size()));
