@@ -218,20 +218,18 @@ namespace libmeshenger
 			tcp::socket sock(io_service);
 
 			/* Try to connect and report any connection errors */
+			netDebugPrint("Sending packet to " +
+					endpoint.address().to_string(), 35);
 			try {
-				sock.connect(endpoint);
+				sock.async_connect(endpoint, [this,&sock,p,i]
+						(boost::system::error_code ec)
+					{
+					});
 				/* Send the data */
-				netDebugPrint("Sending packet to " +
-						endpoint.address().to_string(), 35);
-				sock.async_send(boost::asio::buffer(p.raw().data(),
-							p.raw().size()), [this](boost::system::error_code ec,
-							size_t bytes)
-						{
-							// Handle something
-						});
+				boost::asio::write(sock, boost::asio::buffer(p.raw().data(),
+							p.raw().size()));
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-				if (!strcmp(e.what(), "connect: Connection refused")) {
 					/* Handle connection errors */
 					netDebugPrint(e.what(), 41);
 					netDebugPrint("Peer " + addr.to_string() +
@@ -243,9 +241,7 @@ namespace libmeshenger
 						netDebugPrint("Three strikes. Removing.", 31);
 						peers.erase(peers.begin() + i);
 					}
-				}else {
-						 netDebugPrint(e.what(), 41);
-				}
+			sock.close();
 			}
 		}
 	}
@@ -261,7 +257,6 @@ namespace libmeshenger
 				[this](boost::system::error_code ec)
 		{
 			if (!ec) {
-				try {
 					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
 					vector<uint8_t> v(msg, msg + bytes);
 					if (ValidatePacket(v)) {
@@ -269,9 +264,6 @@ namespace libmeshenger
 						packets.push_back(Packet(v));
 						io_mutex.unlock();
 					}
-				} catch(std::exception &e) {
-					cerr << "FAIL" << e.what() << endl;
-				}
 			}
 			tcp_listen_socket.close();
 
