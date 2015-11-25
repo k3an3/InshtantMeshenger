@@ -241,8 +241,8 @@ namespace libmeshenger
 						netDebugPrint("Three strikes. Removing.", 31);
 						peers.erase(peers.begin() + i);
 					}
-			if (sock.is_open)
-				sock.close();
+					if (sock.is_open())
+						sock.close();
 			}
 		}
 	}
