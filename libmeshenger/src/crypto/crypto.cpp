@@ -12,6 +12,8 @@
 #include <cryptopp/files.h>
 #include <cryptopp/base64.h>
 #include <cryptopp/pssr.h>
+#include <cryptopp/modes.h>
+#include <cryptopp/aes.h>
 
 using namespace std;
 using namespace CryptoPP;
@@ -141,9 +143,25 @@ namespace libmeshenger
 			throw PacketStateException("Message not decrypted!");
 
 		AutoSeededRandomPool rng;
-		vector<uint8_t> ciphertext;
 		vector<uint8_t> plaintext;
 
+		/* Generate one-time use AES key */
+		SecByteBlock key(AES::DEFAULT_KEYLENGTH);
+		vector<uint8_t> iv;
+		iv.resize(AES::BLOCKSIZE);
+
+		rng.GenerateBlock(key, key.size());
+		rng.GenerateBlock(iv.data(), iv.size());
+		
+		/* Encrypt the one-time use AES key */
+		vector<uint8_t> key_cipher;
+		RSAES_OAEP_SHA_Encryptor rsa(pubkey);
+
+		key_cipher.resize(rsa.CiphertextLength(plaintext.size()));
+		rsa.Encrypt(rng, key.data(), key.size(), key_cipher.data());
+		/* key_cipher now exists */
+
+		/* Generate signature */
 		RSASS<PSS, SHA1>::Signer signer(m_privkey);
 	 	size_t sig_size = signer.MaxSignatureLength();
 	 	SecByteBlock signature(sig_size);
@@ -151,22 +169,19 @@ namespace libmeshenger
 	 	sig_size = signer.SignMessage(rng, em.m_body_dec.data(), em.m_body_dec.size(), signature);
 		signature.resize(sig_size);
 
-		/* Create encryptor */
-		RSAES_OAEP_SHA_Encryptor e(pubkey);
-
-		/* Known plaintext. Might be bad, who knows?
-		 * This flag is checked to see if the decrypt was successful
-		 *
-		 * Will not be necessary once signatures are implemented */
+		/* Build plaintext */
 		uint8_t * magic_flag = (uint8_t *) "DECRYPTION GOOD!";
 		plaintext = vector<uint8_t>(magic_flag, magic_flag + 16);
 
 		/* Append MLength and SLength to the plaintext */
 		uint8_t length[2];
+
+		/* MLength */
 		length[0] = em.m_body_dec.size() / 256;
 		length[1] = em.m_body_dec.size() % 256;
 		plaintext.insert(plaintext.end(), length, length + 2);
 
+		/* SLength */
 		length[0] = signature.size() / 256;
 		length[1] = signature.size() % 256;
 		plaintext.insert(plaintext.end(), length, length + 2);
@@ -177,12 +192,30 @@ namespace libmeshenger
 		/* Append signature to plaintext */
 		plaintext.insert(plaintext.end(), signature.begin(), signature.end());
 
-		/* Resize ciphertext vector */
-		ciphertext.resize(e.CiphertextLength(plaintext.size()));
+		/* Plaintext is now built */
 
-		e.Encrypt(rng, plaintext.data(), plaintext.size(), ciphertext.data());
+		/* Encrypt body with AES */
+		CBC_Mode<AES>::Encryption aes;
+		aes.SetKeyWithIV(key, key.size(), iv.data());
 
-		em.m_body_enc = ciphertext;
+		/* Create pipeline and encrypt message */
+		string plain((char *) plaintext.data(), plaintext.size());
+		string cipher;
+		StringSource ss(plain, true,
+			new StreamTransformationFilter(aes,
+				new StringSink(cipher)
+			)
+		);
+
+		/* Build encrypted message body */
+		vector<uint8_t> body;
+		body[0] = key_cipher.size() / 256;
+		body[1] = key_cipher.size() % 256;
+		body.insert(body.end(), key_cipher.begin(), key_cipher.end());
+		body.insert(body.end(), iv.begin(), iv.end());
+		body.insert(body.end(), cipher.c_str(), cipher.c_str() + cipher.length());
+
+		em.m_body_enc = body;
 		em.m_encrypted = true;
 	}
 
