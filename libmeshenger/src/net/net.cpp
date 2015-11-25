@@ -241,7 +241,8 @@ namespace libmeshenger
 						netDebugPrint("Three strikes. Removing.", 31);
 						peers.erase(peers.begin() + i);
 					}
-			sock.close();
+			if (sock.is_open)
+				sock.close();
 			}
 		}
 	}
@@ -256,16 +257,22 @@ namespace libmeshenger
 		tcp_acceptor.async_accept(tcp_listen_socket,
 				[this](boost::system::error_code ec)
 		{
-			if (!ec) {
-					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
-					vector<uint8_t> v(msg, msg + bytes);
-					if (ValidatePacket(v)) {
-						io_mutex.lock();
-						packets.push_back(Packet(v));
-						io_mutex.unlock();
-					}
-			}
-			tcp_listen_socket.close();
+			try {
+				if (!ec) {
+						size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+						vector<uint8_t> v(msg, msg + bytes);
+						if (ValidatePacket(v)) {
+							io_mutex.lock();
+							packets.push_back(Packet(v));
+							io_mutex.unlock();
+						}
+				}
+				} catch (std::exception &e) {
+					cerr << e.what() << endl;
+				}
+
+			if (tcp_listen_socket.is_open())
+				tcp_listen_socket.close();
 
 			startListen();
 		});
@@ -289,7 +296,10 @@ namespace libmeshenger
 		//
 		// Also, get rid of all the cout in the lambda function. That's a thread
 		// violation too.
-		return packets.size();
+		io_mutex.lock();
+		uint16_t t = packets.size();
+		io_mutex.unlock();
+		return t;
 	}
 
 	/* Peer class methods */
