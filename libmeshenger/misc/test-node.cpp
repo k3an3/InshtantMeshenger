@@ -31,8 +31,14 @@ void PrintEncryptedMessage(Packet& p)
 		cout << "\033[1;32m[Encrypted Message Received!]\033[0m ";
 
 		if (cryptoEngine.tryDecrypt(em)) {
-			vector<uint8_t> body = em.decryptedBody();
-			cout << string((char *) body.data()) << endl;
+			if (em.trusted()) {
+				vector<uint8_t> body = em.decryptedBody();
+				cout << "\033[1;32m[" << cryptoEngine.buddy(em.sender()).name();
+			} else {
+				cout << "\033[1;31m[NOT TRUSTED\033[0m";
+			}
+			cout << "]\033[0m" << endl;
+			cout << string((char *) em.decryptedBody().data()) << endl;
 		} else {
 			cout << "\033[1;31mUnable to decrypt!\033[0m" << endl;
 		}
@@ -51,8 +57,8 @@ void ForwardPacketToPeers(Packet& p)
 int main(int argc, char** argv)
 {
 
-	if (argc != 2) {
-		cout << "Usage: TestNode <privkeyfile>" << endl;
+	if (argc < 2) {
+		cout << "Usage: TestNode <privkeyfile> [buddy] ..." << endl;
 		return -1;
 	}
 
@@ -74,6 +80,16 @@ int main(int argc, char** argv)
 	/* Start listening asynchronously */
     net.discoveryListen();
     net.discoverPeers();
+
+	/* Add buddies */
+	for(int i = 2; i < argc; i++) {
+		string buddy_name = argv[i];
+		string filename = buddy_name + ".pub";
+		CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
+		cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
+		cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
+		cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+	}
 
     net.startListen();
 	//net.receivePacket();

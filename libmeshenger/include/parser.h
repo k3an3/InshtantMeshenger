@@ -83,11 +83,20 @@ namespace libmeshenger
 			std::vector<uint8_t> m_body_dec;
 			bool m_encrypted;
 			bool m_decrypted;
+			bool m_trusted;
+			uint16_t m_sender;
 		public:
 			std::vector<uint8_t> encryptedBody();
 			std::vector<uint8_t> decryptedBody();
 			bool encrypted();
 			bool decrypted();
+
+			/* Return the index of the buddy that sent this message. Only
+			 * valid for received, decrypted messaged */
+			uint16_t sender();
+
+			/* Whether or not the message was sent by a buddy */
+			bool trusted();
 
 			EncryptedMessage(std::string);
 			EncryptedMessage(Packet&);
