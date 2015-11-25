@@ -58,6 +58,9 @@ namespace libmeshenger
 			/* Retrieve the vector of buddies */
 			std::vector<Buddy> buddies();
 
+			/* Add a buddy */
+			void addBuddy(const Buddy&);
+
 			/* Retrieve a buddy by index. These indices are the same as
 			 * those in the vector returned by buddies()
 			 */
@@ -101,7 +104,7 @@ namespace libmeshenger
 			std::string name() const;
 
 			/* Public key, name */
-			Buddy(CryptoPP::RSA::PublicKey, std::string);
+			Buddy(CryptoPP::RSA::PublicKey, std::string&);
 			/* Public key */
 			Buddy(CryptoPP::RSA::PublicKey);
 

@@ -69,31 +69,43 @@ namespace libmeshenger
 		if (!privkey_initialized)
 			throw runtime_error("Private key sot set");
 
-		vector<uint8_t> plaintext;
-		vector<uint8_t> ciphertext = em.encryptedBody();
-		DecodingResult res;
 		AutoSeededRandomPool rng;
 
-		/* Create decryptor */
-		RSAES_OAEP_SHA_Decryptor d(m_privkey);
+		/* Step 1: Dissect message */
+		uint16_t klength = em.m_body_enc[0] * 256 + em.m_body_enc[1];
+		vector<uint8_t> key_cipher(em.m_body_enc.begin() + 2, em.m_body_enc.begin() + 2 + klength);
+		vector<uint8_t> iv(em.m_body_enc.begin() + 2 + klength, em.m_body_enc.begin() + 18 + klength);
+		vector<uint8_t> ciphertext(em.m_body_enc.begin() + 18 + klength, em.m_body_enc.end());
 
-		/* Resize to allow for max possible size */
-		plaintext.resize(d.MaxPlaintextLength(em.m_body_enc.size()));
-
+		/* Step 2: Obtain AES key. Return immediately if that doesn't work */
+		DecodingResult res;
+		SecByteBlock key(AES::DEFAULT_KEYLENGTH);
+		RSAES_OAEP_SHA_Decryptor rsa(m_privkey);
         try {
-            res = d.Decrypt(rng, ciphertext.data(), ciphertext.size(), plaintext.data());
+            res = rsa.Decrypt(rng, key_cipher.data(), key_cipher.size(), key.data());
         } catch (CryptoPP::Exception) {
             return false;
         }
 
-		/* Return false if it didn't decrypt. This does not validate correct
-		 * key! */
-		if (!res.isValidCoding)
-			return false;
-
 		/* Resize down to actual size */
-		plaintext.resize(res.messageLength);
+		key.resize(16);
 
+		string plain;
+		/* Step 3: Use AES key to decrypt ciphertext */
+		try {
+			CBC_Mode<AES>::Decryption aes;
+			aes.SetKeyWithIV(key, key.size(), iv.data());
+			string cipher((char *) ciphertext.data(), ciphertext.size());
+			StringSource decryptPipeline(cipher, true,
+				new StreamTransformationFilter(aes,
+					new StringSink(plain)
+				)
+			);
+		} catch (const CryptoPP::Exception& e) {
+			return false;
+		}
+
+		vector<uint8_t> plaintext(plain.c_str(), plain.c_str() + plain.length());
 
 		/* Check magic flag. Not needed once signing is implemented */
 		uint8_t * magic = (uint8_t *) "DECRYPTION GOOD!";
@@ -124,6 +136,13 @@ namespace libmeshenger
 
 
 		em.m_decrypted = true;
+		return true;
+	}
+
+	void
+	CryptoEngine::addBuddy(const Buddy& b)
+	{
+		m_buddies.push_back(b);
 	}
 
 	Buddy
@@ -209,6 +228,7 @@ namespace libmeshenger
 
 		/* Build encrypted message body */
 		vector<uint8_t> body;
+		body.resize(2);
 		body[0] = key_cipher.size() / 256;
 		body[1] = key_cipher.size() % 256;
 		body.insert(body.end(), key_cipher.begin(), key_cipher.end());
@@ -450,7 +470,7 @@ namespace libmeshenger
 		return m_name;
 	}
 
-	Buddy::Buddy(RSA::PublicKey pubkey, string n)
+	Buddy::Buddy(RSA::PublicKey pubkey, string& n)
 		: m_pubkey(pubkey), m_name(n)
 	{
 	}
