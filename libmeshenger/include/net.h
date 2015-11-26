@@ -40,6 +40,8 @@ namespace libmeshenger
 	class Net final
 	{
 		private:
+			/* ## Private member variables ## */
+
 			/* IO service for async asio operations */
 			boost::asio::io_service io_service;
 			/* UDP socket the discovery server will listen on*/
@@ -54,33 +56,62 @@ namespace libmeshenger
 			tcp::resolver tcp_resolver;
 			/* UDP port number to listen on for discovery*/
 			std::uint16_t udp_port;
-			/* TCP port number to listen on for packets*/
+			/* TCP port number to listen on for message packets*/
 			std::uint16_t tcp_port;
 			/* Data received on the sockets */
-			std::uint8_t data[1024], msg[1024]; // shouldn't be hardcoded
+			std::uint8_t data[MAX_LENGTH], msg[MAX_LENGTH];
 			/* Thread used to run the io_service */
 			boost::thread thread;
-			/* Mutex for threading */
+			/* Mutex for threading safety */
 			std::mutex io_mutex;
-
 			/* Peer list */
 			std::vector<Peer> peers;
 			/* Packet list */
 			std::vector<Packet> packets;
 
-			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
-			std::uint32_t getPeerByAddress(boost::asio::ip::address ip_addr);
-			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
-			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
-			void addPeerIfNew(boost::asio::ip::address ip_addr);
+			/* ## Private member functions ## */
+
+			/* ### Networking functions ### */
+
+			/* Sends a meshenger discovery probe to all hosts on the network
+			* using the broadcast address */
 			void sendUDPBroadcast(const uint8_t* message, uint32_t length);
+			/* Sends a discovery reply to a specific peer. */
+			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
+
+			/* Given an IP address, returns a matching Peer object (if it exists) */
+			std::uint32_t getPeerByAddress(boost::asio::ip::address ip_addr);
+
+			/* Method that continuiously runs and handles incoming discovery packets */
+			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
+
+			/* ### Helper functions ### */
+
+			/* Adds a Peer by IP address if they are not already in the peer list */
+			void addPeerIfNew(boost::asio::ip::address ip_addr);
+
+			/* Returns whether or not a peer is already in the peer list,
+			/* given an IP address */
+			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
+
 		public:
-			/* Default net constructor */
+			/* ## Public member functions ## */
+
+			/* Default net constructor. Requires UDP and TCP ports to bind to. */
 			Net(uint16_t udp_port, uint16_t tcp_port);
 
-			uint16_t receivePacket();
+			/* Runs the io_service object in a new thread to facilitate
+			 * boost asio's async functionality */
 			void run();
 
+			/* Sends out a discovery disconnect message and cleans up the
+			 * sockets */
+			void shutdown();
+
+			/* ### Networking methods ### */
+
+			/* Starts a TCP acceptor to accept incoming packets. Validates and
+			 * adds packets to the packet list when they arrive. */
 			void startListen();
 
 			/* Starts a UDP listener on the provided port. The listener will
@@ -92,15 +123,25 @@ namespace libmeshenger
 			 * be used to construct peer objects. */
 			void discoverPeers();
 
+			/* ### Methods for packet and peer list manipulation ### */
+
+			/* Returns the number of packets in the list that are waiting to be
+			 * processed */
+			uint16_t receivePacket();
+
+			/* Pushes a Peer onto the peer list */
 			void addPeer(Peer);
+
+			/* Constructs and pushes a new Peer onto the peer list */
 			void addPeer(std::string);
 
+			/* Returns a vector containing the peer list */
 			std::vector<Peer> getPeers();
 
+			/* Given a packet, the packet is sent to all peers in the peer list */
 			void sendToAllPeers(Packet p);
 
-			/* Starts a TCP listener to receive any packets sent on the wire */
-
+			/* Pops and returns a packet from the back of the packet vector */
 			Packet getPacket();
 	};
 

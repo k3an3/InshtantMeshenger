@@ -71,29 +71,36 @@ namespace libmeshenger
 	void
 	Net::acceptDiscoveryConn(const boost::system::error_code& error, size_t recv_len)
 	{
-		/* Check if we received a discovery packet and if it is from a new peer */
+		/* Helpful error message */
 		if (error) netDebugPrint("ERROR", 33);
+
 		if (recv_len > 0) {
 			/* Need to reply to the server port, not the one that was used to
-			 * connect to us */
+			 * connect to us. Change the remote endpoint's target port. */
 			udp_remote_endpoint.port(udp_port);
+			/* Socket to send replies with */
 			udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 			socket.set_option(udp::socket::reuse_address(true));
 
+			/* Check if packet is meshenger discovery */
 		   	if (!strcmp((char*) data, (char*) MSG)) {
 				netDebugPrint("Received discovery probe from peer " +
 						udp_remote_endpoint.address().to_string(), 32);
+				/* Send a reply to the peer to let it know we exist */
 				socket.async_send_to(
 					boost::asio::buffer(RESP, strlen((char*) RESP) + 1), udp_remote_endpoint,
 					boost::bind(&Net::handleDiscoveryReply, this,
 						boost::asio::placeholders::error,
 						boost::asio::placeholders::bytes_transferred));
+				/* Add the peer to the list if it doesn't exist already */
 				addPeerIfNew(udp_remote_endpoint.address());
 				return;
+			/* Check if packet is discovery reply */
 			} else if (!strcmp((char*) data, (char*) RESP)) {
 				netDebugPrint("Received discovery reply from peer " +
 						udp_remote_endpoint.address().to_string(), 33);
 				addPeerIfNew(udp_remote_endpoint.address());
+			/* Check if packet is discovery disconnect */
 			} else if (!strcmp((char*) data, (char*) DIS)) {
 				 netDebugPrint("Received discovery disconnect from peer " +
 						 udp_remote_endpoint.address().to_string(), 30);
@@ -103,8 +110,10 @@ namespace libmeshenger
 			} else {
 				netDebugPrint("Received invalid probe", 30);
 			}
+			/* Clear the data buffer */
 			memset(data, 0, strlen((char*) data));
 		}
+		/* If we didn't return already, call this function again */
 		udp_listen_socket.async_receive_from(
 			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
@@ -115,7 +124,9 @@ namespace libmeshenger
 	void
 	Net::addPeerIfNew(boost::asio::ip::address ip_addr)
 	{
+		/* Check if peer is in the peer list */
 		if (!peerExistsByAddress(ip_addr)) {
+			/* Add it to the peer list */
 			addPeer(ip_addr);
 			netDebugPrint("Added new peer " +
 					ip_addr.to_string(), 32);
@@ -149,6 +160,7 @@ namespace libmeshenger
 	{
 		if (error) netDebugPrint("ERROR", 31);
 		netDebugPrint("Sending discovery reply to " + udp_remote_endpoint.address().to_string(), 33);
+		/* Send a reply to the remote endpoint and continue listening for discovery */
 		udp_listen_socket.async_receive_from(
 			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
 			boost::bind(&Net::acceptDiscoveryConn, this,
@@ -170,7 +182,7 @@ namespace libmeshenger
 		/* Create the socket that will send UDP broadcast */
 		udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 
-		/* Set socket options so that it can use the host's address and send
+		/* Set socket options so that it can reuse the host's address and send
 		* broadcast */
 		socket.set_option(udp::socket::reuse_address(true));
 		socket.set_option(udp::socket::broadcast(true));
@@ -183,7 +195,7 @@ namespace libmeshenger
 				endpoint, [this](boost::system::error_code ec,
 					size_t bytes_transferred)
 			   	{
-
+					/* Empty lambda function */
 				});
 		/* Make sure we close the socket, as it is not needed anymore */
 		socket.close();
@@ -192,7 +204,9 @@ namespace libmeshenger
 	Packet
 	Net::getPacket()
 	{
+		/* Lock mutex so packet list can't be modified from the other thread */
 		io_mutex.lock();
+		/* Save and pop a packet from the back of the list */
 		Packet p = packets.back();
 		packets.pop_back();
 		io_mutex.unlock();
@@ -202,16 +216,22 @@ namespace libmeshenger
 	void
 	Net::addPeer(Peer p)
 	{
+		/* Add a Peer to the peer list */
 		peers.push_back(p);
 	}
 
 	void
-	Net::addPeer(std::string s)
+	Net::addPeer(string s)
 	{
+		/* Create a resolver so string s can be resolved as either an IP
+		 * address or a hostname */
 		tcp::resolver::query query(s, "");
+		/* Resolve the string into an iterator of endpoint objects */
 		tcp::resolver::iterator iter = tcp_resolver.resolve(query);
 		tcp::resolver::iterator end;
+		/* Save the first endpoint in the iterator */
 		tcp::endpoint endpoint = *iter++;
+		/* Add the peer to the peer list */
 		peers.push_back(Peer(endpoint.address()));
 	}
 
@@ -240,16 +260,17 @@ namespace libmeshenger
 			netDebugPrint("Sending packet to " +
 					endpoint.address().to_string(), 35);
 			try {
+				/* Open a TCP connection async */
 				sock.async_connect(endpoint, [this,&sock,p,i]
 						(boost::system::error_code ec)
 					{
 					});
-				/* Send the data */
+				/* Send the data (not fun) */
 				boost::asio::write(sock, boost::asio::buffer(p.raw().data(),
 							p.raw().size()));
 				peers[i].strikes = 0;
 			} catch(std::exception &e) {
-					/* Handle connection errors */
+					/* Handle connection errors and remove problematic peers */
 					netDebugPrint(e.what(), 41);
 					netDebugPrint("Peer " + addr.to_string() +
 							" is problematic. Strike.", 33);
@@ -270,29 +291,37 @@ namespace libmeshenger
 	void
 	Net::startListen()
 	{
+		/* If the acceptor is closed, open it */
 		if (!tcp_acceptor.is_open()) {
 			tcp_acceptor = tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), tcp_port));
 		}
+		/* Start accepting asynchronously */
 		tcp_acceptor.async_accept(tcp_listen_socket,
 				[this](boost::system::error_code ec)
 		{
 			try {
 				if (!ec) {
-						size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
-						vector<uint8_t> v(msg, msg + bytes);
-						if (ValidatePacket(v)) {
-							io_mutex.lock();
-							packets.push_back(Packet(v));
-							io_mutex.unlock();
-						}
+					/* Read from the socket and create a packet object from the data */
+					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
+					vector<uint8_t> v(msg, msg + bytes);
+					if (ValidatePacket(v)) {
+						/* Lock the mutex so the other thread doesn't modify
+						 * the packet list */
+						io_mutex.lock();
+						/* Add the packet to the packet list */
+						packets.push_back(Packet(v));
+						io_mutex.unlock();
+					}
 				}
-				} catch (std::exception &e) {
-					cerr << e.what() << endl;
-				}
+			} catch (std::exception &e) {
+				cerr << e.what() << endl;
+			}
 
+			/* Close the socket if it is still open */
 			if (tcp_listen_socket.is_open())
 				tcp_listen_socket.close();
 
+			/* Call function again */
 			startListen();
 		});
 	}
