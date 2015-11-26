@@ -17,11 +17,6 @@ using boost::asio::ip::udp;
 using boost::asio::ip::tcp;
 using namespace std;
 
-const int32_t MAX_LENGTH = 1024;
-const uint8_t RESP[] = "meshenger-discovery-reply";
-const uint8_t MSG[] = "meshenger-discovery-probe";
-const uint8_t DIS[] = "meshenger-disconnect";
-
 namespace libmeshenger
 {
 	void
@@ -99,8 +94,16 @@ namespace libmeshenger
 				netDebugPrint("Received discovery reply from peer " +
 						udp_remote_endpoint.address().to_string(), 33);
 				addPeerIfNew(udp_remote_endpoint.address());
-			} else
+			} else if (!strcmp((char*) data, (char*) DIS)) {
+				 netDebugPrint("Received discovery disconnect from peer " +
+						 udp_remote_endpoint.address().to_string(), 30);
+				 peers.erase(peers.begin() + getPeerByAddress(udp_remote_endpoint.address()));
+				 netDebugPrint("Removed peer " +
+						 udp_remote_endpoint.address().to_string(), 30);
+			} else {
 				netDebugPrint("Received invalid probe", 30);
+			}
+			memset(data, 0, strlen((char*) data));
 		}
 		udp_listen_socket.async_receive_from(
 			boost::asio::buffer(data, MAX_LENGTH), udp_remote_endpoint,
@@ -131,6 +134,15 @@ namespace libmeshenger
 		return false;
 	}
 
+	/* Again, placeholder; needs optimization. Consider
+	 * merging with peerExistsByAddress */
+	uint32_t
+	Net::getPeerByAddress(boost::asio::ip::address ip_addr)
+	{
+		for(int i = 0; i< peers.size(); i++)
+			if (peers[i].ip_addr == ip_addr) return i;
+	}
+
 	/* Bind handler for sending discovery replies */
 	void
 	Net::handleDiscoveryReply(const boost::system::error_code& error, size_t send_len)
@@ -149,7 +161,12 @@ namespace libmeshenger
 	Net::discoverPeers()
 	{
 		netDebugPrint("Sending discovery probe...", 42);
+		sendUDPBroadcast(MSG, strlen((char*)MSG));
+	}
 
+	void
+	Net::sendUDPBroadcast(const uint8_t* message, uint32_t length)
+	{
 		/* Create the socket that will send UDP broadcast */
 		udp::socket socket(io_service, udp::endpoint(udp::v4(), 0));
 
@@ -161,13 +178,15 @@ namespace libmeshenger
 		/* Create endpoint for the connections */
 		udp::endpoint endpoint(boost::asio::ip::address_v4::broadcast(), udp_port);
 
-		/* Send discovery packet */
-		socket.async_send_to(boost::asio::buffer(MSG, strlen((char*) MSG) + 1),
+		/* Send broadcast packet asynchronously */
+		socket.async_send_to(boost::asio::buffer(message, length + 1),
 				endpoint, [this](boost::system::error_code ec,
 					size_t bytes_transferred)
 			   	{
 
 				});
+		/* Make sure we close the socket, as it is not needed anymore */
+		socket.close();
 	}
 
 	Packet

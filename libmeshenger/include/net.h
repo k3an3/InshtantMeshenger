@@ -11,6 +11,11 @@
 using boost::asio::ip::udp;
 using boost::asio::ip::tcp;
 
+const int32_t MAX_LENGTH = 1024;
+const uint8_t RESP[] = "meshenger-discovery-reply";
+const uint8_t MSG[] = "meshenger-discovery-probe";
+const uint8_t DIS[] = "meshenger-disconnect";
+
 namespace libmeshenger
 {
 
@@ -64,9 +69,11 @@ namespace libmeshenger
 			std::vector<Packet> packets;
 
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
+			std::uint32_t getPeerByAddress(boost::asio::ip::address ip_addr);
 			void acceptDiscoveryConn(const boost::system::error_code& error, size_t len);
 			void handleDiscoveryReply(const boost::system::error_code& error, size_t len);
 			void addPeerIfNew(boost::asio::ip::address ip_addr);
+			void sendUDPBroadcast(const uint8_t* message, uint32_t length);
 		public:
 			/* Default net constructor */
 			Net(uint16_t udp_port, uint16_t tcp_port);
