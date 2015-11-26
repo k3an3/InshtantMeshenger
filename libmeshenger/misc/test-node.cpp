@@ -28,7 +28,7 @@ void PrintEncryptedMessage(Packet& p)
 	if (p.type() == 0x02) {
 		EncryptedMessage em(p);
 
-		cout << "\033[1;32m[Encrypted Message Received!]\033[0m ";
+		cout << "\033[1;32m<Encrypted Message Received!>\033[0m ";
 
 		if (cryptoEngine.tryDecrypt(em)) {
 			if (em.trusted()) {
@@ -49,7 +49,7 @@ void PrintEncryptedMessage(Packet& p)
 static Net net(5555, 5556);
 void ForwardPacketToPeers(Packet& p)
 {
-	cout << "\033[1;32m[Forwarding packet to peers!]\033[0m" << endl;
+	cout << "\033[1;32m<Forwarding packet to peers!>\033[0m" << endl;
 	/* Encapsulate message in packet */
 	net.sendToAllPeers(p);
 }
@@ -92,7 +92,6 @@ int main(int argc, char** argv)
 	}
 
     net.startListen();
-	//net.receivePacket();
     net.run();
 	while (true) {
 		/* Main loop */

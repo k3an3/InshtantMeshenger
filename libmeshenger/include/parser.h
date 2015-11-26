@@ -61,7 +61,7 @@ namespace libmeshenger
 		public:
 			/* Returns a vector copy containing the appropriate bytes */
 			std::vector<std::uint8_t> body() const;
-			
+
 			/* Body length */
 			std::uint16_t length() const;
 

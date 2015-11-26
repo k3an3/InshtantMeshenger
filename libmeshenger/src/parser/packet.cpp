@@ -129,7 +129,7 @@ namespace libmeshenger
 		/* Magic, version, res, type (EncryptedMessage), length (blank) */
 		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 2, 0, 0 };
 		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
-		
+
 		/* Length */
 		preamble[7] = em.encryptedBody().size() % 256;
 		preamble[6] = em.encryptedBody().size() / 256;
@@ -165,7 +165,7 @@ namespace libmeshenger
 		/* Magic, version, res, type (ClearMessage), length (blank) */
 		uint8_t base_preamble[] = { 'I', 'M', 1, 0, 0, 1, 0, 0 };
 		vector<uint8_t> preamble(base_preamble, base_preamble + 8);
-		
+
 		/* Length */
 		preamble[7] = m.length() % 256;
 		preamble[6] = m.length() / 256;
