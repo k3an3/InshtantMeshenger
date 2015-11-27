@@ -3,7 +3,7 @@ add_library(libmeshenger-tracker
 
 add_executable (tracker_test main.cpp)
 
-find_package (Boost 1.58.0 REQUIRED COMPONENTS system thread)
+find_package (Boost 1.54.0 REQUIRED COMPONENTS system thread)
 if (Boost_FOUND)
 	include_directories (SYSTEM ${Boost_INCLUDE_DIR})
 endif ()
