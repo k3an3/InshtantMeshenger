@@ -108,6 +108,8 @@ namespace libmeshenger
 			 * sockets */
 			void shutdown();
 
+			std::string getHostname();
+
 			/* ### Networking methods ### */
 
 			/* Starts a TCP acceptor to accept incoming packets. Validates and

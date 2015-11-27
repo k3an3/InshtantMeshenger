@@ -57,7 +57,7 @@ void ForwardPacketToPeers(Packet& p)
 }
 
 /* Report packets to the tracker when we get them */
-static Tracker tracker("http://localhost:3000", "thisnode");
+static Tracker tracker("http://localhost:3000", net.getHostname());
 void ReportHop(Packet& p)
 {
     for(auto &peer : net.getPeers()) {

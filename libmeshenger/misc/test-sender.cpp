@@ -44,15 +44,14 @@ int main(int argc, char ** argv)
 	/* Use message.idString method */
 	cout << "Message " << p.idString() << endl;
 	cout << "    `" << s << "`" << endl;
-
-    /* Send this packet to the tracker */
-    Tracker tracker("http://localhost:3000", "testsender");
-    tracker.reportPacket(p.idString());
-
 	string peer(argv[1]);
 
 	/* UDP port, TCP port */
 	Net net(5555, 5556);
+
+    /* Announce this packet to the tracker */
+    Tracker tracker("http://localhost:3000", net.getHostname());
+    tracker.reportPacket(p.idString());
 
 	net.addPeer(peer);
 	net.sendToAllPeers(p);

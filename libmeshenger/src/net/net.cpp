@@ -241,6 +241,12 @@ namespace libmeshenger
 		return std::vector<Peer>(peers.begin(), peers.end());
 	}
 
+    string
+    Net::getHostname()
+    {
+        return boost::asio::ip::host_name();
+    }
+
 	/* Sends a Packet to all previously discovered peers using TCP */
 	void
 	Net::sendToAllPeers(Packet p)
