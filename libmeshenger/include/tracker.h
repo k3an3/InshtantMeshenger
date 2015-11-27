@@ -11,9 +11,10 @@ namespace libmeshenger
 			/* Default constructor */
 			Tracker(std::string server_hostname, std::string name);
 
-			void reportPacket(/* TODO */);
+			void reportPacket(std::string identifier);
 			void reportNode();
-			void reportHop(/* TODO */);
+			void reportHop(std::string packet_id, std::string time, std::string depth,
+					std::string dest, std::string origin);
 
 		private:
 			std::string server_hostname;
