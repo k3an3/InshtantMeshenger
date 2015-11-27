@@ -14,7 +14,7 @@ namespace libmeshenger
 			void reportPacket(std::string identifier);
 			void reportNode();
 			void reportHop(std::string packet_id, std::string time, std::string depth,
-					std::string dest, std::string origin);
+					std::string dest);
 
 		private:
 			std::string server_hostname;

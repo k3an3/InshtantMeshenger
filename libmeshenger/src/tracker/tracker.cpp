@@ -29,10 +29,10 @@ namespace libmeshenger
 	}
 
 	void Tracker::reportHop(std::string packet_id, std::string time, std::string depth,
-			std::string dest, std::string origin)
+			std::string dest)
 	{
 		doHTTPPost("{\"hop\": {\"destination\": \"" + dest + "\", "
-				"\"origin\": \"" + origin + "\", \"packet\": \"" + packet_id + "\", "
+				"\"origin\": \"" + name + "\", \"packet\": \"" + packet_id + "\", "
 				 "\"time\": \"" + time + "\", \"depth\": \"" + depth + "\"}}", "hops");
 	}
 

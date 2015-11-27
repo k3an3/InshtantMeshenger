@@ -5,8 +5,7 @@
 #include <parser.h>
 #include <net.h>
 #include <crypto.h>
-/* Whatever the net library is */
-// #include <libmeshenger_net.h>
+#include <tracker.h>
 
 using namespace std;
 using namespace libmeshenger;
@@ -45,7 +44,10 @@ int main(int argc, char ** argv)
 	/* Use message.idString method */
 	cout << "Message " << p.idString() << endl;
 	cout << "    `" << s << "`" << endl;
-	
+
+    /* Send this packet to the tracker */
+    Tracker tracker("http://localhost:3000", "testsender");
+    tracker.reportPacket(p.idString());
 
 	string peer(argv[1]);
 
