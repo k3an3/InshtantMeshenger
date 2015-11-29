@@ -256,11 +256,15 @@ namespace libmeshenger
     Net::get_ifaddr(string remote_host)
     {
 		/* Only real portable way to get our IP address. This will most likely
-		obtain the IP address of the interface that has the default route.
-		We create a socket, open a connection to something (i.e. MeshTrack or Google),
-		and get the IP address from the resultant local endpoint. */
+		 * obtain the IP address of the interface that has the default route.
+		 * We create a socket, open a connection to something (i.e. MeshTrack or Google),
+		 * and get the IP address from the resultant local endpoint. */
 		tcp::socket sock(io_service);
-		sock.connect(resolveSingle(remote_host));
+		tcp::endpoint e = resolveSingle(remote_host);
+		/* Without modifying the port, connect will try to connect to an arbitrary
+		 * port, which will fail. */
+		e.port(3000); // TODO: Default to 80, override if :<portnum> in remote_host
+		sock.connect(e);
 		boost::asio::ip::address addr = sock.local_endpoint().address();
 		sock.close();
 		return addr;

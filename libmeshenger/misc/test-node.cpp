@@ -57,7 +57,7 @@ void ForwardPacketToPeers(Packet& p)
 }
 
 /* Report packets to the tracker when we get them */
-string server = "http://10.0.242.14";
+string server = "http://localhost:3000";
 static Tracker tracker(server, net.get_ifaddr(server).to_string());
 void ReportHop(Packet& p)
 {

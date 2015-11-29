@@ -38,6 +38,7 @@ namespace libmeshenger
 
 	void Tracker::doHTTPPost(std::string json_data, std::string route)
 	{
+		std::cout << "Reporting " << route << " data to " << server_hostname << std::endl;
 		client::request req(server_hostname + "/" + route);
 		req << header("Connection", "close");
 		req << header("Content-Type", "application/json");
