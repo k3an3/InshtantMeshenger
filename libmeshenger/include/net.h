@@ -94,6 +94,8 @@ namespace libmeshenger
 			/* given an IP address */
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 
+			tcp::endpoint resolveSingle(std::string s);
+
 		public:
 			/* ## Public member functions ## */
 
@@ -109,6 +111,7 @@ namespace libmeshenger
 			void shutdown();
 
 			std::string getHostname();
+			boost::asio::ip::address get_ifaddr(std::string remote_host);
 
 			/* ### Networking methods ### */
 

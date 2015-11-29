@@ -221,7 +221,14 @@ namespace libmeshenger
 	}
 
 	void
-	Net::addPeer(string s)
+	Net::addPeer(string hostname)
+	{
+		/* Add the peer to the peer list */
+		peers.push_back(Peer(resolveSingle(hostname).address()));
+	}
+
+	tcp::endpoint
+	Net::resolveSingle(string s)
 	{
 		/* Create a resolver so string s can be resolved as either an IP
 		 * address or a hostname */
@@ -229,10 +236,8 @@ namespace libmeshenger
 		/* Resolve the string into an iterator of endpoint objects */
 		tcp::resolver::iterator iter = tcp_resolver.resolve(query);
 		tcp::resolver::iterator end;
-		/* Save the first endpoint in the iterator */
-		tcp::endpoint endpoint = *iter++;
-		/* Add the peer to the peer list */
-		peers.push_back(Peer(endpoint.address()));
+		/* Return the first endpoint in the iterator */
+		return *iter++;
 	}
 
 	std::vector<Peer>
@@ -245,6 +250,20 @@ namespace libmeshenger
     Net::getHostname()
     {
         return boost::asio::ip::host_name();
+    }
+
+    boost::asio::ip::address
+    Net::get_ifaddr(string remote_host)
+    {
+		/* Only real portable way to get our IP address. This will most likely
+		obtain the IP address of the interface that has the default route.
+		We create a socket, open a connection to something (i.e. MeshTrack or Google),
+		and get the IP address from the resultant local endpoint. */
+		tcp::socket sock(io_service);
+		sock.connect(resolveSingle(remote_host));
+		boost::asio::ip::address addr = sock.local_endpoint().address();
+		sock.close();
+		return addr;
     }
 
 	/* Sends a Packet to all previously discovered peers using TCP */

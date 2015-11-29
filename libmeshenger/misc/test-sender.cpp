@@ -50,7 +50,8 @@ int main(int argc, char ** argv)
 	Net net(5555, 5556);
 
     /* Announce this packet to the tracker */
-    Tracker tracker("http://localhost:3000", net.getHostname());
+    string server = "http://10.0.242.14";
+    Tracker tracker(server, net.get_ifaddr(server).to_string());
     tracker.reportPacket(p.idString());
 
 	net.addPeer(peer);
