@@ -17,4 +17,6 @@ SOURCES += main.cpp\
 
 HEADERS  += mainwindow.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    add_a_peer.ui \
+    PGP.ui
