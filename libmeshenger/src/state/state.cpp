@@ -16,6 +16,13 @@ using namespace std;
 
 namespace libmeshenger
 {
+	void
+	packetEngineDebugPrint(string s, int color)
+	{
+        cout << "\033[1;32m[packet-engine]\033[0m-> " <<
+            "\033[1;" << color << "m" << s << "\033[0m" << endl;
+	}
+
 	bool
 	PacketEngine::compareIds(uint8_t * a, uint8_t * b)
 	{
@@ -31,8 +38,7 @@ namespace libmeshenger
 	{
 		for(int i = 0; i < seenMessages.size(); i++) {
 			if (compareIds(seenMessages[i].data(), p.id().data())) {
-				cout << "\033[1;32m[packet-engine]\033[0m-> ";
-				cout << "\033[1;31mPacket is old\033[0m" << endl;
+                packetEngineDebugPrint("Packet is old", 33);
 				return false;
 			}
 		}
@@ -57,8 +63,7 @@ namespace libmeshenger
 	PacketEngine::ProcessPacket(Packet &p)
 	{
 		if (IsPacketNew(p)) {
-			cout << "\033[1;32m[packet-engine   ]\033[0m-> ";
-			cout << "\033[1;35mProcessing through callbacks\033[0m" << endl;
+            packetEngineDebugPrint("Processing through callbacks", 35);
 			for(int i = 0; i < callbacks.size(); i++) {
 				callbacks[i](p);
 			}

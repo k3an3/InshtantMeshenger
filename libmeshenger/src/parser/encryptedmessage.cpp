@@ -29,6 +29,18 @@ namespace libmeshenger
 	}
 
 	bool
+	EncryptedMessage::trusted()
+	{
+		return m_trusted;
+	}
+
+	uint16_t
+	EncryptedMessage::sender()
+	{
+		return m_sender;
+	}
+
+	bool
 	EncryptedMessage::encrypted()
 	{
 		return m_encrypted;
