@@ -76,6 +76,13 @@ namespace libmeshenger
 		return vector<uint8_t>(raw_m.begin() + 8, raw_m.begin() + 24);
 	}
 
+    uint32_t
+    Packet::depth() const
+    {
+        // Stub
+        return 0;
+    }
+
 	string
 	Packet::idString() const
 	{

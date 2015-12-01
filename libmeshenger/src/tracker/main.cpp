@@ -15,5 +15,5 @@ main()
 	tracker.reportNode();
 	tracker2.reportNode();
 	tracker.reportPacket("testIdentifier");
-	tracker.reportHop("testIdentifier", "1", "1", "testnode2");
+	tracker.reportHop("testIdentifier", "1", "testnode2");
 }

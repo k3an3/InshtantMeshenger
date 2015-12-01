@@ -13,12 +13,13 @@ namespace libmeshenger
 
 			void reportPacket(std::string identifier);
 			void reportNode();
-			void reportHop(std::string packet_id, std::string time, std::string depth,
+			void reportHop(std::string packet_id, std::string depth,
 					std::string dest);
 
 		private:
 			std::string server_hostname;
 			std::string name;
+			boost::network::http::client client;
 
 			void doHTTPPost(std::string json_data, std::string route);
 	};

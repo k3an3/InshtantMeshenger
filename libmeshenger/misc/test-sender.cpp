@@ -55,7 +55,7 @@ int main(int argc, char ** argv)
     tracker.reportPacket(p.idString());
 
 	net.addPeer(peer);
-    tracker.reportHop(p.idString(), ctime(0), "0", net.getPeers().back().ip_addr.to_string());
+    tracker.reportHop(p.idString(), "0", net.getPeers().back().ip_addr.to_string());
 	net.sendToAllPeers(p);
 
 	cout << "MessageSent!" << endl;

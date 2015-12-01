@@ -32,6 +32,8 @@ namespace libmeshenger
 			std::vector<std::uint8_t> body() const;
 			std::vector<std::uint8_t> id() const;
 
+            std::uint32_t depth() const;
+
 			/* ID as string */
 			std::string idString() const;
 

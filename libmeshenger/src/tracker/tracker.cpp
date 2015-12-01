@@ -13,7 +13,8 @@ namespace libmeshenger
 {
 	Tracker::Tracker(std::string server_hostname, std::string name)
 		: server_hostname(server_hostname),
-		name(name)
+		name(name),
+		client()
 	{
 
 	}
@@ -28,12 +29,13 @@ namespace libmeshenger
 		doHTTPPost("{\"node\":{\"name\":\"" + name + "\"}}", "nodes");
 	}
 
-	void Tracker::reportHop(std::string packet_id, std::string time, std::string depth,
+	void Tracker::reportHop(std::string packet_id, std::string depth,
 			std::string dest)
 	{
+		time_t time_ = time(NULL);
 		doHTTPPost("{\"hop\": {\"destination\": \"" + dest + "\", "
 				"\"origin\": \"" + name + "\", \"packet\": \"" + packet_id + "\", "
-				 "\"time\": \"" + time + "\", \"depth\": \"" + depth + "\"}}", "hops");
+				 "\"time\": \"" + asctime(localtime(&time_)) + "\", \"depth\": \"" + depth + "\"}}", "hops");
 	}
 
 	void Tracker::doHTTPPost(std::string json_data, std::string route)
@@ -44,6 +46,6 @@ namespace libmeshenger
 		req << header("Content-Type", "application/json");
 		req << header("Content-Length", std::to_string(json_data.length()));
 		req << body(json_data);
-		client::response resp = client().post(req); // Do something with this? Or not
+		client::response resp = client.post(req); // Do something with this? Or not
 	}
 }
