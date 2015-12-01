@@ -61,6 +61,8 @@ string server = "http://localhost:3000";
 static Tracker tracker(server, net.get_ifaddr(server).to_string());
 void ReportHop(Packet& p)
 {
+	cout << "\033[1;32m<Reporting hops>\033[0m" << endl;
+    cout << net.getPeers().size() << endl;
     for(auto &peer : net.getPeers()) {
         tracker.reportHop(p.idString(), ctime(0), string("1"), peer.ip_addr.to_string());
     }

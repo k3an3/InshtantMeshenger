@@ -263,7 +263,7 @@ namespace libmeshenger
 		tcp::endpoint e = resolveSingle(remote_host);
 		/* Without modifying the port, connect will try to connect to an arbitrary
 		 * port, which will fail. */
-		e.port(3000); // TODO: Default to 80, override if :<portnum> in remote_host
+		e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
 		sock.connect(e);
 		boost::asio::ip::address addr = sock.local_endpoint().address();
 		sock.close();
