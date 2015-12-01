@@ -35,7 +35,7 @@ namespace libmeshenger
 		time_t time_ = time(NULL);
 		doHTTPPost("{\"hop\": {\"destination\": \"" + dest + "\", "
 				"\"origin\": \"" + name + "\", \"packet\": \"" + packet_id + "\", "
-				 "\"time\": \"" + asctime(localtime(&time_)) + "\", \"depth\": \"" + depth + "\"}}", "hops");
+				 "\"time\": \"" + std::to_string(time_) + "\", \"depth\": \"" + depth + "\"}}", "hops");
 	}
 
 	void Tracker::doHTTPPost(std::string json_data, std::string route)
