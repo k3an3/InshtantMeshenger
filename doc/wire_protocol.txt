@@ -10,11 +10,11 @@ All multi-octet ints are in Network Byte Order (Big-endian)
 
 Preamble Structure
 
---------------------------------------------------------------------
-|  2 octets  | 1 octet | 2 octets | 1 octet | 2 octets | 16 octets |
---------------------------------------------------------------------
-| Magic "IM" | Version | Reserved |  Type   |  Length  |    ID     |
---------------------------------------------------------------------
+------------------------------------------------------------------------------
+|  2 octets  | 1 octet | 1 octet |  1 octet | 1 octet | 2 octets | 16 octets |
+------------------------------------------------------------------------------
+| Magic "IM" | Version |  Depth  | Reserved |  Type   |  Length  |    ID     |
+------------------------------------------------------------------------------
 
 ClearMessage Structure (Type 0x01)
 
