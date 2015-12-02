@@ -276,6 +276,7 @@ namespace libmeshenger
 	{
 		/* Increment the depth of a packet (tx counter) */
 		p.setDepth(p.depth() + 1);
+		netDebugPrint("Packet now has depth of " + to_string(p.depth()));
 
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
