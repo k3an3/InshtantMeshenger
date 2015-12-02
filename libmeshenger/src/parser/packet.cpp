@@ -18,10 +18,6 @@ namespace libmeshenger
 	static bool
 	validateClearMessage(vector<uint8_t> body)
 	{
-		if (body.size() < 16)
-		{
-			return false;
-		}
 		return true;
 	}
 

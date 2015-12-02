@@ -34,7 +34,7 @@ namespace libmeshenger
 	ClearMessage::ClearMessage(string s)
 	{
 		uint8_t * str = (uint8_t *) s.c_str();
-		vector<uint8_t> raw_body(str, str + s.size());
+		vector<uint8_t> raw_body(str, str + s.size() + 1);
 
 		raw_m = raw_body;
 	}
