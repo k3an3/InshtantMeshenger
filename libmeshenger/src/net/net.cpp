@@ -274,6 +274,9 @@ namespace libmeshenger
 	void
 	Net::sendToAllPeers(Packet p)
 	{
+		/* Increment the depth of a packet (tx counter) */
+		p.setDepth(p.depth() + 1);
+
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
 			/* Peer IP address */
