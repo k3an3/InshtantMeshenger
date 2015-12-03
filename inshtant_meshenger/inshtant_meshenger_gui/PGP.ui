@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>574</width>
-    <height>404</height>
+    <width>561</width>
+    <height>389</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,7 +41,7 @@
           <item>
            <widget class="QLabel" name="label">
             <property name="text">
-             <string>INSERT SSH KEY HERE </string>
+             <string>Insert your private SSH key here</string>
             </property>
            </widget>
           </item>
@@ -119,7 +119,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PGP Keys</string>
+    <string>PGP Keys Screen</string>
    </property>
   </widget>
  </widget>
