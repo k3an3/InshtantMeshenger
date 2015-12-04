@@ -307,8 +307,6 @@ namespace libmeshenger
 				sock.async_connect(endpoint, [this,&sock,p,i]
 						(boost::system::error_code ec)
 					{
-				boost::asio::write(sock, boost::asio::buffer(p.raw().data(),
-							p.raw().size()));
 					});
 				/* Send the data (not fun) */
 				boost::asio::write(sock, boost::asio::buffer(p.raw().data(),
