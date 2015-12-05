@@ -10,6 +10,7 @@
 
 #include <parser.h>
 #include <net.h>
+#include <tracker.h>
 
 #define NET_DEBUG true
 
@@ -39,7 +40,8 @@ namespace libmeshenger
 		udp_listen_socket(io_service),
 		tcp_listen_socket(io_service),
 		tcp_acceptor(io_service),
-		tcp_resolver(io_service)
+		tcp_resolver(io_service),
+		tracker("", "")
 	{
 	}
 
@@ -48,6 +50,12 @@ namespace libmeshenger
 	Net::run()
 	{
 		boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	}
+
+	void
+	Net::enableTracker(Tracker &tracker_)
+	{
+		tracker = tracker_;
 	}
 
 	/* Starts a UDP listener on the provided port. The listener will
@@ -218,6 +226,7 @@ namespace libmeshenger
 	{
 		/* Add a Peer to the peer list */
 		peers.push_back(p);
+		tracker.reportPeering(p.ip_addr.to_string());
 	}
 
 	void

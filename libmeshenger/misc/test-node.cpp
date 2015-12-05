@@ -85,13 +85,14 @@ int main(int argc, char** argv)
     /* Report this node to the tracker */
     tracker.reportNode();
 
-	/* Register the two callbacks
+	/* Register the callbacks
 	 *
 	 * This is currently 100% functional*/
 	engine.AddCallback(PrintMessage);
 	engine.AddCallback(ForwardPacketToPeers);
 	engine.AddCallback(PrintEncryptedMessage);
 	engine.AddCallback(ReportHop);
+    net.enableTracker(tracker);
 
 	/* Start listening asynchronously */
     net.discoveryListen();

@@ -1,3 +1,5 @@
+#ifndef TRACKER_H
+#define TRACKER_H
 #include <boost/network/protocol/http/client.hpp>
 #include <string>
 
@@ -17,6 +19,7 @@ namespace libmeshenger
 			void reportNode();
 			void reportHop(std::string packet_id, std::string depth,
 					std::string dest);
+			void reportPeering(std::string upstream);
 
 		private:
 			/* Hostname/address of the tracking server */
@@ -31,4 +34,4 @@ namespace libmeshenger
 			void doHTTPPost(std::string json_data, std::string route);
 	};
 }
-
+#endif
