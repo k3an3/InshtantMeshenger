@@ -2,6 +2,7 @@
 #include <QPalette>
 #include <QtCore>
 #include <QtGui>
+#include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
@@ -12,9 +13,12 @@
 using namespace libmeshenger;
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent, libmeshenger::Net *net_p, libmeshenger::PacketEngine *engine_p) :
+MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+	net(net_p),
+	engine(engine_p),
+	cryptoEngine(crypto_p)
 {
     ui->setupUi(this);
     /* set up a color palette */
@@ -43,8 +47,10 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net *net_p, libmeshenger::
     ui->buddyListFrame->setPalette(palette);
     ui->tabWidget->removeTab(1);
 
-    net = net_p;
-    engine = engine_p;
+	/* Periodic timer to check for incoming packets */
+	QTimer *timer = new QTimer(this);
+	connect(timer, SIGNAL(timeout()), this, SLOT(checkForPackets()));
+	timer->start(100);
 }
 
 MainWindow::~MainWindow()
@@ -57,7 +63,7 @@ void MainWindow::on_messageToSendLineEdit_returnPressed()
     ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
     Packet p(m);
     ui->textEdit->append(ui->messageToSendLineEdit->text());
-    net->sendToAllPeers(p);
+    net.sendToAllPeers(p);
     ui->messageToSendLineEdit->clear();
 }
 
@@ -66,20 +72,20 @@ void MainWindow::on_sendPushButton_clicked()
     ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
     Packet p(m);
     ui->textEdit->append(ui->messageToSendLineEdit->text());
-    net->sendToAllPeers(p);
+    net.sendToAllPeers(p);
     ui->messageToSendLineEdit->clear();
 }
 
-void MainWindow::on_getMessagesPushButton_clicked()
+void MainWindow::checkForPackets()
 {
     // get messages
-    uint16_t numPackets = net->receivePacket();
+    uint16_t numPackets = net.receivePacket();
     if (numPackets) {
         for (int i = 0; i < numPackets; i++) {
-            Packet p = net->getPacket();
+            Packet p = net.getPacket();
 
             std::cout << "Packet received from net" << std::endl;
-            engine->ProcessPacket(p);
+            engine.ProcessPacket(p);
         }
     }
 }
