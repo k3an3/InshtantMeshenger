@@ -32,7 +32,6 @@ void PrintEncryptedMessage(Packet& p)
 
 		if (cryptoEngine.tryDecrypt(em)) {
 			if (em.trusted()) {
-				vector<uint8_t> body = em.decryptedBody();
 				cout << "\033[1;32m[" << cryptoEngine.buddy(em.sender()).name();
 			} else {
 				cout << "\033[1;31m[NOT TRUSTED\033[0m";
