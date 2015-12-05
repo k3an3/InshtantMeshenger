@@ -82,12 +82,18 @@ int main(int argc, char** argv)
 
 	/* Add buddies */
 	for(int i = 2; i < argc; i++) {
-		string buddy_name = argv[i];
-		string filename = buddy_name + ".pub";
-		CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
-		cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
-		cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
-		cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+		/* It is actually a peer. Parsing args is hard */
+		if (string(argv[i], argv[i] + 2) == string("-P")) {
+			cout << "Adding peer " << argv[i] + 2 << endl;
+			net.addPeer(argv[i] + 2);
+		} else {
+			string buddy_name = argv[i];
+			string filename = buddy_name + ".pub";
+			CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
+			cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
+			cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
+			cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+		}
 	}
 
     net.startListen();
