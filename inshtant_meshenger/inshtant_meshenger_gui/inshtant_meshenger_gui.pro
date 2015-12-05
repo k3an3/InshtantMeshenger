@@ -13,9 +13,12 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    add_a_peer.cpp \
+    PGP.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    add_a_peer.h
 
 FORMS    += mainwindow.ui \
     add_a_peer.ui \

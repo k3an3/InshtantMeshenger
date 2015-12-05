@@ -96,7 +96,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit_4">
+          <widget class="QTextEdit" name="IP_To_Add_Same">
            <property name="minimumSize">
             <size>
              <width>80</width>
@@ -115,7 +115,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="Add_a_Peer_same_net">
         <property name="text">
          <string>Add Peer</string>
         </property>
@@ -160,7 +160,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="button_discover">
         <property name="text">
          <string>Yes</string>
         </property>
@@ -221,7 +221,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QTextEdit" name="textEdit_5">
+          <widget class="QTextEdit" name="IP_To_Add_Differn">
            <property name="minimumSize">
             <size>
              <width>80</width>
@@ -294,7 +294,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="Add_a_Peer_different_net">
         <property name="text">
          <string>Add Peer</string>
         </property>
@@ -313,7 +313,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="Disconnect_button">
         <property name="text">
          <string>Disconnect from all Nodes and Peers</string>
         </property>
@@ -323,15 +323,10 @@
     </widget>
    </item>
   </layout>
-  <zorder>textEdit_6</zorder>
-  <zorder>label_3</zorder>
   <zorder>frame</zorder>
   <zorder>frame_5</zorder>
-  <zorder>pushButton_2</zorder>
   <zorder>frame_6</zorder>
   <zorder>frame_7</zorder>
-  <zorder>label_6</zorder>
-  <zorder>label_6</zorder>
  </widget>
  <resources/>
  <connections/>

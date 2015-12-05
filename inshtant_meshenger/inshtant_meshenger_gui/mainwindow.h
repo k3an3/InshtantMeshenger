@@ -32,6 +32,7 @@ private slots:
 
     void checkForPackets();
 
+
 private:
     Ui::MainWindow *ui;
 };
