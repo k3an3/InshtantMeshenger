@@ -92,6 +92,25 @@ void MainWindow::checkForPackets()
 
 void MainWindow::displayMessage(Packet &p)
 {
-    ClearMessage m(p);
-    ui->textEdit->append(QString::fromStdString(m.bodyString()));
+	/* Display ClearMessage to the default window */
+	if (p.type() == 0x01) {
+    	ClearMessage m(p);
+    	ui->textEdit->append(QString::fromStdString("[CLEARMESSAGE] " + m.bodyString()));
+	}
+
+	/* Just print who sent it and that it is trusted */
+	if (p.type() == 0x02) {
+		EncryptedMessage m(p);
+		if (cryptoEngine.tryDecrypt(m)) {
+			if(m.trusted()){
+				string buddy = cryptoEngine.buddy(m.sender()).name();
+				ui->textEdit->append(QString::fromStdString("[" + buddy +
+							"] " + string((char *)m.decryptedBody().data())));
+
+			} else {
+				ui->textEdit->append(QString::fromStdString("[UNTRUSTED] " + 
+							string((char *)m.decryptedBody().data())));
+			}
+		}
+	}
 }

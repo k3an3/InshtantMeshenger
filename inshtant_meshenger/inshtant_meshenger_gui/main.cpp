@@ -38,22 +38,26 @@ int main(int argc, char *argv[])
     net.discoveryListen();
     net.discoverPeers();
 
-	/* Remove this. Replace with UI elements that add peer dynamically */
-    net.addPeer("129.186.205.235");
-	
 	/* Set your private key. Replace this with UI functionality to set a private
 	 * key from Base64 input */
 	cryptoEngine.setPrivateKeyFromFile(argv[1]);
 
 	/* Add buddies. Replace this with UI functionality to add buddies from
 	 * Base64 public keys */
+	/* Also adds peers. That should be GUIfied as well */
     for(int i = 2; i < argc; i++) {
-        string buddy_name = argv[i];
-        string filename = buddy_name + ".pub";
-        CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
-        cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
-        cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
-        cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+        /* It is actually a peer. Parsing args is hard */
+        if (string(argv[i], argv[i] + 2) == string("-P")) {
+            cout << "Adding peer " << argv[i] + 2 << endl;
+            net.addPeer(argv[i] + 2);
+        } else {
+            string buddy_name = argv[i];
+            string filename = buddy_name + ".pub";
+            CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
+            cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
+            cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
+            cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+        }
     }
 
     net.startListen();
