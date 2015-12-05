@@ -32,6 +32,7 @@ namespace libmeshenger
 	void Tracker::reportHop(std::string packet_id, std::string depth,
 			std::string dest)
 	{
+		/* Get current UNIX time in seconds */
 		time_t time_ = time(NULL);
 		doHTTPPost("{\"hop\": {\"destination\": \"" + dest + "\", "
 				"\"origin\": \"" + name + "\", \"packet\": \"" + packet_id + "\", "
