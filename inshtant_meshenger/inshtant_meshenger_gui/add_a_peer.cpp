@@ -30,9 +30,9 @@ void ADD_A_PEER::on_Add_a_Peer_same_net_returnPressed()//Buttons to add to same 
      ui->IP_To_Add_Same->clear();
 }
 void ADD_A_PEER::on_Add_a_Peer_different_net_returnPressed()//  Buttons to add to a differnt network
-//should be exactly the same as the code for same network
+//should be exactly the same as the code for same network 
 {
-
+   
     ((MainWindow *)this->parent)->net.addPeer(ui->IP_To_Add_Differnt->text().toStdString());
      ui->IP_To_Add_Differnt->clear();
 }
