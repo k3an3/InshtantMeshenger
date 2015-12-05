@@ -53,21 +53,21 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <item>
-           <widget class="QPushButton" name="pushButton_3">
+           <widget class="QPushButton" name="Load_Key">
             <property name="text">
              <string>Load Key</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton_2">
+           <widget class="QPushButton" name="Export_Key">
             <property name="text">
              <string>Export Key</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="pushButton">
+           <widget class="QPushButton" name="Generate_key">
             <property name="text">
              <string>Generate New Key</string>
             </property>

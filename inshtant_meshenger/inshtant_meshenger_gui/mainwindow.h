@@ -20,6 +20,9 @@ public:
     ~MainWindow();
     void displayMessage(libmeshenger::Packet &p);
 
+    libmeshenger::Net *net;
+    libmeshenger::PacketEngine *engine;
+
 private slots:
 
     void on_messageToSendLineEdit_returnPressed();
@@ -28,10 +31,9 @@ private slots:
 
     void on_getMessagesPushButton_clicked();
 
+
 private:
     Ui::MainWindow *ui;
-    libmeshenger::Net *net;
-    libmeshenger::PacketEngine *engine;
 };
 
 #endif // MAINWINDOW_H
