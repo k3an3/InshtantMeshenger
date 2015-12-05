@@ -41,7 +41,7 @@ namespace libmeshenger
 
 	void Tracker::reportPeering(std::string downstream)
 	{
-		doHTTPPost("{\"peering\": {\"downstream\": \"" + downstream + "\", \"upstream\"" + name + "\"}}", "peerings");
+		doHTTPPost("{\"peering\": {\"downstream\": \"" + downstream + "\", \"upstream\": \"" + name + "\"}}", "peerings");
 	}
 
 	void Tracker::doHTTPPost(std::string json_data, std::string route)
