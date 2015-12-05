@@ -13,7 +13,7 @@ namespace libmeshenger
 
 	EncryptedMessage::EncryptedMessage(string s)
 	{
-		m_body_dec = vector<uint8_t>(s.c_str(), s.c_str()+s.size());
+		m_body_dec = vector<uint8_t>(s.c_str(), s.c_str()+s.size()+1);
 		m_decrypted = true;
 		m_encrypted = false;
 	}
@@ -26,6 +26,18 @@ namespace libmeshenger
 		m_body_enc = vector<uint8_t>(p.body());
 		m_decrypted = false;
 		m_encrypted = true;
+	}
+
+	bool
+	EncryptedMessage::trusted()
+	{
+		return m_trusted;
+	}
+
+	uint16_t
+	EncryptedMessage::sender()
+	{
+		return m_sender;
 	}
 
 	bool
