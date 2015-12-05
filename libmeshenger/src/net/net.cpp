@@ -234,11 +234,15 @@ namespace libmeshenger
 		 * address or a hostname */
 		tcp::resolver::query query(s, "");
 		/* Resolve the string into an iterator of endpoint objects */
-		tcp::resolver::iterator iter = tcp_resolver.resolve(query);
-		tcp::resolver::iterator end;
-		/* Return the first endpoint in the iterator */
-		return *iter++;
-	}
+        try {
+            tcp::resolver::iterator iter = tcp_resolver.resolve(query);
+            tcp::resolver::iterator end;
+            /* Return the first endpoint in the iterator */
+            return *iter++;
+        } catch (exception &e) {
+            netDebugPrint(e.what(), 31);
+        }
+    }
 
 	std::vector<Peer>
 	Net::getPeers()
@@ -260,13 +264,19 @@ namespace libmeshenger
 		 * We create a socket, open a connection to something (i.e. MeshTrack or Google),
 		 * and get the IP address from the resultant local endpoint. */
 		tcp::socket sock(io_service);
-		tcp::endpoint e = resolveSingle(remote_host);
-		/* Without modifying the port, connect will try to connect to an arbitrary
-		 * port, which will fail. */
-		e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
-		sock.connect(e);
-		boost::asio::ip::address addr = sock.local_endpoint().address();
-		sock.close();
+        boost::asio::ip::address addr;
+        try {
+            tcp::endpoint e = resolveSingle(remote_host);
+            /* Without modifying the port, connect will try to connect to an arbitrary
+             * port, which will fail. */
+            e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
+            sock.connect(e);
+            addr = sock.local_endpoint().address();
+        } catch (exception &e) {
+            netDebugPrint(e.what(), 31);
+        }
+        if (sock.is_open())
+            sock.close();
 		return addr;
     }
 

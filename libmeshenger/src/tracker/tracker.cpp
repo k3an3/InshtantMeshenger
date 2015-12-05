@@ -47,6 +47,10 @@ namespace libmeshenger
 		req << header("Content-Type", "application/json");
 		req << header("Content-Length", std::to_string(json_data.length()));
 		req << body(json_data);
+		try {
 		client::response resp = client.post(req); // Do something with this? Or not
+		} catch(std::exception &e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
 }
