@@ -37,11 +37,12 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     PacketEngine engine;
 	CryptoEngine cryptoEngine;
-    MainWindow w(0, net, engine, cryptoEngine);
+    MainWindow w(0, net, engine, cryptoEngine, tracker);
     win = &w;
 
     engine.AddCallback(ForwardPacketToPeers);
     engine.AddCallback(displayMessageHandler);
+    engine.AddCallback(ReportHop);
 
 	tracker.reportNode();
 

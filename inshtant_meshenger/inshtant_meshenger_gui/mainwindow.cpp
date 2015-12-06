@@ -14,12 +14,13 @@
 using namespace libmeshenger;
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p) :
+MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, Tracker &tracker_p) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
 	net(net_p),
 	engine(engine_p),
-	cryptoEngine(crypto_p)
+	cryptoEngine(crypto_p),
+	tracker(tracker_p)
 {
     ui->setupUi(this);
     /* set up a color palette */
@@ -76,19 +77,20 @@ void MainWindow::on_messageToSendLineEdit_returnPressed()
 		/* Encrypt to a buddy */
 		cryptoEngine.encryptMessage(em, buddyname);
 		Packet p(em);
+		tracker.reportPacket(p.idString());
 		ui->textEdit->append(ui->messageToSendLineEdit->text());
 		net.sendToAllPeers(p);
 		ui->messageToSendLineEdit->clear();
 	} else {
 		ClearMessage m(msg);
 		Packet p(m);
+		tracker.reportPacket(p.idString());
 		ui->textEdit->append(ui->messageToSendLineEdit->text());
 		net.sendToAllPeers(p);
 		ui->messageToSendLineEdit->clear();
 	}
 }
 
-extern Tracker tracker;
 void MainWindow::on_sendPushButton_clicked()
 {
     ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
@@ -97,7 +99,6 @@ void MainWindow::on_sendPushButton_clicked()
     net.sendToAllPeers(p);
     ui->messageToSendLineEdit->clear();
 
-	tracker.reportPacket(p.idString());
 }
 
 void MainWindow::checkForPackets()
