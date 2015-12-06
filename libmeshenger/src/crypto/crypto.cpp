@@ -254,8 +254,10 @@ namespace libmeshenger
 			throw runtime_error("Name cannot be empty!");
 
 		for(uint16_t i = 0; i < m_buddies.size(); i++){
-			if (m_buddies[i].name() == name)
+			if (m_buddies[i].name() == name) {
 				encryptMessage(em, m_buddies[i].pubkey());
+				return;
+			}
 		}
 
 		throw runtime_error("Buddy with name not found!");

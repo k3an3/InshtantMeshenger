@@ -61,10 +61,19 @@ MainWindow::~MainWindow()
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
 	/* Choose which buddy to send it to (default unencrypted) */
+	/* Format: '-e buddyname message contents go here' */
 	string msg = ui->messageToSendLineEdit->text().toStdString();
-	if ((msg.c_str()[0] <= '9') && (msg.c_str()[0] >= '0')) {
-		EncryptedMessage em(string(msg.c_str()+2));
-		cryptoEngine.encryptMessage(em, msg[0] - '0');
+	if ((msg[0] == '-') && (msg[1] == 'e')) {
+		int i = 0;
+		for (i = 3; i < msg.length(); i++) {
+			if (msg[i] == ' ')
+				break;
+		}
+		EncryptedMessage em(string(msg.c_str()+i));
+		string buddyname(msg.c_str()+3, msg.c_str()+i);
+
+		/* Encrypt to a buddy */
+		cryptoEngine.encryptMessage(em, buddyname);
 		Packet p(em);
 		ui->textEdit->append(ui->messageToSendLineEdit->text());
 		net.sendToAllPeers(p);
