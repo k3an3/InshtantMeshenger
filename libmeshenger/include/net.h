@@ -1,3 +1,5 @@
+#ifndef NET_H
+#define NET_H
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
@@ -20,7 +22,7 @@ const uint8_t DIS[] = "meshenger-disconnect";
 namespace libmeshenger
 {
 
-	void netDebugPrint(std::string s, int color = 0);
+        void netDebugPrint(std::string s, int color);
 
 	/* Peer class */
 	class Peer final
@@ -167,3 +169,4 @@ namespace libmeshenger
 	};
 
 }
+#endif
