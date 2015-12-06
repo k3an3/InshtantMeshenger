@@ -60,11 +60,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
-    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
-    Packet p(m);
-    ui->textEdit->append(ui->messageToSendLineEdit->text());
-    net.sendToAllPeers(p);
-    ui->messageToSendLineEdit->clear();
+	/* Choose which buddy to send it to (default unencrypted) */
+	/* Format: '-e buddyname message contents go here' */
+	string msg = ui->messageToSendLineEdit->text().toStdString();
+	if ((msg[0] == '-') && (msg[1] == 'e')) {
+		int i = 0;
+		for (i = 3; i < msg.length(); i++) {
+			if (msg[i] == ' ')
+				break;
+		}
+		EncryptedMessage em(string(msg.c_str()+i));
+		string buddyname(msg.c_str()+3, msg.c_str()+i);
+
+		/* Encrypt to a buddy */
+		cryptoEngine.encryptMessage(em, buddyname);
+		Packet p(em);
+		ui->textEdit->append(ui->messageToSendLineEdit->text());
+		net.sendToAllPeers(p);
+		ui->messageToSendLineEdit->clear();
+	} else {
+		ClearMessage m(msg);
+		Packet p(m);
+		ui->textEdit->append(ui->messageToSendLineEdit->text());
+		net.sendToAllPeers(p);
+		ui->messageToSendLineEdit->clear();
+	}
 }
 
 void MainWindow::on_sendPushButton_clicked()
