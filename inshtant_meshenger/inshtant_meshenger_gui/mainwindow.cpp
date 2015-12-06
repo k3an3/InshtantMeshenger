@@ -60,11 +60,22 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
-    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
-    Packet p(m);
-    ui->textEdit->append(ui->messageToSendLineEdit->text());
-    net.sendToAllPeers(p);
-    ui->messageToSendLineEdit->clear();
+	/* Choose which buddy to send it to (default unencrypted) */
+	string msg = ui->messageToSendLineEdit->text().toStdString();
+	if ((msg.c_str()[0] <= '9') && (msg.c_str()[0] >= '0')) {
+		EncryptedMessage em(string(msg.c_str()+2));
+		cryptoEngine.encryptMessage(em, msg[0] - '0');
+		Packet p(em);
+		ui->textEdit->append(ui->messageToSendLineEdit->text());
+		net.sendToAllPeers(p);
+		ui->messageToSendLineEdit->clear();
+	} else {
+		ClearMessage m(msg);
+		Packet p(m);
+		ui->textEdit->append(ui->messageToSendLineEdit->text());
+		net.sendToAllPeers(p);
+		ui->messageToSendLineEdit->clear();
+	}
 }
 
 void MainWindow::on_sendPushButton_clicked()
