@@ -11,4 +11,4 @@ add_library(chat main.cpp)
 target_link_libraries (chat Qt5::Widgets)
 
 add_executable(chat_test mainwindow.cpp)
-target_link_libraries (chat_test LINK_PUBLIC boost_system boost_thread cryptopp chat ${LIBMESHENGER})
+target_link_libraries (chat_test LINK_PUBLIC boost_system boost_thread cppnetlib-uri cryptopp chat ${LIBMESHENGER})

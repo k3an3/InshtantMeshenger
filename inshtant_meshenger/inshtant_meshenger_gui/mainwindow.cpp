@@ -9,6 +9,7 @@
 #include <parser.h>
 #include <state.h>
 #include <net.h>
+#include <tracker.h>
 
 using namespace libmeshenger;
 using namespace std;
@@ -87,6 +88,7 @@ void MainWindow::on_messageToSendLineEdit_returnPressed()
 	}
 }
 
+extern Tracker tracker;
 void MainWindow::on_sendPushButton_clicked()
 {
     ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
@@ -94,6 +96,8 @@ void MainWindow::on_sendPushButton_clicked()
     ui->textEdit->append(ui->messageToSendLineEdit->text());
     net.sendToAllPeers(p);
     ui->messageToSendLineEdit->clear();
+
+	tracker.reportPacket(p.idString());
 }
 
 void MainWindow::checkForPackets()

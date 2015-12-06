@@ -4,6 +4,7 @@
 #include <parser.h>
 #include <state.h>
 #include <net.h>
+#include <tracker.h>
 
 using namespace libmeshenger;
 using namespace std;
@@ -22,6 +23,14 @@ void displayMessageHandler(Packet& p)
     win->displayMessage(p);
 }
 
+Tracker tracker("http://meshtrack.pqz.us", net.get_ifaddr("8.8.8.8").to_string());
+static void ReportHop(Packet& p)
+{
+	cout << "\033[132m<Reporting hops\033[0m" << endl;
+	for(auto &peer : net.getPeers()) {
+		tracker.reportHop(p.idString(), to_string(p.depth()), peer.ip_addr.to_string());
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -33,6 +42,9 @@ int main(int argc, char *argv[])
 
     engine.AddCallback(ForwardPacketToPeers);
     engine.AddCallback(displayMessageHandler);
+
+	tracker.reportNode();
+
 
     /* Start listening asynchronously */
     net.discoveryListen();
