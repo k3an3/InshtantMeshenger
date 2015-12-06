@@ -50,7 +50,7 @@ int main(int argc, char ** argv)
 	Net net(5555, 5556);
 
     /* Announce this packet to the tracker */
-    string server = "10.0.242.14";
+    string server = "meshtrack.pqz.us";
     Tracker tracker("http://" + server, net.get_ifaddr(server).to_string());
     tracker.reportPacket(p.idString());
 
