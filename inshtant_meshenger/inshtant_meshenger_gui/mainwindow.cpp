@@ -78,7 +78,7 @@ void MainWindow::on_messageToSendLineEdit_returnPressed()
 		cryptoEngine.encryptMessage(em, buddyname);
 		Packet p(em);
 		tracker.reportPacket(p.idString());
-		tracker.reportHop(p.idString(), p.depth(), 
+		tracker.reportHop(p.idString(), "0", 
 				net.get_ifaddr("meshtrack.pqz.us").to_string());
 		ui->textEdit->append(ui->messageToSendLineEdit->text());
 		net.sendToAllPeers(p);
@@ -87,7 +87,7 @@ void MainWindow::on_messageToSendLineEdit_returnPressed()
 		ClearMessage m(msg);
 		Packet p(m);
 		tracker.reportPacket(p.idString());
-		tracker.reportHop(p.idString(), p.depth(), 
+		tracker.reportHop(p.idString(), "0", 
 				net.get_ifaddr("meshtrack.pqz.us").to_string());
 		ui->textEdit->append(ui->messageToSendLineEdit->text());
 		net.sendToAllPeers(p);
