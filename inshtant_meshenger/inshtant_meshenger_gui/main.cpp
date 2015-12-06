@@ -23,7 +23,7 @@ void displayMessageHandler(Packet& p)
     win->displayMessage(p);
 }
 
-Tracker tracker("http://meshtrack.pqz.us", net.get_ifaddr("example.com").to_string());
+Tracker tracker("http://meshtrack.pqz.us", net.get_ifaddr("meshtrack.pqz.us").to_string());
 static void ReportHop(Packet& p)
 {
 	cout << "\033[132m<Reporting hops\033[0m" << endl;
