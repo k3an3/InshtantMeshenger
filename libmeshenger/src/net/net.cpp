@@ -279,7 +279,13 @@ namespace libmeshenger
             /* Without modifying the port, connect will try to connect to an arbitrary
              * port, which will fail. */
             e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
-            sock.connect(e);
+			sock.connect(e);
+			/*
+			sock.async_connect(e, [this,&sock]
+					(boost::system::error_code ec)
+				{
+				});
+			*/
             addr = sock.local_endpoint().address();
         } catch (exception &e) {
             netDebugPrint(e.what(), 31);
@@ -295,7 +301,7 @@ namespace libmeshenger
 	{
 		/* Increment the depth of a packet (tx counter) */
 		p.setDepth(p.depth() + 1);
-		netDebugPrint("Packet now has depth of " + to_string(p.depth()), 33);
+		netDebugPrint("Packet now has depth of " + to_string(p.depth()), 32);
 
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
@@ -353,6 +359,8 @@ namespace libmeshenger
 		{
 			try {
 				if (!ec) {
+					/* If we havent' seen this peer before, add them to the list */
+					addPeerIfNew(tcp_listen_socket.remote_endpoint().address());
 					/* Read from the socket and create a packet object from the data */
 					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
 					vector<uint8_t> v(msg, msg + bytes);
