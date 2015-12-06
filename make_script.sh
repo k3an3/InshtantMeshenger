@@ -8,5 +8,5 @@ cp me.priv me.pub ../bin_gui
 cd ..
 
 ##wget files.drahos.me/jake.pub
-##./chat_test joe.priv keane mesh1 mesh2 mesh3 jake
+##./chat_test joe.priv keane mesh1 mesh2 mesh3 jake -Pidle.drahos.me
 
