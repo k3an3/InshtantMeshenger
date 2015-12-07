@@ -27,52 +27,6 @@ namespace libmeshenger
 				"\033[1;" << color << "m" << s << "\033[0m" << endl;
 	}
 
-	/* Private class that handles outgoing TCP connections */
-	class tcp_connection
-	{
-		private:
-			string message_;
-			tcp::socket socket_;
-			tcp_connection(boost::asio::io_service& io_service)
-				: socket_(io_service)
-			{
-			}
-
-			void handle_write(const boost::system::error_code &,
-					size_t bytes_written)
-			{
-			}
-
-			void handle_connect(const boost::system::error_code& /*error*/)
-			{
-				boost::asio::async_write(socket_, boost::asio::buffer(message_),
-						boost::bind(&tcp_connection::handle_write, this, 
-							boost::asio::placeholders::error,
-							boost::asio::placeholders::bytes_transferred));
-			}
-		public:
-			typedef boost::shared_ptr<tcp_connection> pointer;
-
-			static pointer create(boost::asio::io_service& io_service)
-			{
-				return pointer(new tcp_connection(io_service));
-			}
-
-			tcp::socket& socket()
-			{
-				return socket_;
-			}
-
-			void start(tcp::endpoint endpoint, Packet p)
-			{
-				message_ = string((char *)p.raw().data(), p.raw().size());
-
-				socket_.async_connect(endpoint,
-						boost::bind(&tcp_connection::handle_connect, 
-							this, boost::asio::placeholders::error));
-			}
-	};
-
 	/* Net class methods */
 
 	/* Default constructor for Net. Port numbers are used to bind to. */
@@ -296,20 +250,32 @@ namespace libmeshenger
 			/* Peer IP address */
 			boost::asio::ip::address addr = peers[i].ip_addr;
 
-			/* Endpoint for the peer */
-			tcp::endpoint endpoint(addr, tcp_port);
-
-
+			/* Endpoint and write source. Must be cleaned up by the sender thread */
+			tcp::endpoint * endpoint = new tcp::endpoint(addr, tcp_port);
 			vector<uint8_t> * write_source = new vector<uint8_t>(p.raw());
+
 			/* Try to connect and report any connection errors */
 			netDebugPrint("Sending packet to " +
-					endpoint.address().to_string(), 35);
+					endpoint->address().to_string(), 35);
 			/* Open a TCP connection async */
 			try {
-				tcp_connection::pointer new_connection = 
-					tcp_connection::create(io_service);
+				/* Fuck it. Create a thread and use that to send */
+				boost::thread thread([endpoint, write_source]() {
+					boost::asio::io_service io_svc2;
+					tcp::socket sock(io_svc2);
 
-				new_connection->start(endpoint, p);
+					try {
+						sock.connect(*endpoint);
+
+						boost::system::error_code ignored_error;
+						boost::asio::write(sock, boost::asio::buffer(*write_source),
+								boost::asio::transfer_all(), ignored_error);
+					} catch (exception &e) {
+					}
+
+					delete write_source;
+					delete endpoint;
+				});
 			} catch(std::exception &e) {
 					/* Handle connection errors and remove problematic peers */
 					netDebugPrint(e.what(), 41);
