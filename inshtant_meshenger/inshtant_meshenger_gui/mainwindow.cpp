@@ -5,8 +5,8 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_add_a_peer.h"
-#include "ui_PGP.h"
+#include "addpeer.h"
+#include "ui_addpeer.h"
 
 #include <parser.h>
 #include <state.h>
@@ -91,16 +91,18 @@ void MainWindow::checkForPackets()
         }
     }
 }
+
+/*
 void MainWindow::on_actionAdd_your_Key_clicked(){
     PGP s(0, net, engine, cryptoEngine);
     win = &s;
     s.show();
 }
 void MainWindow::on_actionNetwork_settings_clicked(){
-    add_a_peer m(0, net, engine, cryptoEngine);
+    addpeer m(0, net, engine, cryptoEngine);
     win = &m;
     m.show();
-}
+}*/
 
 void MainWindow::displayMessage(Packet &p)
 {
@@ -125,4 +127,10 @@ void MainWindow::displayMessage(Packet &p)
 			}
 		}
 	}
+}
+
+void MainWindow::on_actionAdd_Peers_triggered()
+{
+    AddPeer m(this);
+    m.show();
 }

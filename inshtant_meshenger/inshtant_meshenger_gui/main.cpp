@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include "addpeer.h"
+#include "pgp.h"
 #include <QApplication>
 
 #include <parser.h>

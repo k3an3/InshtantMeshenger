@@ -25,13 +25,14 @@ public:
     libmeshenger::PacketEngine &engine;
     libmeshenger::CryptoEngine &cryptoEngine;
 private slots:
-
     void on_messageToSendLineEdit_returnPressed();
-
     void on_sendPushButton_clicked();
-
     void checkForPackets();
+    /*
+    void MainWindow::on_actionAdd_your_Key_clicked();
+    void MainWindow::on_actionNetwork_settings_clicked();*/
 
+    void on_actionAdd_Peers_triggered();
 
 private:
     Ui::MainWindow *ui;

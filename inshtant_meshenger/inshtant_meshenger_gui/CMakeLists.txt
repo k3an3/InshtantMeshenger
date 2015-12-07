@@ -10,5 +10,5 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_library(chat main.cpp)
 target_link_libraries (chat Qt5::Widgets)
 
-add_executable(chat_test mainwindow.cpp)
+add_executable(chat_test mainwindow.cpp addpeer.cpp pgp.cpp)
 target_link_libraries (chat_test LINK_PUBLIC boost_system boost_thread cryptopp chat ${LIBMESHENGER})

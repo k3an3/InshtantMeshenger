@@ -136,29 +136,18 @@
      <x>0</x>
      <y>0</y>
      <width>1311</width>
-     <height>21</height>
+     <height>27</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuSettings">
+   <widget class="QMenu" name="menuOptions">
     <property name="title">
-     <string>Settings</string>
+     <string>Options</string>
     </property>
-    <addaction name="actionAdd_your_Key"/>
-    <addaction name="actionNetwork_settings"/>
+    <addaction name="actionAdd_Peers"/>
+    <addaction name="actionAdd_Buddies"/>
+    <addaction name="actionSet_Keys"/>
    </widget>
-   <widget class="QMenu" name="menuTrust_List">
-    <property name="title">
-     <string>Trust List</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuPeer_Connections">
-    <property name="title">
-     <string>Peer Connections</string>
-    </property>
-   </widget>
-   <addaction name="menuSettings"/>
-   <addaction name="menuTrust_List"/>
-   <addaction name="menuPeer_Connections"/>
+   <addaction name="menuOptions"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -169,14 +158,19 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
-  <action name="actionAdd_your_Key">
+  <action name="actionAdd_Peers">
    <property name="text">
-    <string>Add your Key</string>
+    <string>Add Peers</string>
    </property>
   </action>
-  <action name="actionNetwork_settings">
+  <action name="actionAdd_Buddies">
    <property name="text">
-    <string>Network settings</string>
+    <string>Add Buddies</string>
+   </property>
+  </action>
+  <action name="actionSet_Keys">
+   <property name="text">
+    <string>Set Keys</string>
    </property>
   </action>
  </widget>
