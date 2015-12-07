@@ -226,7 +226,6 @@ namespace libmeshenger
 	{
 		/* Add a Peer to the peer list */
 		peers.push_back(p);
-		tracker.reportPeering(p.ip_addr.to_string());
 	}
 
 	void
@@ -279,13 +278,10 @@ namespace libmeshenger
             /* Without modifying the port, connect will try to connect to an arbitrary
              * port, which will fail. */
             e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
-			sock.connect(e);
-			/*
 			sock.async_connect(e, [this,&sock]
 					(boost::system::error_code ec)
 				{
 				});
-			*/
             addr = sock.local_endpoint().address();
         } catch (exception &e) {
             netDebugPrint(e.what(), 31);

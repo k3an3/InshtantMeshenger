@@ -19,7 +19,6 @@ namespace libmeshenger
 			void reportNode();
 			void reportHop(std::string packet_id, std::string depth,
 					std::string dest);
-			void reportPeering(std::string upstream);
 
 		private:
 			/* Hostname/address of the tracking server */
