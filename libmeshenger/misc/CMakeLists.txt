@@ -8,5 +8,5 @@ include_directories("../include")
 add_executable (TestNode test-node.cpp)
 add_executable (TestSender test-sender.cpp)
 
-target_link_libraries(TestSender LINK_PUBLIC cryptopp boost_system boost_thread ${LIBMESHENGER})
-target_link_libraries(TestNode LINK_PUBLIC cryptopp boost_system boost_thread ${LIBMESHENGER})
+target_link_libraries(TestSender LINK_PUBLIC cryptopp cppnetlib-uri boost_system boost_thread ${LIBMESHENGER})
+target_link_libraries(TestNode LINK_PUBLIC cryptopp cppnetlib-uri boost_system boost_thread ${LIBMESHENGER})

@@ -10,6 +10,7 @@
 
 #include <parser.h>
 #include <net.h>
+#include <tracker.h>
 
 #define NET_DEBUG true
 
@@ -39,7 +40,8 @@ namespace libmeshenger
 		udp_listen_socket(io_service),
 		tcp_listen_socket(io_service),
 		tcp_acceptor(io_service),
-		tcp_resolver(io_service)
+		tcp_resolver(io_service),
+		tracker("", "")
 	{
 	}
 
@@ -48,6 +50,12 @@ namespace libmeshenger
 	Net::run()
 	{
 		boost::thread thread(boost::bind(&boost::asio::io_service::run, &io_service));
+	}
+
+	void
+	Net::enableTracker(Tracker &tracker_)
+	{
+		tracker = tracker_;
 	}
 
 	/* Starts a UDP listener on the provided port. The listener will
@@ -221,19 +229,28 @@ namespace libmeshenger
 	}
 
 	void
-	Net::addPeer(string s)
+	Net::addPeer(string hostname)
+	{
+		/* Add the peer to the peer list */
+		peers.push_back(Peer(resolveSingle(hostname).address()));
+	}
+
+	tcp::endpoint
+	Net::resolveSingle(string s)
 	{
 		/* Create a resolver so string s can be resolved as either an IP
 		 * address or a hostname */
 		tcp::resolver::query query(s, "");
 		/* Resolve the string into an iterator of endpoint objects */
-		tcp::resolver::iterator iter = tcp_resolver.resolve(query);
-		tcp::resolver::iterator end;
-		/* Save the first endpoint in the iterator */
-		tcp::endpoint endpoint = *iter++;
-		/* Add the peer to the peer list */
-		peers.push_back(Peer(endpoint.address()));
-	}
+        try {
+            tcp::resolver::iterator iter = tcp_resolver.resolve(query);
+            tcp::resolver::iterator end;
+            /* Return the first endpoint in the iterator */
+            return *iter++;
+        } catch (exception &e) {
+            netDebugPrint(e.what(), 31);
+        }
+    }
 
 	std::vector<Peer>
 	Net::getPeers()
@@ -241,10 +258,47 @@ namespace libmeshenger
 		return std::vector<Peer>(peers.begin(), peers.end());
 	}
 
+    string
+    Net::getHostname()
+    {
+        return boost::asio::ip::host_name();
+    }
+
+    boost::asio::ip::address
+    Net::get_ifaddr(string remote_host)
+    {
+		/* Only real portable way to get our IP address. This will most likely
+		 * obtain the IP address of the interface that has the default route.
+		 * We create a socket, open a connection to something (i.e. MeshTrack or Google),
+		 * and get the IP address from the resultant local endpoint. */
+		tcp::socket sock(io_service);
+        boost::asio::ip::address addr;
+        try {
+            tcp::endpoint e = resolveSingle(remote_host);
+            /* Without modifying the port, connect will try to connect to an arbitrary
+             * port, which will fail. */
+            e.port(80); // TODO: Default to 80, override if :<portnum> in remote_host
+			sock.async_connect(e, [this,&sock]
+					(boost::system::error_code ec)
+				{
+				});
+            addr = sock.local_endpoint().address();
+        } catch (exception &e) {
+            netDebugPrint(e.what(), 31);
+        }
+        if (sock.is_open())
+            sock.close();
+		return addr;
+    }
+
 	/* Sends a Packet to all previously discovered peers using TCP */
 	void
 	Net::sendToAllPeers(Packet p)
 	{
+		/* Increment the depth of a packet (tx counter) */
+		p.setDepth(p.depth() + 1);
+		netDebugPrint("Packet now has depth of " + to_string(p.depth()), 32);
+
 		/* Cycle through the peers vector and prepare to send */
 		for(int i = 0; i < peers.size(); i++) {
 			/* Peer IP address */
@@ -306,6 +360,8 @@ namespace libmeshenger
 		{
 			try {
 				if (!ec) {
+					/* If we havent' seen this peer before, add them to the list */
+					addPeerIfNew(tcp_listen_socket.remote_endpoint().address());
 					/* Read from the socket and create a packet object from the data */
 					size_t bytes = tcp_listen_socket.read_some(boost::asio::buffer(msg, MAX_LENGTH));
 					vector<uint8_t> v(msg, msg + bytes);
