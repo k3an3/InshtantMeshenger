@@ -7,6 +7,8 @@
 #include "ui_mainwindow.h"
 #include "addpeer.h"
 #include "ui_addpeer.h"
+#include "pgp.h"
+#include "ui_pgp.h"
 
 #include <parser.h>
 #include <state.h>
@@ -92,18 +94,6 @@ void MainWindow::checkForPackets()
     }
 }
 
-/*
-void MainWindow::on_actionAdd_your_Key_clicked(){
-    PGP s(0, net, engine, cryptoEngine);
-    win = &s;
-    s.show();
-}
-void MainWindow::on_actionNetwork_settings_clicked(){
-    addpeer m(0, net, engine, cryptoEngine);
-    win = &m;
-    m.show();
-}*/
-
 void MainWindow::displayMessage(Packet &p)
 {
 	/* Display ClearMessage to the default window */
@@ -131,6 +121,12 @@ void MainWindow::displayMessage(Packet &p)
 
 void MainWindow::on_actionAdd_Peers_triggered()
 {
-    AddPeer m(this);
-    m.show();
+    AddPeer a(this);
+    a.exec();
+}
+
+void MainWindow::on_actionSet_Keys_triggered()
+{
+    PGP p(this);
+    p.exec();
 }

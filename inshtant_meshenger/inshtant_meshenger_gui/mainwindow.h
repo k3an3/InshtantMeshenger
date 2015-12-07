@@ -34,6 +34,8 @@ private slots:
 
     void on_actionAdd_Peers_triggered();
 
+    void on_actionSet_Keys_triggered();
+
 private:
     Ui::MainWindow *ui;
 };
