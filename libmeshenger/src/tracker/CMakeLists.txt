@@ -1,7 +1,7 @@
-add_library(libmeshenger-net
-	net.cpp)
+add_library(libmeshenger-tracker
+	tracker.cpp)
 
-add_executable (nettest main.cpp)
+add_executable (tracker_test main.cpp)
 
 find_package (Boost 1.54.0 REQUIRED COMPONENTS system thread)
 if (Boost_FOUND)
@@ -13,4 +13,4 @@ set (Boost_USE_STATIC_LIBS ON)
 set (Boost_USE_STATIC_RUNTIME OFF)
 set (BOOST_ALL_DYN_LINK OFF)
 
-target_link_libraries(nettest LINK_PUBLIC cryptopp cppnetlib-uri boost_system boost_thread ${LIBMESHENGER})
+target_link_libraries(tracker_test LINK_PUBLIC cryptopp cppnetlib-uri boost_system boost_thread ${LIBMESHENGER})

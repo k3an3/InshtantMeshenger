@@ -6,6 +6,7 @@
 #include <state.h>
 #include <net.h>
 #include <crypto.h>
+#include <tracker.h>
 
 using namespace std;
 using namespace libmeshenger;
@@ -53,6 +54,17 @@ void ForwardPacketToPeers(Packet& p)
 	net.sendToAllPeers(p);
 }
 
+/* Report packets to the tracker when we get them */
+string server = "10.0.242.14";
+static Tracker tracker("http://" + server, net.get_ifaddr(server).to_string());
+void ReportHop(Packet& p)
+{
+	cout << "\033[1;32m<Reporting hops>\033[0m" << endl;
+    for(auto &peer : net.getPeers()) {
+        tracker.reportHop(p.idString(), to_string(p.depth()), peer.ip_addr.to_string());
+    }
+}
+
 int main(int argc, char** argv)
 {
 
@@ -69,12 +81,17 @@ int main(int argc, char** argv)
 	/* Set the private key */
 	cryptoEngine.setPrivateKeyFromFile(argv[1]);
 
-	/* Register the two callbacks
+    /* Report this node to the tracker */
+    tracker.reportNode();
+
+	/* Register the callbacks
 	 *
 	 * This is currently 100% functional*/
 	engine.AddCallback(PrintMessage);
 	engine.AddCallback(ForwardPacketToPeers);
 	engine.AddCallback(PrintEncryptedMessage);
+	engine.AddCallback(ReportHop);
+    net.enableTracker(tracker);
 
 	/* Start listening asynchronously */
     net.discoveryListen();

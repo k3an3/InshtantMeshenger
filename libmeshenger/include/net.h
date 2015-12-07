@@ -9,6 +9,7 @@
 #include <mutex>
 
 #include <parser.h>
+#include <tracker.h>
 
 using boost::asio::ip::udp;
 using boost::asio::ip::tcp;
@@ -70,6 +71,8 @@ namespace libmeshenger
 			std::vector<Peer> peers;
 			/* Packet list */
 			std::vector<Packet> packets;
+			/* Tracker */
+			Tracker tracker;
 
 			/* ## Private member functions ## */
 
@@ -96,6 +99,8 @@ namespace libmeshenger
 			/* given an IP address */
 			bool peerExistsByAddress(boost::asio::ip::address ip_addr);
 
+			tcp::endpoint resolveSingle(std::string s);
+
 		public:
 			/* ## Public member functions ## */
 
@@ -109,6 +114,12 @@ namespace libmeshenger
 			/* Sends out a discovery disconnect message and cleans up the
 			 * sockets */
 			void shutdown();
+
+			/* Enable the tracker */
+			void enableTracker(Tracker &tracker_);
+
+			std::string getHostname();
+			boost::asio::ip::address get_ifaddr(std::string remote_host);
 
 			/* ### Networking methods ### */
 
