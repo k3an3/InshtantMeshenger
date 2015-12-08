@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QSpacerItem>
 #include <net.h>
 #include <parser.h>
 #include <string>
@@ -55,6 +56,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QVBoxLayout * vlayout;
+    QSpacerItem *spacer;
 
 };
 

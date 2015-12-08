@@ -193,18 +193,21 @@ void MainWindow::populateBuddyList(vector<Buddy> buddies)
     ui->buddyScrollArea->setWidget(central);
     vlayout = new QVBoxLayout(central);
     central->show();
+    spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    vlayout->addItem(spacer);
     for(int i = 0; i < buddies.size(); i++)
     {
         addBuddyToList(buddies[i].name());
+        //ui->tabWidget->addTab();
     }
-    QSpacerItem *spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-    vlayout->addItem(spacer);
 }
 
 void MainWindow::addBuddyToList(string buddy_name)
 {
     QPushButton *buddy_button = new QPushButton(QString::fromStdString(buddy_name));
+    vlayout->removeItem(spacer);
     vlayout->addWidget(buddy_button);
+    vlayout->addItem(spacer);
     buddy_button->show();
 }
 
