@@ -9,6 +9,7 @@
 #include "ui_addpeer.h"
 #include "pgp.h"
 #include "ui_pgp.h"
+#include "addbuddy.h"
 
 #include <parser.h>
 #include <state.h>
@@ -189,12 +190,18 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 void MainWindow::on_actionAdd_Peers_triggered()
 {
-    AddPeer a(this, net, engine, cryptoEngine, tracker, settings);
-    a.exec();
+    AddPeer * a = new AddPeer(this, net, engine, cryptoEngine, tracker, settings);
+    a->exec();
 }
 
 void MainWindow::on_actionSet_Keys_triggered()
 {
-    PGP p(this);
-    p.exec();
+    PGP * p = new PGP(this);
+    p->exec();
+}
+
+void MainWindow::on_actionAdd_Buddies_triggered()
+{
+    AddBuddy * ab = new AddBuddy(this);
+    ab->exec();
 }

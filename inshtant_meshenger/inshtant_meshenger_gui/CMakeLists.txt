@@ -9,5 +9,5 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-add_executable(inshtant_meshenger mainwindow.cpp addpeer.cpp pgp.cpp main.cpp)
+add_executable(inshtant_meshenger mainwindow.cpp addpeer.cpp pgp.cpp main.cpp addbuddy.cpp)
 target_link_libraries (inshtant_meshenger LINK_PUBLIC boost_system boost_thread Qt5::Widgets cppnetlib-uri cryptopp ${LIBMESHENGER})
