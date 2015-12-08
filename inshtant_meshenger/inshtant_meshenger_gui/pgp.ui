@@ -11,16 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>My Keys</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
-   <item>
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>My Keys</string>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QSplitter" name="splitter_2">
      <property name="orientation">
