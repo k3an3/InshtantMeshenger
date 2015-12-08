@@ -8,6 +8,7 @@
 #include <string>
 #include <state.h>
 #include <crypto.h>
+#include <vector>
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +28,8 @@ public:
     libmeshenger::CryptoEngine &cryptoEngine;
 	libmeshenger::Tracker &tracker;
     QSettings &settings;
+    void loadBuddies(libmeshenger::CryptoEngine& ce);
+    void saveBuddies(std::vector<libmeshenger::Buddy> buddies);
 private slots:
 
     void on_messageToSendLineEdit_returnPressed();
