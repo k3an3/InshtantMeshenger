@@ -11,16 +11,9 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Add a Buddy</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <item>
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Add A Buddy</string>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QFrame" name="frame">
      <property name="frameShape">
