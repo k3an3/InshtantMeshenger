@@ -18,6 +18,7 @@
 #include <net.h>
 #include <tracker.h>
 #include <string>
+#include <QDesktopServices>
 
 using namespace libmeshenger;
 using namespace std;
@@ -231,4 +232,9 @@ void MainWindow::on_actionAdd_Buddies_triggered()
 {
     AddBuddy * ab = new AddBuddy(this);
     ab->exec();
+}
+
+void MainWindow::on_actionView_Tracking_triggered()
+{
+    QDesktopServices::openUrl(QUrl("http://meshtrack.pqz.us", QUrl::TolerantMode));
 }

@@ -72,7 +72,7 @@
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
-              <property name="clearButtonEnabled">
+              <property name="clearButtonEnabled" stdset="0">
                <bool>false</bool>
               </property>
              </widget>
@@ -134,8 +134,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>272</width>
-             <height>820</height>
+             <width>293</width>
+             <height>857</height>
             </rect>
            </property>
           </widget>
@@ -153,7 +153,7 @@
      <x>0</x>
      <y>0</y>
      <width>1311</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
@@ -163,6 +163,8 @@
     <addaction name="actionAdd_Peers"/>
     <addaction name="actionAdd_Buddies"/>
     <addaction name="actionSet_Keys"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_Tracking"/>
    </widget>
    <addaction name="menuOptions"/>
   </widget>
@@ -188,6 +190,11 @@
   <action name="actionSet_Keys">
    <property name="text">
     <string>Set Keys</string>
+   </property>
+  </action>
+  <action name="actionView_Tracking">
+   <property name="text">
+    <string>View Tracking</string>
    </property>
   </action>
  </widget>
