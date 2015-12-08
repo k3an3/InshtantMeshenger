@@ -10,10 +10,13 @@
 #include "pgp.h"
 #include "ui_pgp.h"
 
+#include<vector>
+#include <crypto.h>
 #include <parser.h>
 #include <state.h>
 #include <net.h>
 #include <tracker.h>
+#include <string>
 
 using namespace libmeshenger;
 using namespace std;
@@ -58,6 +61,8 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkForPackets()));
 	timer->start(100);
+
+    populateBuddyList(cryptoEngine.buddies());
 }
 
 MainWindow::~MainWindow()
@@ -179,6 +184,26 @@ void MainWindow::loadBuddies(CryptoEngine& ce)
         }
     }
     settings.endArray();
+}
+
+void MainWindow::populateBuddyList(vector<Buddy> buddies)
+{
+    QWidget *central = new QWidget(this);
+    ui->buddyScrollArea->setWidget(central);
+    QVBoxLayout *vlayout = new QVBoxLayout(central);
+    central->show();
+    for(int i = 0; i < 5/*buddies.size()*/; i++)
+    {
+        addBuddyToList(buddies[i].name(), central, vlayout);
+    }
+}
+
+void MainWindow::addBuddyToList(string buddy_name, QWidget *central, QVBoxLayout *vlayout)
+{
+    QPushButton *buddy_button = new QPushButton("herwsdfg");
+    vlayout->addWidget(buddy_button);
+    buddy_button->show();
+    //this->ui->buddyListFrame-> this->ui->buddyListFrame->children().indexOf(verticalSpacer, 0)
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

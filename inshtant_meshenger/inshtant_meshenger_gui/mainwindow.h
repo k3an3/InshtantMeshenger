@@ -3,12 +3,15 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QVBoxLayout>
+#include <QWidget>
 #include <net.h>
 #include <parser.h>
 #include <string>
 #include <state.h>
 #include <crypto.h>
 #include <vector>
+#include <string>
 
 namespace Ui {
 class MainWindow;
@@ -30,6 +33,8 @@ public:
     QSettings &settings;
     void loadBuddies(libmeshenger::CryptoEngine& ce);
     void saveBuddies(std::vector<libmeshenger::Buddy> buddies);
+    void populateBuddyList(std::vector<libmeshenger::Buddy> buddies);
+    void addBuddyToList(std::string buddy_name, QWidget *central, QVBoxLayout *vlayout);
 private slots:
     void on_messageToSendLineEdit_returnPressed();
     void on_sendPushButton_clicked();
