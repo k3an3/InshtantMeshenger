@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSettings>
 #include <net.h>
 #include <parser.h>
 #include <string>
@@ -17,7 +18,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent, libmeshenger::Net &net, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, libmeshenger::Tracker &tracker);
+    explicit MainWindow(QWidget *parent, libmeshenger::Net &net, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, libmeshenger::Tracker &tracker, QSettings &settings_p);
     ~MainWindow();
     void displayMessage(libmeshenger::Packet &p);
 
@@ -25,6 +26,7 @@ public:
     libmeshenger::PacketEngine &engine;
     libmeshenger::CryptoEngine &cryptoEngine;
 	libmeshenger::Tracker &tracker;
+    QSettings &settings;
 private slots:
 
     void on_messageToSendLineEdit_returnPressed();

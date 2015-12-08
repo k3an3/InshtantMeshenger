@@ -14,13 +14,14 @@
 using namespace libmeshenger;
 using namespace std;
 
-MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, Tracker &tracker_p) :
+MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, Tracker &tracker_p, QSettings &settings_p):
     QMainWindow(parent),
     ui(new Ui::MainWindow),
 	net(net_p),
 	engine(engine_p),
 	cryptoEngine(crypto_p),
-	tracker(tracker_p)
+	tracker(tracker_p),
+	settings(settings_p)
 {
     ui->setupUi(this);
     /* set up a color palette */
@@ -149,5 +150,6 @@ void MainWindow::displayMessage(Packet &p)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	settings.sync();
 	 net.shutdown();
 }

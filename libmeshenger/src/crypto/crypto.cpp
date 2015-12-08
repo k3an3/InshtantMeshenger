@@ -55,6 +55,12 @@ namespace libmeshenger
 		privkey_initialized = true;
 	}
 
+    std::vector<Buddy>
+    CryptoEngine::buddies()
+    {
+        return std::vector<Buddy>(m_buddies.begin(), m_buddies.end());
+    }
+
 	/* Attempt to decrypt the message */
 	bool
 	CryptoEngine::tryDecrypt(EncryptedMessage& em)
@@ -171,7 +177,7 @@ namespace libmeshenger
 
 		rng.GenerateBlock(key, key.size());
 		rng.GenerateBlock(iv.data(), iv.size());
-		
+
 		/* Encrypt the one-time use AES key */
 		vector<uint8_t> key_cipher;
 		RSAES_OAEP_SHA_Encryptor rsa(pubkey);
@@ -184,7 +190,7 @@ namespace libmeshenger
 		RSASS<PSS, SHA1>::Signer signer(m_privkey);
 	 	size_t sig_size = signer.MaxSignatureLength();
 	 	SecByteBlock signature(sig_size);
-	
+
 	 	sig_size = signer.SignMessage(rng, em.m_body_dec.data(), em.m_body_dec.size(), signature);
 		signature.resize(sig_size);
 
@@ -370,7 +376,7 @@ namespace libmeshenger
 		        new StringSink(decoded)
 		    )
 		);
-	
+
 		StringSource dss(decoded, true);
 		dss.TransferTo(queue);
 		queue.MessageEnd();
@@ -392,7 +398,7 @@ namespace libmeshenger
 		        new StringSink(decoded)
 		    )
 		);
-	
+
 		StringSource dss(decoded, true);
 		dss.TransferTo(queue);
 		queue.MessageEnd();
@@ -453,9 +459,9 @@ namespace libmeshenger
 		string fingerprint;
 		char buffer[3];
 		string encoded = pubkeyToBase64(key);
-		CryptoPP::SHA256().CalculateDigest(hash, 
+		CryptoPP::SHA256().CalculateDigest(hash,
 				(unsigned char *) encoded.c_str(), encoded.length());
-		
+
 		for(int i = 0; i < 16; i++) {
 			snprintf(buffer, 3, "%02X", (hash[i] ^ hash[16+i]));
 			fingerprint += buffer;
