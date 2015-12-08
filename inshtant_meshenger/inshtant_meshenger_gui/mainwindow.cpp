@@ -239,5 +239,5 @@ void MainWindow::on_actionAdd_Buddies_triggered()
 
 void MainWindow::on_actionView_Tracking_triggered()
 {
-    QDesktopServices::openUrl(QUrl("http://meshtrack.pqz.us", QUrl::TolerantMode));
+    QDesktopServices::openUrl(QUrl("http://meshtrack.pqz.us/packets", QUrl::TolerantMode));
 }
