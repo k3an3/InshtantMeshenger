@@ -14,7 +14,7 @@
 using boost::asio::ip::udp;
 using boost::asio::ip::tcp;
 
-const int32_t MAX_LENGTH = 1024;
+const int32_t MAX_LENGTH = 4096;
 const uint8_t RESP[] = "meshenger-discovery-reply";
 const uint8_t MSG[] = "meshenger-discovery-probe";
 const uint8_t DIS[] = "meshenger-disconnect";
