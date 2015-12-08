@@ -33,7 +33,7 @@
           <item>
            <widget class="QTabWidget" name="tabWidget">
             <property name="currentIndex">
-             <number>1</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="tab">
              <attribute name="title">
@@ -41,7 +41,20 @@
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <widget class="QTextEdit" name="textEdit"/>
+               <widget class="QTextEdit" name="textEdit">
+                <property name="cursor" stdset="0">
+                 <cursorShape>IBeamCursor</cursorShape>
+                </property>
+                <property name="acceptDrops">
+                 <bool>false</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+                <property name="textInteractionFlags">
+                 <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -55,7 +68,14 @@
           <item>
            <layout class="QHBoxLayout" name="messageHorizontalLayout">
             <item>
-             <widget class="QLineEdit" name="messageToSendLineEdit"/>
+             <widget class="QLineEdit" name="messageToSendLineEdit">
+              <property name="autoFillBackground">
+               <bool>true</bool>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
             <item>
              <widget class="QPushButton" name="sendPushButton">
