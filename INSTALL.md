@@ -8,8 +8,9 @@ Debian/Ubuntu:
 If building the Qt GUI ```apt-get install qt5-default```
 
 ## Install
-
+```
 cd G32_InshtantMeshenger/libmeshenger
 mkdir build && cd build
 cmake ..
 make
+```
