@@ -33,3 +33,9 @@ void AddBuddy::on_pushButton_2_clicked()
 {
     destroy();
 }
+
+void AddBuddy::on_plainTextEdit_textChanged()
+{
+    string fp = CryptoEngine::fingerprint(CryptoEngine::pubkeyFromBase64(ui->plainTextEdit->toPlainText().toStdString()));
+    ui->fpLine->setText(QString::fromStdString(fp));
+}
