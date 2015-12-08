@@ -78,16 +78,10 @@ void MainWindow::sendMessage()
         /* Choose which buddy to send it to (default unencrypted) */
         /* Format: '-e buddyname message contents go here' */
 		int index = ui->tabWidget->currentIndex();
-		msg = "-e " + cryptoEngine.buddies()[index - 1].name() + " " + msg;
-		cout << msg << endl;
-        if ((msg[0] == '-') && (msg[1] == 'e')) {
-            int i = 0;
-            for (i = 3; i < msg.length(); i++) {
-                if (msg[i] == ' ')
-                    break;
-            }
-            EncryptedMessage em(string(msg.c_str()+i));
-            string buddyname(msg.c_str()+3, msg.c_str()+i);
+		cout << index << endl;
+        if (index > 0) {
+			string buddyname = cryptoEngine.buddies()[index - 1].name();
+            EncryptedMessage em(string(msg.c_str()));
 
             /* Encrypt to a buddy */
             try {
@@ -109,6 +103,7 @@ void MainWindow::sendMessage()
             tracker.reportPacket(p.idString());
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
+			if (index <= 0) index = 1;
             tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             ui->messageToSendLineEdit->clear();
