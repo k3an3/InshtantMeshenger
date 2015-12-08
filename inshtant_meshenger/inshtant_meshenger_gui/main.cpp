@@ -88,5 +88,6 @@ int main(int argc, char *argv[])
     net.run();
 
     w.show();
+    w.populateBuddyList(cryptoEngine.buddies());
     return a.exec();
 }

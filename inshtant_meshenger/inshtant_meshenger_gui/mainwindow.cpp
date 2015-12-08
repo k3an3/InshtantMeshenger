@@ -62,8 +62,6 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::
 	QTimer *timer = new QTimer(this);
 	connect(timer, SIGNAL(timeout()), this, SLOT(checkForPackets()));
 	timer->start(100);
-
-    populateBuddyList(cryptoEngine.buddies());
 }
 
 MainWindow::~MainWindow()
@@ -193,20 +191,22 @@ void MainWindow::populateBuddyList(vector<Buddy> buddies)
 {
     QWidget *central = new QWidget(this);
     ui->buddyScrollArea->setWidget(central);
-    QVBoxLayout *vlayout = new QVBoxLayout(central);
+    vlayout = new QVBoxLayout(central);
     central->show();
-    for(int i = 0; i < 5/*buddies.size()*/; i++)
+    for(int i = 0; i < buddies.size(); i++)
     {
-        addBuddyToList(buddies[i].name(), central, vlayout);
+        addBuddyToList(buddies[i].name());
     }
+    QSpacerItem *spacer = new QSpacerItem(vlayout);
+    vlayout->addWidget(spacer);
+    buddy_button->show();
 }
 
-void MainWindow::addBuddyToList(string buddy_name, QWidget *central, QVBoxLayout *vlayout)
+void MainWindow::addBuddyToList(string buddy_name)
 {
-    QPushButton *buddy_button = new QPushButton("herwsdfg");
+    QPushButton *buddy_button = new QPushButton(QString::fromStdString(buddy_name));
     vlayout->addWidget(buddy_button);
     buddy_button->show();
-    //this->ui->buddyListFrame-> this->ui->buddyListFrame->children().indexOf(verticalSpacer, 0)
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

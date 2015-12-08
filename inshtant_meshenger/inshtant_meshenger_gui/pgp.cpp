@@ -62,11 +62,14 @@ void PGP::on_Export_Key_clicked()
 
 void PGP::on_Load_Key_clicked()
 {
-    ui->label->setText("Key was imported.");
-    string base64 = ui->textEdit->toPlainText().toStdString();
-    RSA::PrivateKey privkey = CryptoEngine::privkeyFromBase64(base64);
-    ((MainWindow *) this->parent())->cryptoEngine.setPrivateKey(privkey);
-    settings.setValue("crypto/privkey", base64.c_str());
+    try {
+        ui->label->setText("Key was imported.");
+        string base64 = ui->textEdit->toPlainText().toStdString();
+        RSA::PrivateKey privkey = CryptoEngine::privkeyFromBase64(base64);
+        ((MainWindow *) this->parent())->cryptoEngine.setPrivateKey(privkey);
+        settings.setValue("crypto/privkey", base64.c_str());
+    } catch (CryptoPP::BERDecodeErr e) {
+    }
 }
 
 void PGP::on_pushButton_4_clicked()
