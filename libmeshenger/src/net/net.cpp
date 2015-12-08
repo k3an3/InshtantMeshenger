@@ -266,6 +266,7 @@ namespace libmeshenger
 			udp_listen_socket.close();
 		if (tcp_listen_socket.is_open())
 			tcp_listen_socket.close();
+		io_service.stop();
 	}
 
     string
