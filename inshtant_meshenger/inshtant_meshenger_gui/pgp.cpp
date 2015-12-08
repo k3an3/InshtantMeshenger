@@ -37,6 +37,8 @@ PGP::PGP(QWidget *parent, QSettings& settings_p) :
     palette.setColor(QPalette::ButtonText, Qt::black);
     palette.setColor(QPalette::BrightText, Qt::white);
     palette.setColor(QPalette::Background, Qt::gray);
+
+    on_textEdit_textChanged();
 }
 
 PGP::~PGP()
