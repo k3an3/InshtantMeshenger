@@ -197,9 +197,8 @@ void MainWindow::populateBuddyList(vector<Buddy> buddies)
     {
         addBuddyToList(buddies[i].name());
     }
-    QSpacerItem *spacer = new QSpacerItem(vlayout);
-    vlayout->addWidget(spacer);
-    buddy_button->show();
+    QSpacerItem *spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    vlayout->addItem(spacer);
 }
 
 void MainWindow::addBuddyToList(string buddy_name)
