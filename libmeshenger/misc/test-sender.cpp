@@ -59,4 +59,7 @@ int main(int argc, char ** argv)
 	net.sendToAllPeers(p);
 
 	cout << "MessageSent!" << endl;
+
+	/* Give the sender thread one second to finish */
+	system("sleep 1");
 }

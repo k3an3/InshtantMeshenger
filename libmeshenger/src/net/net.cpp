@@ -304,25 +304,32 @@ namespace libmeshenger
 			/* Peer IP address */
 			boost::asio::ip::address addr = peers[i].ip_addr;
 
-			/* Endpoint for the peer */
-			tcp::endpoint endpoint(addr, tcp_port);
-
-			/* Socket used to create the connection */
-			tcp::socket sock(io_service);
+			/* Endpoint and write source. Must be cleaned up by the sender thread */
+			tcp::endpoint * endpoint = new tcp::endpoint(addr, tcp_port);
+			vector<uint8_t> * write_source = new vector<uint8_t>(p.raw());
 
 			/* Try to connect and report any connection errors */
 			netDebugPrint("Sending packet to " +
-					endpoint.address().to_string(), 35);
+					endpoint->address().to_string(), 35);
+			/* Open a TCP connection async */
 			try {
-				/* Open a TCP connection async */
-				sock.async_connect(endpoint, [this,&sock,p,i]
-						(boost::system::error_code ec)
-					{
-					});
-				/* Send the data (not fun) */
-				boost::asio::write(sock, boost::asio::buffer(p.raw().data(),
-							p.raw().size()));
-				peers[i].strikes = 0;
+				/* Fuck it. Create a thread and use that to send */
+				boost::thread thread([endpoint, write_source]() {
+					boost::asio::io_service io_svc2;
+					tcp::socket sock(io_svc2);
+
+					try {
+						sock.connect(*endpoint);
+
+						boost::system::error_code ignored_error;
+						boost::asio::write(sock, boost::asio::buffer(*write_source),
+								boost::asio::transfer_all(), ignored_error);
+					} catch (exception &e) {
+					}
+
+					delete write_source;
+					delete endpoint;
+				});
 			} catch(std::exception &e) {
 					/* Handle connection errors and remove problematic peers */
 					netDebugPrint(e.what(), 41);
@@ -335,8 +342,6 @@ namespace libmeshenger
 						netDebugPrint("Three strikes. Removing.", 31);
 						peers.erase(peers.begin() + i);
 					}
-					if (sock.is_open())
-						sock.close();
 			}
 		}
 	}
