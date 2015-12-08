@@ -15,12 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     pgp.cpp \
-    addpeer.cpp
+    addpeer.cpp \
+    addbuddy.cpp
 
 HEADERS  += mainwindow.h \
     pgp.h \
-    addpeer.h
+    addpeer.h \
+    addbuddy.h
 
 FORMS    += mainwindow.ui \
     pgp.ui \
-    addpeer.ui
+    addpeer.ui \
+    addbuddy.ui
