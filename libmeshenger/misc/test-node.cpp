@@ -55,7 +55,7 @@ void ForwardPacketToPeers(Packet& p)
 }
 
 /* Report packets to the tracker when we get them */
-string server = "10.0.242.14";
+string server = "meshtrack.pqz.us";
 static Tracker tracker("http://" + server, net.get_ifaddr(server).to_string());
 void ReportHop(Packet& p)
 {
