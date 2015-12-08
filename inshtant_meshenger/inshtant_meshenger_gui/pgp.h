@@ -2,6 +2,7 @@
 #define PGP_H
 
 #include <QDialog>
+#include <QSettings>
 #include <net.h>
 #include <parser.h>
 #include <string>
@@ -17,8 +18,9 @@ class PGP : public QDialog
     Q_OBJECT
 
 public:
-    explicit PGP(QWidget *parent = 0);
+    explicit PGP(QWidget *parent, QSettings& settings_p);
     ~PGP();
+    QSettings &settings;
 private slots:
     void on_pushButton_clicked();
 

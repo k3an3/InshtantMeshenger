@@ -184,6 +184,7 @@ void MainWindow::loadBuddies(CryptoEngine& ce)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	settings.setValue("crypto/privkey", cryptoEngine.privkeyToBase64(cryptoEngine.getPrivkey()).c_str());
 	saveBuddies(cryptoEngine.buddies());
 	settings.sync();
 	net.shutdown();
@@ -196,7 +197,7 @@ void MainWindow::on_actionAdd_Peers_triggered()
 
 void MainWindow::on_actionSet_Keys_triggered()
 {
-    PGP * p = new PGP(this);
+    PGP * p = new PGP(this, settings);
     p->exec();
 }
 
