@@ -18,15 +18,18 @@ AddBuddy::~AddBuddy()
     delete ui;
 }
 
-void AddBuddy::on_pushButton_2_clicked()
+void AddBuddy::on_pushButton_clicked()
 {
+    cout << "Processing add buddy" << endl;
     string base64 = ui->plainTextEdit->toPlainText().toStdString();
     string name = ui->lineEdit->text().toStdString();
     Buddy buddy(base64, name);
     ((MainWindow *) parent())->cryptoEngine.addBuddy(buddy);
+
+    destroy();
 }
 
-void AddBuddy::on_pushButton_clicked()
+void AddBuddy::on_pushButton_2_clicked()
 {
     destroy();
 }
