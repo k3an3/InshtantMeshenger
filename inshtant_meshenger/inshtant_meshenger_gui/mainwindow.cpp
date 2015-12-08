@@ -196,20 +196,25 @@ void MainWindow::populateBuddyList(vector<Buddy> buddies)
     central->show();
     spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     vlayout->addItem(spacer);
+
     for(int i = 0; i < buddies.size(); i++)
     {
         addBuddyToList(buddies[i].name());
-        //ui->tabWidget->addTab();
     }
 }
 
 void MainWindow::addBuddyToList(string buddy_name)
 {
     QPushButton *buddy_button = new QPushButton(QString::fromStdString(buddy_name));
+    buddyButtonVector.push_back(buddy_button);
     vlayout->removeItem(spacer);
     vlayout->addWidget(buddy_button);
     vlayout->addItem(spacer);
     buddy_button->show();
+
+    QTextEdit *tabEdit = new QTextEdit(this);
+    tabEditVector.push_back(tabEdit);
+    ui->tabWidget->addTab(tabEdit,QString::fromStdString(buddy_name));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

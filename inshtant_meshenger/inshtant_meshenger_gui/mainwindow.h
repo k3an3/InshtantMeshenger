@@ -6,6 +6,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QSpacerItem>
+#include <QPushButton>
+#include <QTextEdit>
 #include <net.h>
 #include <parser.h>
 #include <string>
@@ -59,6 +61,8 @@ private:
     Ui::MainWindow *ui;
     QVBoxLayout * vlayout;
     QSpacerItem *spacer;
+    std::vector <QTextEdit*> tabEditVector;
+    std::vector <QPushButton*> buddyButtonVector;
 
 };
 
