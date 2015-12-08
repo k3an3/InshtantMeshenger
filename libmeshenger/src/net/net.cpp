@@ -79,9 +79,6 @@ namespace libmeshenger
 	void
 	Net::acceptDiscoveryConn(const boost::system::error_code& error, size_t recv_len)
 	{
-		/* Helpful error message */
-		if (error) netDebugPrint("ERROR", 33);
-
 		if (recv_len > 0) {
 			/* Need to reply to the server port, not the one that was used to
 			 * connect to us. Change the remote endpoint's target port. */
