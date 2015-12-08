@@ -5,8 +5,8 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "ui_add_a_peer.h"
-#include "ui_PGP.h"
+#include "add_a_peer.h"
+#include "PGP.h"
 
 #include <parser.h>
 #include <state.h>
