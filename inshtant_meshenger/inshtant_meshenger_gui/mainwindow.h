@@ -35,6 +35,7 @@ private slots:
 
     void sendMessage();
 
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;

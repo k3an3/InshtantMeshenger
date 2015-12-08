@@ -258,6 +258,19 @@ namespace libmeshenger
 		return std::vector<Peer>(peers.begin(), peers.end());
 	}
 
+	void
+	Net::shutdown()
+	{
+		netDebugPrint("Shutting down...", 31);
+		sendUDPBroadcast(DIS, strlen((char*) DIS));
+		if (tcp_acceptor.is_open())
+			tcp_acceptor.close();
+		if (udp_listen_socket.is_open())
+			udp_listen_socket.close();
+		if (tcp_listen_socket.is_open())
+			tcp_listen_socket.close();
+	}
+
     string
     Net::getHostname()
     {

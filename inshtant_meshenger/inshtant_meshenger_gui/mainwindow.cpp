@@ -146,3 +146,8 @@ void MainWindow::displayMessage(Packet &p)
 		}
 	}
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	 net.shutdown();
+}
