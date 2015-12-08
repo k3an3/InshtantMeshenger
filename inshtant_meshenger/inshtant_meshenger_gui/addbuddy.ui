@@ -68,7 +68,11 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit"/>
+         <widget class="QLineEdit" name="lineEdit">
+          <property name="autoFillBackground">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

@@ -53,6 +53,8 @@ private slots:
 
     void on_actionAdd_Buddies_triggered();
 
+    void on_actionView_Tracking_triggered();
+
 private:
     Ui::MainWindow *ui;
     QVBoxLayout * vlayout;
