@@ -37,3 +37,8 @@ AddPeer::~AddPeer()
 {
     delete ui;
 }
+
+void AddPeer::on_pushButton_clicked()
+{
+    this->destroy();
+}

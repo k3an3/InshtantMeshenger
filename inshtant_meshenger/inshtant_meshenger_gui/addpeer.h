@@ -15,6 +15,8 @@ public:
     explicit AddPeer(QWidget *parent = 0);
     ~AddPeer();
 private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::AddPeer *ui;
 };

@@ -20,6 +20,8 @@ public:
     explicit PGP(QWidget *parent = 0);
     ~PGP();
 private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::PGP *ui;
 };

@@ -37,3 +37,8 @@ PGP::~PGP()
 {
     delete ui;
 }
+
+void PGP::on_pushButton_clicked()
+{
+    this->destroy();
+}
