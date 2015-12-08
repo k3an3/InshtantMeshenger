@@ -22,6 +22,8 @@ public:
 private slots:
     void on_pushButton_clicked();
 
+    void on_Export_Key_clicked();
+
 private:
     Ui::PGP *ui;
 };

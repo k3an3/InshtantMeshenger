@@ -8,9 +8,11 @@
 #include <parser.h>
 #include <state.h>
 #include <net.h>
+#include <cryptopp/rsa.h>
 
 using namespace libmeshenger;
 using namespace std;
+using namespace cryptopp;
 
 PGP::PGP(QWidget *parent) :
     QDialog(parent),
@@ -41,4 +43,9 @@ PGP::~PGP()
 void PGP::on_pushButton_clicked()
 {
     this->destroy();
+}
+
+void PGP::on_Export_Key_clicked()
+{
+    RSA::PublicKey pubkey = CryptoEngine::pubkeyToBase64((MainWindow) this->parent)->
 }
