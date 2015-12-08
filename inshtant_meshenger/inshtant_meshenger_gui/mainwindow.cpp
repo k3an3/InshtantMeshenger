@@ -185,7 +185,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 void MainWindow::on_actionAdd_Peers_triggered()
 {
-    AddPeer a(this);
+    AddPeer a(this, net, engine, cryptoEngine, tracker, settings);
     a.exec();
 }
 
