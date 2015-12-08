@@ -17,7 +17,7 @@
    <item>
     <widget class="QLabel" name="label_2">
      <property name="text">
-      <string>PGP Keys Screen</string>
+      <string>My Keys</string>
      </property>
     </widget>
    </item>
@@ -56,7 +56,7 @@
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>Your Fingerprint</string>
+            <string>Your Fingerprint:</string>
            </property>
           </widget>
          </item>
@@ -104,7 +104,6 @@
       </layout>
       <zorder>textEdit</zorder>
       <zorder>label</zorder>
-      <zorder>horizontalLayoutWidget</zorder>
      </widget>
     </widget>
    </item>
