@@ -38,31 +38,6 @@ static void ReportHop(Packet& p)
 	}
 }
 
-void saveBuddies(vector<Buddy> buddies)
-{
-    settings.beginWriteArray("buddies");
-    for(int i = 0; i < buddies.size(); i++) {
-        settings.setArrayIndex(i);
-        settings.setValue("name", buddies[i].name().c_str());
-    }
-    settings.endArray();
-}
-
-void loadBuddies(CryptoEngine& ce)
-{
-    int size = settings.beginReadArray("buddies");
-    cout << "Loading buddies..." << endl;
-    for(int i = 0; i < size; i++) {
-        settings.setArrayIndex(i);
-        string buddy_name = settings.value("name", "").toString().toStdString();
-        if (buddy_name.length() > 0) {
-            CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(buddy_name + ".pub");
-            ce.addBuddy(Buddy(pubkey, buddy_name));
-        }
-    }
-    settings.endArray();
-}
-
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
@@ -90,7 +65,7 @@ int main(int argc, char *argv[])
     } else if (privkey.length() > 0)
         cryptoEngine.setPrivateKeyFromFile(privkey);
 
-    loadBuddies(cryptoEngine);
+    w.loadBuddies(cryptoEngine);
 
 	/* Add buddies.
 	/* Also adds peers. That should be GUIfied as well */
@@ -108,7 +83,7 @@ int main(int argc, char *argv[])
             cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
         }
     }
-    saveBuddies(cryptoEngine.buddies());
+    w.saveBuddies(cryptoEngine.buddies());
 
     net.startListen();
     net.run();

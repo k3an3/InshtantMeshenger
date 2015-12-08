@@ -78,6 +78,22 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QLabel" name="peerlabel">
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
@@ -148,6 +164,25 @@
        <widget class="QPushButton" name="Disconnect_button">
         <property name="text">
          <string>Disconnect from all Nodes and Peers</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="disconnectlabel">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::NoTextInteraction</set>
         </property>
        </widget>
       </item>

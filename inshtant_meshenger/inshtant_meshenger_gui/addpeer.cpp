@@ -53,9 +53,12 @@ void AddPeer::on_close_button_clicked()
 void AddPeer::on_add_peer_button_clicked()
 {
     net.addPeer(ui->host_to_add->text().toStdString());
+    ui->peerlabel->setText("Added \"" + ui->host_to_add->text() + "\" to peers.");
+    ui->host_to_add->clear();
 }
 
 void AddPeer::on_Disconnect_button_clicked()
 {
+    ui->disconnectlabel->setText("Disabled net. Application must be restarted to continue.");
     net.shutdown();
 }
