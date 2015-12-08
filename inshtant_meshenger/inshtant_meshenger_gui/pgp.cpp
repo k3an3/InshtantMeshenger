@@ -4,6 +4,7 @@
 #include <QtGui>
 #include "pgp.h"
 #include "ui_pgp.h"
+#include "mainwindow.h"
 
 #include <parser.h>
 #include <state.h>
@@ -12,7 +13,7 @@
 
 using namespace libmeshenger;
 using namespace std;
-using namespace cryptopp;
+using namespace CryptoPP;
 
 PGP::PGP(QWidget *parent) :
     QDialog(parent),
@@ -47,5 +48,7 @@ void PGP::on_pushButton_clicked()
 
 void PGP::on_Export_Key_clicked()
 {
-    RSA::PublicKey pubkey = CryptoEngine::pubkeyToBase64((MainWindow) this->parent)->
+    RSA::PublicKey pubkey = ((MainWindow *) this->parent())->cryptoEngine.getPubkey();
+    string base64 = CryptoEngine::pubkeyToBase64(pubkey);
+    ui->textEdit->append(QString::fromStdString(base64));
 }
