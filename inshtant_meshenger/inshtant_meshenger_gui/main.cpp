@@ -36,30 +36,29 @@ static void ReportHop(Packet& p)
 	}
 }
 
-void saveBuddies(QSettings* settings, vector<Buddy> buddies)
+void saveBuddies(vector<Buddy> buddies)
 {
-    settings->beginGroup("crypto");
-    settings->beginWriteArray("buddies");
+    settings.beginWriteArray("buddies");
     for(int i = 0; i < buddies.size(); i++) {
-        settings->setArrayIndex(i);
-        settings->setValue("name", buddies[i].name().c_str());
+        settings.setArrayIndex(i);
+        settings.setValue("name", buddies[i].name().c_str());
     }
-    settings->endArray();
+    settings.endArray();
 }
 
-void loadBuddies(QSettings* settings, CryptoEngine& ce)
+void loadBuddies(CryptoEngine& ce)
 {
-    settings->beginGroup("crypto");
-    int size = settings->beginReadArray("buddies");
+    int size = settings.beginReadArray("buddies");
+    cout << "Loading buddies..." << endl;
     for(int i = 0; i < size; i++) {
-        settings->setArrayIndex(i);
-        string buddy_name = settings->value("name", "").toString().toStdString();
+        settings.setArrayIndex(i);
+        string buddy_name = settings.value("name", "").toString().toStdString();
         if (buddy_name.length() > 0) {
             CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(buddy_name + ".pub");
             ce.addBuddy(Buddy(pubkey, buddy_name));
         }
     }
-    settings->endArray();
+    settings.endArray();
 }
 
 int main(int argc, char *argv[])
@@ -83,19 +82,13 @@ int main(int argc, char *argv[])
 	/* Set your private key. Replace this with UI functionality to set a private
 	 * key from Base64 input */
     string privkey = settings.value("crypto/privkey", "").toString().toStdString();
-    if (argc > 1 && string(argv[1]).length() > 0)
+    if (argc > 1 && string(argv[1]).length() > 0) {
         cryptoEngine.setPrivateKeyFromFile(argv[1]);
-    else if (privkey.length() > 0)
+        settings.setValue("crypto/privkey", argv[1]);
+    } else if (privkey.length() > 0)
         cryptoEngine.setPrivateKeyFromFile(privkey);
 
-    loadBuddies(&settings, cryptoEngine);
-
-    string buddy_name = "mesh1";
-    string filename = buddy_name + ".pub";
-    CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(filename);
-    cryptoEngine.addBuddy(Buddy(pubkey, buddy_name));
-    cout << "Added buddy: " << buddy_name << ". Pubkey: " << endl;
-    cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
+    loadBuddies(cryptoEngine);
 
 	/* Add buddies.
 	/* Also adds peers. That should be GUIfied as well */
@@ -113,7 +106,7 @@ int main(int argc, char *argv[])
             cout << CryptoEngine::pubkeyToBase64(pubkey) << endl;
         }
     }
-    saveBuddies(&settings, cryptoEngine.buddies());
+    saveBuddies(cryptoEngine.buddies());
 
     net.startListen();
     net.run();
