@@ -48,6 +48,20 @@ void PGP::on_pushButton_clicked()
 
 void PGP::on_Export_Key_clicked()
 {
+    RSA::PrivateKey privkey = ((MainWindow *) this->parent())->cryptoEngine.getPrivkey();
+    string base64 = CryptoEngine::privkeyToBase64(privkey);
+    ui->textEdit->append(QString::fromStdString(base64));
+}
+
+void PGP::on_Load_Key_clicked()
+{
+    string base64 = ui->textEdit->toPlainText().toStdString();
+    RSA::PrivateKey privkey = CryptoEngine::privkeyFromBase64(base64);
+    ((MainWindow *) this->parent())->cryptoEngine.setPrivateKey(privkey);
+}
+
+void PGP::on_pushButton_4_clicked()
+{
     RSA::PublicKey pubkey = ((MainWindow *) this->parent())->cryptoEngine.getPubkey();
     string base64 = CryptoEngine::pubkeyToBase64(pubkey);
     ui->textEdit->append(QString::fromStdString(base64));

@@ -37,7 +37,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Insert your private SSH key here</string>
+          <string>Insert your private RSA key here</string>
          </property>
         </widget>
        </item>

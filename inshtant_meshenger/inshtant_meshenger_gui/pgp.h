@@ -24,6 +24,10 @@ private slots:
 
     void on_Export_Key_clicked();
 
+    void on_Load_Key_clicked();
+
+    void on_pushButton_4_clicked();
+
 private:
     Ui::PGP *ui;
 };
