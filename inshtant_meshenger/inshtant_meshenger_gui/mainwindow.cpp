@@ -81,6 +81,7 @@ void MainWindow::sendMessage()
 			string buddyname(msg.c_str()+3, msg.c_str()+i);
 
 			/* Encrypt to a buddy */
+			try {
 			cryptoEngine.encryptMessage(em, buddyname);
 			Packet p(em);
 			tracker.reportPacket(p.idString());
@@ -88,6 +89,9 @@ void MainWindow::sendMessage()
 					net.get_ifaddr("meshtrack.pqz.us").to_string());
 			ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
 			net.sendToAllPeers(p);
+			} catch (std::runtime_error &e) {
+				ui->textEdit->append("[error] Buddy doesn't exist!");
+			}
 			ui->messageToSendLineEdit->clear();
 		} else {
 			/* Such duplicate code */
@@ -185,7 +189,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 }
 void MainWindow::on_actionAdd_Peers_triggered()
 {
-    AddPeer a(this);
+    AddPeer a(this, net, engine, cryptoEngine, tracker, settings);
     a.exec();
 }
 

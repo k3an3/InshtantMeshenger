@@ -4,6 +4,9 @@
 #include <QtGui>
 #include "addpeer.h"
 #include "ui_addpeer.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+#include <iostream>
 
 #include <parser.h>
 #include <state.h>
@@ -12,9 +15,14 @@
 using namespace libmeshenger;
 using namespace std;
 
-AddPeer::AddPeer(QWidget *parent) :
+AddPeer::AddPeer(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::PacketEngine &engine_p, libmeshenger::CryptoEngine &crypto_p, Tracker &tracker_p, QSettings &settings_p):
     QDialog(parent),
-    ui(new Ui::AddPeer)
+    ui(new Ui::AddPeer),
+	net(net_p),
+	engine(engine_p),
+	cryptoEngine(crypto_p),
+	tracker(tracker_p),
+	settings(settings_p)
 {
     ui->setupUi(this);
     /* set up a color palette */
@@ -38,7 +46,16 @@ AddPeer::~AddPeer()
     delete ui;
 }
 
-void AddPeer::on_pushButton_clicked()
+void AddPeer::on_close_button_clicked()
 {
     this->destroy();
+}
+void AddPeer::on_add_peer_button_clicked()
+{
+    net.addPeer(ui->host_to_add->text().toStdString());
+}
+
+void AddPeer::on_Disconnect_button_clicked()
+{
+    net.shutdown();
 }
