@@ -60,49 +60,52 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::sendMessage()
+{
+	string msg = ui->messageToSendLineEdit->text().toStdString();
+	if (msg.length() > 0) {
+		/* Choose which buddy to send it to (default unencrypted) */
+		/* Format: '-e buddyname message contents go here' */
+		if ((msg[0] == '-') && (msg[1] == 'e')) {
+			int i = 0;
+			for (i = 3; i < msg.length(); i++) {
+				if (msg[i] == ' ')
+					break;
+			}
+			EncryptedMessage em(string(msg.c_str()+i));
+			string buddyname(msg.c_str()+3, msg.c_str()+i);
+
+			/* Encrypt to a buddy */
+			cryptoEngine.encryptMessage(em, buddyname);
+			Packet p(em);
+			tracker.reportPacket(p.idString());
+			tracker.reportHop(p.idString(), "0",
+					net.get_ifaddr("meshtrack.pqz.us").to_string());
+			ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
+			net.sendToAllPeers(p);
+			ui->messageToSendLineEdit->clear();
+		} else {
+			/* Such duplicate code */
+			ClearMessage m(msg);
+			Packet p(m);
+			tracker.reportPacket(p.idString());
+			tracker.reportHop(p.idString(), "0",
+					net.get_ifaddr("meshtrack.pqz.us").to_string());
+			ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
+			net.sendToAllPeers(p);
+			ui->messageToSendLineEdit->clear();
+		}
+	}
+}
+
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
-	/* Choose which buddy to send it to (default unencrypted) */
-	/* Format: '-e buddyname message contents go here' */
-	string msg = ui->messageToSendLineEdit->text().toStdString();
-	if ((msg[0] == '-') && (msg[1] == 'e')) {
-		int i = 0;
-		for (i = 3; i < msg.length(); i++) {
-			if (msg[i] == ' ')
-				break;
-		}
-		EncryptedMessage em(string(msg.c_str()+i));
-		string buddyname(msg.c_str()+3, msg.c_str()+i);
-
-		/* Encrypt to a buddy */
-		cryptoEngine.encryptMessage(em, buddyname);
-		Packet p(em);
-		tracker.reportPacket(p.idString());
-		tracker.reportHop(p.idString(), "0", 
-				net.get_ifaddr("meshtrack.pqz.us").to_string());
-		ui->textEdit->append(ui->messageToSendLineEdit->text());
-		net.sendToAllPeers(p);
-		ui->messageToSendLineEdit->clear();
-	} else {
-		ClearMessage m(msg);
-		Packet p(m);
-		tracker.reportPacket(p.idString());
-		tracker.reportHop(p.idString(), "0", 
-				net.get_ifaddr("meshtrack.pqz.us").to_string());
-		ui->textEdit->append(ui->messageToSendLineEdit->text());
-		net.sendToAllPeers(p);
-		ui->messageToSendLineEdit->clear();
-	}
+	sendMessage();
 }
 
 void MainWindow::on_sendPushButton_clicked()
 {
-    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
-    Packet p(m);
-    ui->textEdit->append(ui->messageToSendLineEdit->text());
-    net.sendToAllPeers(p);
-    ui->messageToSendLineEdit->clear();
-
+	sendMessage();
 }
 
 void MainWindow::checkForPackets()
@@ -137,7 +140,7 @@ void MainWindow::displayMessage(Packet &p)
 							"] " + string((char *)m.decryptedBody().data())));
 
 			} else {
-				ui->textEdit->append(QString::fromStdString("[UNTRUSTED] " + 
+				ui->textEdit->append(QString::fromStdString("[UNTRUSTED] " +
 							string((char *)m.decryptedBody().data())));
 			}
 		}

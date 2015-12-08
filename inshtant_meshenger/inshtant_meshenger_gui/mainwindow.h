@@ -33,6 +33,8 @@ private slots:
 
     void checkForPackets();
 
+    void sendMessage();
+
 
 private:
     Ui::MainWindow *ui;
