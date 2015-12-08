@@ -30,6 +30,8 @@ private slots:
 
     void on_Generate_key_clicked();
 
+    void on_textEdit_textChanged();
+
 private:
     Ui::PGP *ui;
 };

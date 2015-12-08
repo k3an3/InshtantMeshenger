@@ -84,3 +84,9 @@ void PGP::on_Generate_key_clicked()
     string base64 = CryptoEngine::pubkeyToBase64(pubkey);
     ui->textEdit->append(QString::fromStdString(base64));
 }
+
+void PGP::on_textEdit_textChanged()
+{
+    string fp = CryptoEngine::fingerprint(((MainWindow *) parent())->cryptoEngine.getPubkey());
+    ui->fpLine->setText(QString::fromStdString(fp));
+}
