@@ -5,6 +5,8 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_add_a_peer.h"
+#include "ui_PGP.h"
 
 #include <parser.h>
 #include <state.h>
@@ -60,31 +62,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_messageToSendLineEdit_returnPressed()
 {
-	/* Choose which buddy to send it to (default unencrypted) */
-	/* Format: '-e buddyname message contents go here' */
-	string msg = ui->messageToSendLineEdit->text().toStdString();
-	if ((msg[0] == '-') && (msg[1] == 'e')) {
-		int i = 0;
-		for (i = 3; i < msg.length(); i++) {
-			if (msg[i] == ' ')
-				break;
-		}
-		EncryptedMessage em(string(msg.c_str()+i));
-		string buddyname(msg.c_str()+3, msg.c_str()+i);
-
-		/* Encrypt to a buddy */
-		cryptoEngine.encryptMessage(em, buddyname);
-		Packet p(em);
-		ui->textEdit->append(ui->messageToSendLineEdit->text());
-		net.sendToAllPeers(p);
-		ui->messageToSendLineEdit->clear();
-	} else {
-		ClearMessage m(msg);
-		Packet p(m);
-		ui->textEdit->append(ui->messageToSendLineEdit->text());
-		net.sendToAllPeers(p);
-		ui->messageToSendLineEdit->clear();
-	}
+    ClearMessage m(ui->messageToSendLineEdit->text().toStdString());
+    Packet p(m);
+    ui->textEdit->append(ui->messageToSendLineEdit->text());
+    net.sendToAllPeers(p);
+    ui->messageToSendLineEdit->clear();
 }
 
 void MainWindow::on_sendPushButton_clicked()
@@ -108,6 +90,16 @@ void MainWindow::checkForPackets()
             engine.ProcessPacket(p);
         }
     }
+}
+void MainWindow::on_actionAdd_your_Key_clicked(){
+    PGP s(0, net, engine, cryptoEngine);
+    win = &s;
+    s.show();
+}
+void MainWindow::on_actionNetwork_settings_clicked(){
+    add_a_peer m(0, net, engine, cryptoEngine);
+    win = &m;
+    m.show();
 }
 
 void MainWindow::displayMessage(Packet &p)
