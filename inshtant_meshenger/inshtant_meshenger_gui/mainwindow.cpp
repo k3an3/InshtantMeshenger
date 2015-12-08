@@ -9,6 +9,7 @@
 #include "ui_addpeer.h"
 #include "pgp.h"
 #include "ui_pgp.h"
+#include "addbuddy.h"
 
 #include<vector>
 #include <crypto.h>
@@ -167,6 +168,7 @@ void MainWindow::saveBuddies(vector<Buddy> buddies)
     for(int i = 0; i < buddies.size(); i++) {
         settings.setArrayIndex(i);
         settings.setValue("name", buddies[i].name().c_str());
+        settings.setValue("key", CryptoEngine::pubkeyToBase64(buddies[i].pubkey()).c_str());
     }
     settings.endArray();
 }
@@ -177,9 +179,10 @@ void MainWindow::loadBuddies(CryptoEngine& ce)
     cout << "Loading buddies..." << endl;
     for(int i = 0; i < size; i++) {
         settings.setArrayIndex(i);
+        string base64 = settings.value("key", "").toString().toStdString();
         string buddy_name = settings.value("name", "").toString().toStdString();
         if (buddy_name.length() > 0) {
-            CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromFile(buddy_name + ".pub");
+            CryptoPP::RSA::PublicKey pubkey = CryptoEngine::pubkeyFromBase64(base64);
             ce.addBuddy(Buddy(pubkey, buddy_name));
         }
     }
@@ -208,18 +211,25 @@ void MainWindow::addBuddyToList(string buddy_name, QWidget *central, QVBoxLayout
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+	settings.setValue("crypto/privkey", cryptoEngine.privkeyToBase64(cryptoEngine.getPrivkey()).c_str());
 	saveBuddies(cryptoEngine.buddies());
 	settings.sync();
 	net.shutdown();
 }
 void MainWindow::on_actionAdd_Peers_triggered()
 {
-    AddPeer a(this, net, engine, cryptoEngine, tracker, settings);
-    a.exec();
+    AddPeer * a = new AddPeer(this, net, engine, cryptoEngine, tracker, settings);
+    a->exec();
 }
 
 void MainWindow::on_actionSet_Keys_triggered()
 {
-    PGP p(this);
-    p.exec();
+    PGP * p = new PGP(this, settings);
+    p->exec();
+}
+
+void MainWindow::on_actionAdd_Buddies_triggered()
+{
+    AddBuddy * ab = new AddBuddy(this);
+    ab->exec();
 }

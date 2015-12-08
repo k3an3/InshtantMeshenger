@@ -56,14 +56,13 @@ int main(int argc, char *argv[])
     net.discoveryListen();
     net.discoverPeers();
 
-	/* Set your private key. Replace this with UI functionality to set a private
-	 * key from Base64 input */
+	/* Set your private and public key. */
     string privkey = settings.value("crypto/privkey", "").toString().toStdString();
     if (argc > 1 && string(argv[1]).length() > 0) {
         cryptoEngine.setPrivateKeyFromFile(argv[1]);
-        settings.setValue("crypto/privkey", argv[1]);
+        settings.setValue("crypto/privkey", cryptoEngine.privkeyToBase64(cryptoEngine.getPrivkey()).c_str());
     } else if (privkey.length() > 0)
-        cryptoEngine.setPrivateKeyFromFile(privkey);
+        cryptoEngine.setPrivateKey(privkey);
 
     w.loadBuddies(cryptoEngine);
 

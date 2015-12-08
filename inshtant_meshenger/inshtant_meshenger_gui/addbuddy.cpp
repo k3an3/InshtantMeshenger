@@ -1,5 +1,10 @@
 #include "addbuddy.h"
 #include "ui_addbuddy.h"
+#include <crypto.h>
+#include <string>
+#include "mainwindow.h"
+using namespace std;
+using namespace libmeshenger;
 
 AddBuddy::AddBuddy(QWidget *parent) :
     QDialog(parent),
@@ -11,4 +16,26 @@ AddBuddy::AddBuddy(QWidget *parent) :
 AddBuddy::~AddBuddy()
 {
     delete ui;
+}
+
+void AddBuddy::on_pushButton_clicked()
+{
+    cout << "Processing add buddy" << endl;
+    string base64 = ui->plainTextEdit->toPlainText().toStdString();
+    string name = ui->lineEdit->text().toStdString();
+    Buddy buddy(base64, name);
+    ((MainWindow *) parent())->cryptoEngine.addBuddy(buddy);
+
+    destroy();
+}
+
+void AddBuddy::on_pushButton_2_clicked()
+{
+    destroy();
+}
+
+void AddBuddy::on_plainTextEdit_textChanged()
+{
+    string fp = CryptoEngine::fingerprint(CryptoEngine::pubkeyFromBase64(ui->plainTextEdit->toPlainText().toStdString()));
+    ui->fpLine->setText(QString::fromStdString(fp));
 }

@@ -50,6 +50,8 @@ private slots:
     void closeEvent(QCloseEvent *event);
     void on_actionSet_Keys_triggered();
 
+    void on_actionAdd_Buddies_triggered();
+
 private:
     Ui::MainWindow *ui;
 };

@@ -148,6 +148,7 @@ namespace libmeshenger
 	void
 	CryptoEngine::addBuddy(const Buddy& b)
 	{
+		cout << "Adding buddy " << b.name() << endl;
 		m_buddies.push_back(b);
 	}
 
