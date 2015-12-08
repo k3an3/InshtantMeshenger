@@ -33,6 +33,9 @@ private slots:
 
     void checkForPackets();
 
+    void sendMessage();
+
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::MainWindow *ui;
