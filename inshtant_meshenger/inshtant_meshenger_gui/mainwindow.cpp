@@ -10,6 +10,7 @@
 #include "pgp.h"
 #include "ui_pgp.h"
 #include "addbuddy.h"
+#include <algorithm>
 
 #include<vector>
 #include <crypto.h>
@@ -153,7 +154,12 @@ void MainWindow::displayMessage(Packet &p)
         if (cryptoEngine.tryDecrypt(m)) {
             if(m.trusted()){
                 string buddy = cryptoEngine.buddy(m.sender()).name();
-                ui->textEdit->append(QString::fromStdString("[" + buddy +
+				int i;
+				for (i = 0; i < cryptoEngine.buddies().size(); i++) {
+					if (!cryptoEngine.buddies()[i].name().compare(buddy))
+						break;
+				}
+                tabEditVector[i]->append(QString::fromStdString("[" + buddy +
                             "] " + string((char *)m.decryptedBody().data())));
 
             } else {
