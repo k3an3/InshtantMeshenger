@@ -31,16 +31,19 @@ public:
     void loadBuddies(libmeshenger::CryptoEngine& ce);
     void saveBuddies(std::vector<libmeshenger::Buddy> buddies);
 private slots:
-
     void on_messageToSendLineEdit_returnPressed();
-
     void on_sendPushButton_clicked();
-
     void checkForPackets();
+    /*
+    void MainWindow::on_actionAdd_your_Key_clicked();
+    void MainWindow::on_actionNetwork_settings_clicked();*/
+
+    void on_actionAdd_Peers_triggered();
 
     void sendMessage();
 
     void closeEvent(QCloseEvent *event);
+    void on_actionSet_Keys_triggered();
 
 private:
     Ui::MainWindow *ui;

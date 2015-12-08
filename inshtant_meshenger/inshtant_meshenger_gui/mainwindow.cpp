@@ -5,6 +5,10 @@
 #include <QTimer>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "addpeer.h"
+#include "ui_addpeer.h"
+#include "pgp.h"
+#include "ui_pgp.h"
 
 #include <parser.h>
 #include <state.h>
@@ -178,4 +182,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
 	saveBuddies(cryptoEngine.buddies());
 	settings.sync();
 	net.shutdown();
+}
+void MainWindow::on_actionAdd_Peers_triggered()
+{
+    AddPeer a(this);
+    a.exec();
+}
+
+void MainWindow::on_actionSet_Keys_triggered()
+{
+    PGP p(this);
+    p.exec();
 }
