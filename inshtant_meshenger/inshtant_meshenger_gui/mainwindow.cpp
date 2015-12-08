@@ -76,6 +76,9 @@ void MainWindow::sendMessage()
     if (msg.length() > 0) {
         /* Choose which buddy to send it to (default unencrypted) */
         /* Format: '-e buddyname message contents go here' */
+		int index = ui->tabWidget->currentIndex();
+		msg = "-e " + cryptoEngine.buddies()[index - 1].name() + " " + msg;
+		cout << msg << endl;
         if ((msg[0] == '-') && (msg[1] == 'e')) {
             int i = 0;
             for (i = 3; i < msg.length(); i++) {
@@ -92,7 +95,7 @@ void MainWindow::sendMessage()
             tracker.reportPacket(p.idString());
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
-            ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
+            tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             } catch (std::runtime_error &e) {
                 ui->textEdit->append("[error] Buddy doesn't exist!");
@@ -105,7 +108,7 @@ void MainWindow::sendMessage()
             tracker.reportPacket(p.idString());
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
-            ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
+            tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             ui->messageToSendLineEdit->clear();
         }
