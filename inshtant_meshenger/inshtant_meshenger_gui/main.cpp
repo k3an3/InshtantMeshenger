@@ -61,9 +61,9 @@ int main(int argc, char *argv[])
     string privkey = settings.value("crypto/privkey", "").toString().toStdString();
     if (argc > 1 && string(argv[1]).length() > 0) {
         cryptoEngine.setPrivateKeyFromFile(argv[1]);
-        settings.setValue("crypto/privkey", argv[1]);
+        settings.setValue("crypto/privkey", cryptoEngine.privkeyToBase64(cryptoEngine.getPrivkey()).c_str());
     } else if (privkey.length() > 0)
-        cryptoEngine.setPrivateKeyFromFile(privkey);
+        cryptoEngine.setPrivateKey(privkey);
 
     w.loadBuddies(cryptoEngine);
 
