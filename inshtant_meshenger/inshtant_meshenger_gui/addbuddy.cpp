@@ -21,13 +21,15 @@ AddBuddy::~AddBuddy()
 void AddBuddy::on_pushButton_clicked()
 {
     try {
-        string base64 = ui->plainTextEdit->toPlainText().toStdString();
-        string name = ui->lineEdit->text().toStdString();
-        Buddy buddy(base64, name);
-        ((MainWindow *) parent())->cryptoEngine.addBuddy(buddy);
-        ((MainWindow *) parent())->addBuddyToList(buddy.name());
+            string base64 = ui->plainTextEdit->toPlainText().toStdString();
+            string name = ui->lineEdit->text().toStdString();
+            if (name.length() > 0) {
+            Buddy buddy(base64, name);
+            ((MainWindow *) parent())->cryptoEngine.addBuddy(buddy);
+            ((MainWindow *) parent())->addBuddyToList(buddy.name());
 
-        destroy();
+            destroy();
+        }
     } catch (CryptoPP::BERDecodeErr e) {
     }
 }
