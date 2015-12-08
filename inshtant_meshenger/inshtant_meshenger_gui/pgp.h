@@ -28,6 +28,8 @@ private slots:
 
     void on_pushButton_4_clicked();
 
+    void on_Generate_key_clicked();
+
 private:
     Ui::PGP *ui;
 };

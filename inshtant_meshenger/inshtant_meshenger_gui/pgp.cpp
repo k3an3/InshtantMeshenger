@@ -10,6 +10,7 @@
 #include <state.h>
 #include <net.h>
 #include <cryptopp/rsa.h>
+#include <cryptopp/osrng.h>
 
 using namespace libmeshenger;
 using namespace std;
@@ -48,6 +49,7 @@ void PGP::on_pushButton_clicked()
 
 void PGP::on_Export_Key_clicked()
 {
+    ui->textEdit->clear();
     RSA::PrivateKey privkey = ((MainWindow *) this->parent())->cryptoEngine.getPrivkey();
     string base64 = CryptoEngine::privkeyToBase64(privkey);
     ui->textEdit->append(QString::fromStdString(base64));
@@ -62,7 +64,23 @@ void PGP::on_Load_Key_clicked()
 
 void PGP::on_pushButton_4_clicked()
 {
+    ui->textEdit->clear();
     RSA::PublicKey pubkey = ((MainWindow *) this->parent())->cryptoEngine.getPubkey();
+    string base64 = CryptoEngine::pubkeyToBase64(pubkey);
+    ui->textEdit->append(QString::fromStdString(base64));
+}
+
+void PGP::on_Generate_key_clicked()
+{
+    AutoSeededRandomPool rng;
+    InvertibleRSAFunction params;
+    params.GenerateRandomWithKeySize(rng, 3072);
+    RSA::PublicKey pubkey(params);
+    RSA::PrivateKey privkey(params);
+
+    ((MainWindow *) parent())->cryptoEngine.setPrivateKey(privkey);
+
+    ui->textEdit->clear();
     string base64 = CryptoEngine::pubkeyToBase64(pubkey);
     ui->textEdit->append(QString::fromStdString(base64));
 }
