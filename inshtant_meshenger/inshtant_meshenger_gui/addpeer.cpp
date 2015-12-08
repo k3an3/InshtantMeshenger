@@ -54,3 +54,8 @@ void AddPeer::on_add_peer_button_clicked()
 {
     net.addPeer(ui->host_to_add->text().toStdString());
 }
+
+void AddPeer::on_Disconnect_button_clicked()
+{
+    net.shutdown();
+}

@@ -28,12 +28,11 @@ public:
     QSettings &settings;
 private slots:
     void on_close_button_clicked();
-
+    void on_Disconnect_button_clicked();
     void on_add_peer_button_clicked();
 
 private:
     Ui::AddPeer *ui;
-    void on_Add_a_Peer_same_net_clicked();
 };
 
 #endif // ADDPEER_H
