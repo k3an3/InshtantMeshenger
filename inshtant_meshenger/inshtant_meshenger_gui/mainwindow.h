@@ -57,12 +57,15 @@ private slots:
 
     void on_actionView_Tracking_triggered();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QVBoxLayout * vlayout;
     QSpacerItem *spacer;
     std::vector <QTextEdit*> tabEditVector;
     std::vector <QPushButton*> buddyButtonVector;
+    void doSendMessage(std::string msg);
 
 };
 

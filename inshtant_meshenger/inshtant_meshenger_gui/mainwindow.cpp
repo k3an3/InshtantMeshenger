@@ -21,6 +21,10 @@
 #include <string>
 #include <QDesktopServices>
 #include <fstream>
+#include <QFileDialog>
+#include <cstdio>
+#include <QMessageBox>
+
 
 using namespace libmeshenger;
 using namespace std;
@@ -75,6 +79,11 @@ MainWindow::~MainWindow()
 void MainWindow::sendMessage()
 {
     string msg = ui->messageToSendLineEdit->text().toStdString();
+    doSendMessage(msg);
+}
+
+void MainWindow::doSendMessage(string msg)
+{
     if (msg.length() > 0) {
         /* Choose which buddy to send it to (default unencrypted) */
         /* Format: '-e buddyname message contents go here' */
@@ -82,7 +91,7 @@ void MainWindow::sendMessage()
 		cout << index << endl;
         if (index > 0) {
 			string buddyname = cryptoEngine.buddies()[index - 1].name();
-            EncryptedMessage em(string(msg.c_str()));
+            EncryptedMessage em(msg);
 
             /* Encrypt to a buddy */
             try {
@@ -161,6 +170,7 @@ void MainWindow::displayMessage(Packet &p)
                     /* Receive file */
                     string filename = "";
                     vector<uint8_t> data = m.decryptedBody();
+                    cout << "RX Message Size: " << data.size() << endl;
                     cout << "Receiving file" << endl;
                     for(int end = 5; end < data.size(); end++) {
                         if (data[end] == '%') {
@@ -173,6 +183,7 @@ void MainWindow::displayMessage(Packet &p)
                         filename.push_back(data[end]);
                     }
                     cout << "Received file name: " << filename << endl;
+                    cout << "Size: " << data.size() << endl;
                     ofstream of(filename.c_str(), ios::out | ios::binary);
                     of.write((char *) data.data(), data.size());
                     of.close();
@@ -275,4 +286,35 @@ void MainWindow::on_actionAdd_Buddies_triggered()
 void MainWindow::on_actionView_Tracking_triggered()
 {
     QDesktopServices::openUrl(QUrl("http://meshtrack.pqz.us/packets", QUrl::TolerantMode));
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    string path = QFileDialog::getOpenFileName(this).toStdString();
+    cout << "Sending file " << path << endl;
+    string filename;
+    for (int i = 0; i < path.length(); i++) {
+        if (path[i] == '/') {
+            filename = "";
+        } else {
+            filename.push_back(path[i]);
+        }
+    }
+    cout << endl;
+    cout << "Filename: " << filename << endl;
+    ifstream in(path.c_str(), ios::in | ios::binary );
+    vector<uint8_t> filedata;
+    in.unsetf(std::ios::skipws);
+
+    while(true) {
+        int c = in.get();
+        if (c == EOF)
+            break;
+        filedata.push_back((uint8_t) c);
+    }
+    cout << "File size: " << filedata.size() << endl;
+
+    string msg("%%%%f" + filename + "%" + string((char *) filedata.data(), filedata.size()));
+    cout << "Message size:" << msg.length() << endl;
+    doSendMessage(msg);
 }

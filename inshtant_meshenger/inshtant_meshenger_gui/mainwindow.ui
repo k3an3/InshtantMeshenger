@@ -72,7 +72,7 @@
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
-              <property name="clearButtonEnabled">
+              <property name="clearButtonEnabled" stdset="0">
                <bool>false</bool>
               </property>
              </widget>
@@ -81,6 +81,13 @@
              <widget class="QPushButton" name="sendPushButton">
               <property name="text">
                <string>Send</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pushButton">
+              <property name="text">
+               <string>Send File</string>
               </property>
              </widget>
             </item>
@@ -134,8 +141,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>288</width>
-             <height>822</height>
+             <width>293</width>
+             <height>857</height>
             </rect>
            </property>
           </widget>
@@ -153,7 +160,7 @@
      <x>0</x>
      <y>0</y>
      <width>1311</width>
-     <height>26</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">
