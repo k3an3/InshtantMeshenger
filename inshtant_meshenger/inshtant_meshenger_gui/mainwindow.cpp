@@ -88,7 +88,6 @@ void MainWindow::doSendMessage(string msg)
         /* Choose which buddy to send it to (default unencrypted) */
         /* Format: '-e buddyname message contents go here' */
 		int index = ui->tabWidget->currentIndex();
-		cout << index << endl;
         if (index > 0) {
 			string buddyname = cryptoEngine.buddies()[index - 1].name();
             EncryptedMessage em(msg);
@@ -114,7 +113,8 @@ void MainWindow::doSendMessage(string msg)
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
 			if (index <= 0) index = 1;
-            tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
+			if (tabEditVector.size() > 0)
+				tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             ui->messageToSendLineEdit->clear();
         }
