@@ -113,8 +113,7 @@ void MainWindow::doSendMessage(string msg)
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
 			if (index <= 0) index = 1;
-			if (tabEditVector.size() > 0)
-				tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
+			ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             ui->messageToSendLineEdit->clear();
         }
