@@ -182,12 +182,13 @@ void MainWindow::displayMessage(Packet &p)
                         }
                         filename.push_back(data[end]);
                     }
+                    cout << "Posting message to tab " << i << endl;
+                    tabEditVector[i]->append(QString::fromStdString("Received a file. Saved as " + filename));
                     cout << "Received file name: " << filename << endl;
                     cout << "Size: " << data.size() << endl;
                     ofstream of(filename.c_str(), ios::out | ios::binary);
                     of.write((char *) data.data(), data.size());
                     of.close();
-                    tabEditVector[i]->append(QString::fromStdString("Received a file. Saved as " + filename));
 
                 } else {
                     tabEditVector[i]->append(QString::fromStdString("[" + buddy +
