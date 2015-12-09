@@ -20,6 +20,7 @@
 #include <tracker.h>
 #include <string>
 #include <QDesktopServices>
+#include <fstream>
 
 using namespace libmeshenger;
 using namespace std;
@@ -148,14 +149,39 @@ void MainWindow::displayMessage(Packet &p)
         EncryptedMessage m(p);
         if (cryptoEngine.tryDecrypt(m)) {
             if(m.trusted()){
+                /* Check to see if it is a file transfer */
                 string buddy = cryptoEngine.buddy(m.sender()).name();
-				int i;
-				for (i = 0; i < cryptoEngine.buddies().size(); i++) {
-					if (!cryptoEngine.buddies()[i].name().compare(buddy))
-						break;
-				}
-                tabEditVector[i]->append(QString::fromStdString("[" + buddy +
-                            "] " + string((char *)m.decryptedBody().data())));
+                int i;
+                for (i = 0; i < cryptoEngine.buddies().size(); i++) {
+                    if (!cryptoEngine.buddies()[i].name().compare(buddy))
+                        break;
+                }
+                string token((char*) m.decryptedBody().data(), 5);
+                if (token.compare("%%%%f") == 0) {
+                    /* Receive file */
+                    string filename = "";
+                    vector<uint8_t> data = m.decryptedBody();
+                    cout << "Receiving file" << endl;
+                    for(int end = 5; end < data.size(); end++) {
+                        if (data[end] == '%') {
+                            data = vector<uint8_t>(data.begin() + end + 1, data.end());
+                            break;
+                        } else if (data[end] == '/') {
+                            /* Disallow paths */
+                            filename = "";
+                        }
+                        filename.push_back(data[end]);
+                    }
+                    cout << "Received file name: " << filename << endl;
+                    ofstream of(filename.c_str(), ios::out | ios::binary);
+                    of.write((char *) data.data(), data.size());
+                    of.close();
+                    tabEditVector[i]->append(QString::fromStdString("Received a file. Saved as " + filename));
+
+                } else {
+                    tabEditVector[i]->append(QString::fromStdString("[" + buddy +
+                                "] " + string((char *)m.decryptedBody().data())));
+                }
 
             } else {
                 ui->textEdit->append(QString::fromStdString("[UNTRUSTED] " +
