@@ -72,7 +72,7 @@
               <property name="autoFillBackground">
                <bool>true</bool>
               </property>
-              <property name="clearButtonEnabled" stdset="0">
+              <property name="clearButtonEnabled">
                <bool>false</bool>
               </property>
              </widget>
@@ -141,8 +141,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>293</width>
-             <height>857</height>
+             <width>252</width>
+             <height>820</height>
             </rect>
            </property>
           </widget>
@@ -160,7 +160,7 @@
      <x>0</x>
      <y>0</y>
      <width>1311</width>
-     <height>20</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOptions">

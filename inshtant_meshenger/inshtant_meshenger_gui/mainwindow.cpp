@@ -64,6 +64,7 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::
     ui->buddyListFrame->setAutoFillBackground(true);
     ui->buddyListFrame->setPalette(palette);
     ui->tabWidget->removeTab(1);
+    //message_sound("sounds/r2d2.wav");
 
     /* Periodic timer to check for incoming packets */
     QTimer *timer = new QTimer(this);
@@ -99,13 +100,14 @@ void MainWindow::doSendMessage(string msg)
             tracker.reportPacket(p.idString());
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
-            tabEditVector[index - 1]->append("[self] " + ui->messageToSendLineEdit->text());
+            tabEditVector[index - 1]->append("<font color=\"green\">[self]$</font> " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             } catch (std::runtime_error &e) {
-                ui->textEdit->append("[error] Buddy doesn't exist!");
+                ui->textEdit->append("<font color=\"red\"[error]-># Buddy doesn't exist!</font>");
             }
             ui->messageToSendLineEdit->clear();
         } else {
+            /* Message is just cleartext */
             /* Such duplicate code */
             ClearMessage m(msg);
             Packet p(m);
@@ -113,7 +115,7 @@ void MainWindow::doSendMessage(string msg)
             tracker.reportHop(p.idString(), "0",
                     net.get_ifaddr("meshtrack.pqz.us").to_string());
 			if (index <= 0) index = 1;
-			ui->textEdit->append("[self] " + ui->messageToSendLineEdit->text());
+            ui->textEdit->append("<font color=\"red\">[self]$</font> " + ui->messageToSendLineEdit->text());
             net.sendToAllPeers(p);
             ui->messageToSendLineEdit->clear();
         }
@@ -149,7 +151,7 @@ void MainWindow::displayMessage(Packet &p)
     /* Display ClearMessage to the default window */
     if (p.type() == 0x01) {
         ClearMessage m(p);
-        ui->textEdit->append(QString::fromStdString("[CLEARMESSAGE] " + m.bodyString()));
+        ui->textEdit->append(QString::fromStdString("<font color=\"red\">[CLEARMESSAGE]-></font> " + m.bodyString()));
     }
 
     /* Just print who sent it and that it is trusted */
@@ -182,7 +184,7 @@ void MainWindow::displayMessage(Packet &p)
                         filename.push_back(data[end]);
                     }
                     cout << "Posting message to tab " << i << endl;
-                    tabEditVector[i]->append(QString::fromStdString("Received a file. Saved as " + filename));
+                    tabEditVector[i]->append(QString::fromStdString("<font color=\"green\">-># Received a file. Saved as " + filename + "</font>"));
                     cout << "Received file name: " << filename << endl;
                     cout << "Size: " << data.size() << endl;
                     ofstream of(filename.c_str(), ios::out | ios::binary);
@@ -190,13 +192,13 @@ void MainWindow::displayMessage(Packet &p)
                     of.close();
 
                 } else {
-                    tabEditVector[i]->append(QString::fromStdString("[" + buddy +
-                                "] " + string((char *)m.decryptedBody().data())));
+                    tabEditVector[i]->append(QString::fromStdString("<font color=\"green\">[" + buddy +
+                                "]-></font> " + string((char *)m.decryptedBody().data())));
                 }
 
             } else {
-                ui->textEdit->append(QString::fromStdString("[UNTRUSTED] " +
-                            string((char *)m.decryptedBody().data())));
+                ui->textEdit->append(QString::fromStdString("<font color=\"red\">[UNTRUSTED]-> " +
+                            string((char *)m.decryptedBody().data()) + "</font>"));
             }
         }
     }
