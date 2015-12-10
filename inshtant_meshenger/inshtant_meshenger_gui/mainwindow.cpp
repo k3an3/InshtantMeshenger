@@ -20,6 +20,7 @@
 #include <tracker.h>
 #include <string>
 #include <QDesktopServices>
+#include <QSound>
 #include <fstream>
 #include <QFileDialog>
 #include <cstdio>
