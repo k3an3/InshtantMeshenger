@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::
     engine(engine_p),
     cryptoEngine(crypto_p),
     tracker(tracker_p),
-    settings(settings_p)
+    settings(settings_p),
+    message_sound("sounds/r2d2.wav")
 {
     ui->setupUi(this);
     /* set up a color palette */
@@ -65,7 +66,7 @@ MainWindow::MainWindow(QWidget *parent, libmeshenger::Net &net_p, libmeshenger::
     ui->buddyListFrame->setAutoFillBackground(true);
     ui->buddyListFrame->setPalette(palette);
     ui->tabWidget->removeTab(1);
-    //message_sound("sounds/r2d2.wav");
+
 
     /* Periodic timer to check for incoming packets */
     QTimer *timer = new QTimer(this);
@@ -149,6 +150,7 @@ void MainWindow::checkForPackets()
 
 void MainWindow::displayMessage(Packet &p)
 {
+    message_sound.play();
     /* Display ClearMessage to the default window */
     if (p.type() == 0x01) {
         ClearMessage m(p);

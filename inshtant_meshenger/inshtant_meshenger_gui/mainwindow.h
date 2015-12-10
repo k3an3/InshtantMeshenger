@@ -67,7 +67,7 @@ private:
     std::vector <QTextEdit*> tabEditVector;
     std::vector <QPushButton*> buddyButtonVector;
     void doSendMessage(std::string msg);
-    //QSound message_sound;
+    QSound message_sound;
 
 };
 
