@@ -15,6 +15,7 @@
 #include <crypto.h>
 #include <vector>
 #include <string>
+#include <QSound>
 
 namespace Ui {
 class MainWindow;
