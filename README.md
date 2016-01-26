@@ -1,5 +1,6 @@
 Inshtant Meshenger
 ------------------
+Semester group project for COM S 309, Group 32. A distributed, peer-to-peer mesh network chat client written in C++.
 
 Subdirectories:
 
